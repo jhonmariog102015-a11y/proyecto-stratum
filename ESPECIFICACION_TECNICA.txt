@@ -1,0 +1,148 @@
+================================================================================
+STRATUM GROUP S.A.S. - DOCUMENTACION TECNICA DEL SITIO WEB
+================================================================================
+Firma especializada en Consultoria, Interventoria e Ingenieria Minera,
+Geologica, Ambiental y Tecnologica con IA.
+================================================================================
+
+1. RESUMEN DEL PROYECTO Y ARQUITECTURA
+--------------------------------------------------------------------------------
+El sitio web esta desarrollado bajo la arquitectura moderna Jamstack:
+* Vanilla Puro (Sin frameworks pesados): No utiliza React, Angular, Vue,
+  WordPress ni jQuery. Carga en menos de 1 segundo y no requiere compilacion.
+* Multi-Page Application (MPA): 6 archivos HTML independientes y semanticos.
+* Backend as a Service (BaaS): Utiliza Google Firebase para la base de datos
+  y autenticacion en la nube sin costos de servidor.
+* Despliegue Zero-Build: No requiere comandos npm install ni npm run build.
+  Funciona subiendo los archivos a cualquier hosting o servidor estatico.
+
+2. ESTRUCTURA DE ARCHIVOS Y CARPETAS
+--------------------------------------------------------------------------------
+/
+├── index.html                   (Portada principal / Landing page)
+├── nosotros.html                (Identidad corporativa, mision y vision)
+├── servicios.html               (Catalogo de servicios y descarga de portafolio)
+├── noticias.html                (Feed publico de noticias en tiempo real)
+├── contacto.html                (Formulario de atencion y mapa interactivo)
+├── admin_noticias.html          (Panel administrativo privado y seguridad)
+│
+├── css/
+│   └── diseno6.css              (Hoja de estilos centralizada con +2.880 lineas)
+│
+├── js/
+│   ├── app.js                   (Interactividad: scroll, contadores, acordeon)
+│   └── firebase_noticias.js     (Conexion oficial al SDK de Google Firebase)
+│
+├── assets/                      (Portafolio PDF descargable, renders e imagenes)
+└── img/                         (Logotipos oficiales en alta definicion)
+
+3. DESGLOSE DE CADA PAGINA WEB
+--------------------------------------------------------------------------------
+* index.html:
+  - Header flotante con efecto de desenfoque al hacer scroll.
+  - Hero banner con llamadas a la accion y presentacion corporativa.
+  - Banner de estadisticas con contadores animados automaticos.
+  - Seccion de los 5 pilares de ingenieria y consultoria.
+  - Tarjetas interactivas de sectores mineros e industriales.
+  - Slider de entidades gubernamentales (ANM, ANLA, CAR, Corpoboyaca).
+  - Footer de 4 columnas con enlaces a WhatsApp, correo y accesibilidad.
+
+* nosotros.html:
+  - Header con corte geometrico angular (clip-path).
+  - Historia de Stratum Group desde 2018.
+  - Seccion simetrica de Mision y Vision con bordes dorados.
+  - Enfoque diferencial: Mineria + Inteligencia Artificial y Software a medida.
+
+* servicios.html:
+  - Acordeon interactivo con los 5 pilares de la compania:
+    1. Ingenieria y Planeamiento Minero (PTO, explotacion, topografia).
+    2. Geologia y Exploracion (Mapeo, muestreo, modelamiento 3D).
+    3. Gestion Ambiental (PMA, licencias ANLA, concesiones de agua).
+    4. Seguridad y SST (SG-SST, ventilacion forzada, planes de rescate).
+    5. Tecnologia e Inteligencia Artificial (Optimizacion, reportes).
+  - Bloque de requerimientos legales ante ANM, CAR y Fiscalia.
+  - Boton de llamada a la accion y descarga directa del archivo PDF del portafolio.
+
+* noticias.html:
+  - Consulta en tiempo real a la coleccion "noticias" en Cloud Firestore.
+  - Estado de carga con indicador visual si Firebase esta procesando.
+  - Tarjetas interactivas con categoria, fecha formateada, imagen y enlace.
+
+* contacto.html:
+  - Datos de contacto directo: WhatsApp (wa.me), telefonos fijos y redes.
+  - Formulario comercial con 6 campos enrutados mediante FormSubmit hacia
+    stratumgroupsas@gmail.com sin requerir backend propio.
+  - Mapa embebido de Google Maps centrado en la sede de Ubate, Cundinamarca.
+
+* admin_noticias.html:
+  - Sistema de acceso con pestanas: Iniciar Sesion y Registrar Administrador.
+  - Publicador con validacion de campos para titulo, categoria, resumen y fotos.
+  - Gestor de noticias activas con boton de borrado instantaneo en la nube.
+  - Panel de control de seguridad: gestion de lista blanca de correos y clave
+    maestra encriptada en SHA-256.
+  - Etiqueta "robots: noindex, nofollow" para evitar que aparezca en Google.
+
+4. SISTEMA DE DISENO CSS (css/diseno6.css)
+--------------------------------------------------------------------------------
+* Variables Globales (:root):
+  - Púrpura principal: #3B1E43
+  - Púrpura oscuro: #1E0F23
+  - Dorado de acento: #D4AF37 / #FACC15
+  - Azul marino de contraste: #1E1B4B
+  - Tipografia: 'Montserrat' y 'Plus Jakarta Sans'
+* CSS Grid Autoadaptable: repeat(auto-fit, minmax(320px, 1fr)) para que las
+  rejillas se adapten automaticamente a monitores, portatiles y celulares.
+* Micro-animaciones: Elevacion de tarjetas (translateY) y zoom suave en fotos.
+
+5. LOGICA JAVASCRIPT (js/app.js)
+--------------------------------------------------------------------------------
+1. requestAnimationFrame: Optimiza la transicion de la barra de navegacion
+   a 60 cuadros por segundo sin sobrecargar el procesador del dispositivo.
+2. IntersectionObserver: Dispara los contadores numericos (+15, 100%, +50)
+   unicamente cuando el usuario baja la pantalla y los tiene a la vista.
+3. Menu hamburguesa para celulares con cierre automatico al pulsar enlaces.
+4. Acordeon para despliegue de contenido en servicios y sectores.
+5. Widget flotante de accesibilidad:
+   - Aumentar o disminuir texto.
+   - Modo de Alto Contraste (blanco sobre negro puro).
+   - Modo de Escala de Grises.
+   - Restablecimiento general.
+
+6. BACKEND Y BASE DE DATOS (Google Firebase)
+--------------------------------------------------------------------------------
+* Firebase SDK v10.8.0 Modular cargado mediante modulos ES6.
+* Firebase Authentication: Maneja tokens seguros y sesiones de administradores.
+* Cloud Firestore (Base de datos NoSQL):
+  - Coleccion "noticias": Almacena titulos, categorias, fechas y fotos.
+  - Coleccion "configuracion", Documento "seguridad": Almacena el array de
+    correos autorizados y el codigo hash encriptado de registro.
+
+7. SEGURIDAD CRIPTOGRAFICA (SHA-256)
+--------------------------------------------------------------------------------
+* El panel utiliza la API nativa del navegador window.crypto.subtle.digest.
+* Al registrar un nuevo administrador:
+  1. Verifica que el correo este en la lista blanca de Firestore.
+  2. Convierte la clave maestra en un hash SHA-256 antes de validarla.
+  3. No se guardan ni viajan contrasenas en texto plano por la red.
+
+8. SERVICIOS EXTERNOS INTEGRADOS
+--------------------------------------------------------------------------------
+- FormSubmit.co: Envio de correos comerciales a stratumgroupsas@gmail.com.
+- Google Cloud Firestore: Base de datos NoSQL en tiempo real.
+- Google Firebase Auth: Autenticacion segura de usuarios.
+- Google Maps Embed API: Mapa satelital interactivo.
+- Google Fonts: Tipografias optimizadas via CDN.
+- WhatsApp Business API: Enlaces de atencion directa a clientes.
+- Open Graph Meta Tags: Tarjetas de vista previa al compartir por WhatsApp.
+
+9. GUIA DE HOSPEDAJE Y MANTENIMIENTO
+--------------------------------------------------------------------------------
+El proyecto se puede subir a cualquier servicio de hosting:
+- Hosting gratuito: GitHub Pages, Vercel, Netlify o Firebase Hosting.
+- Hosting tradicional: Servidor cPanel, Apache o NGINX.
+
+Instrucciones: Subir la carpeta completa tal cual esta estructurada. No requiere
+instalaciones previas de Node.js ni configuraciones de bases de datos locales.
+================================================================================
+Documento oficial para el equipo tecnico y administrativo de Stratum Group S.A.S.
+================================================================================

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin_noticias.html
+Disallow: /gracias.html
+Disallow: /404.html
+
+Sitemap: https://www.stratumgroup.com.co/sitemap.xml

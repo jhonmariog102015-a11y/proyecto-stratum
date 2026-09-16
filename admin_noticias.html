@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración | Stratum Group</title>
+  <meta name="description" content="Panel de administración y gestión de noticias para Stratum Group S.A.S.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/diseno6.css">
+  <link rel="icon" type="image/png" href="img/favicon-stratum.png">
+  <script>
+    function switchAuthTab(tab) {
+      const tabLogin = document.getElementById("tabLogin");
+      const tabRegister = document.getElementById("tabRegister");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const authSubtitle = document.getElementById("authSubtitle");
+      const loginAlert = document.getElementById("loginAlert");
+
+      if (tab === 'login') {
+        if (tabLogin) tabLogin.classList.add("active");
+        if (tabRegister) tabRegister.classList.remove("active");
+        if (loginForm) loginForm.style.display = "block";
+        if (registerForm) registerForm.style.display = "none";
+        if (authSubtitle) authSubtitle.textContent = "Ingresa con tus credenciales de Stratum Group";
+      } else {
+        if (tabRegister) tabRegister.classList.add("active");
+        if (tabLogin) tabLogin.classList.remove("active");
+        if (loginForm) loginForm.style.display = "none";
+        if (registerForm) registerForm.style.display = "block";
+        if (authSubtitle) authSubtitle.textContent = "Crea tu cuenta administradora para gestionar noticias";
+      }
+      if (loginAlert) loginAlert.style.display = "none";
+    }
+  </script>
+</head>
+<body>
+
+  <!-- ==============================================
+       VISTA 1: FORMULARIO DE INICIO DE SESIÓN
+       ============================================== -->
+  <div id="loginSection" class="login-wrapper">
+    <div class="login-card">
+      <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group" class="login-logo">
+      <h1 class="login-title">Panel de Administración</h1>
+      <p id="authSubtitle" class="login-subtitle">Ingresa con tus credenciales de Stratum Group</p>
+
+      <!-- Selector de pestañas: Iniciar Sesión / Registrar Administrador -->
+      <div class="auth-toggle-tabs">
+        <button type="button" id="tabLogin" class="auth-tab active" onclick="switchAuthTab('login')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Iniciar Sesión
+        </button>
+        <button type="button" id="tabRegister" class="auth-tab" onclick="switchAuthTab('register')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Registrar Admin
+        </button>
+      </div>
+
+      <!-- Formulario 1: Iniciar Sesión -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Correo Electrónico</label>
+          <input type="email" id="loginEmail" class="form-input" placeholder="admin@stratumgroup.com" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="btnLogin" class="btn-primary">
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- Formulario 2: Registrar Nuevo Administrador -->
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Correo Electrónico del Administrador</label>
+          <input type="email" id="regEmail" class="form-input" placeholder="admin@stratumgroup.com" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regSecretCode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Código de Invitación / Clave Maestra *
+          </label>
+          <input type="password" id="regSecretCode" class="form-input" placeholder="Ingresa la clave maestra autorizada" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Crear Contraseña</label>
+          <input type="password" id="regPassword" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regPasswordConfirm">Confirmar Contraseña</label>
+          <input type="password" id="regPasswordConfirm" class="form-input" placeholder="Repite la contraseña" required minlength="6" autocomplete="new-password">
+        </div>
+
+        <button type="submit" id="btnRegister" class="btn-primary btn-register-action">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar y Acceder
+        </button>
+      </form>
+
+      <div id="loginAlert" class="alert-box alert-error"></div>
+
+      <a href="noticias.html" class="back-home-link">&larr; Volver a Noticias Públicas</a>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       VISTA 2: DASHBOARD DE CONTROL DE NOTICIAS
+       ============================================== -->
+  <div id="dashboardSection" class="dashboard-wrapper">
+    
+    <!-- Barra Superior -->
+    <header class="dashboard-nav">
+      <div class="dash-brand">
+        <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group">
+        <span>Gestor de Noticias</span>
+      </div>
+      <div class="dash-user-controls">
+        <span id="currentUserEmail" class="user-badge">admin@stratumgroup.com</span>
+        <a href="noticias.html" target="_blank" class="dash-live-link">Ver Web en Vivo &rarr;</a>
+        <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="dash-container">
+      
+      <!-- Columna 1: Formulario Crear Noticia -->
+      <section class="dash-card">
+        <h2 class="dash-card-title" id="formCardTitle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          <span id="formTitleText">Publicar Nueva Noticia</span>
+        </h2>
+
+        <form id="publishNewsForm">
+          <input type="hidden" id="editingNewsId" value="">
+
+          <div class="form-group">
+            <label class="form-label" for="newsTitle">Título de la Noticia *</label>
+            <input type="text" id="newsTitle" class="form-input" placeholder="Ej: Implementación de IA en proyectos mineros de Cundinamarca" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newsCategory">Categoría / Pilar *</label>
+            <select id="newsCategory" class="form-select" required>
+              <option value="Ingeniería Minera">1. Ingeniería y Planeamiento Minero</option>
+              <option value="Geología & Exploración">2. Geología y Exploración</option>
+              <option value="Gestión Ambiental">3. Gestión y Cumplimiento Ambiental</option>
+              <option value="Seguridad y SST">4. Seguridad, Salud en el Trabajo y Riesgos</option>
+              <option value="Tecnología e IA">5. Tecnología, Software e IA Minera</option>
+              <option value="Corporativo" selected>Comunicado Corporativo</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newsSummary">Resumen / Contenido de la Noticia *</label>
+            <textarea id="newsSummary" class="form-textarea" rows="4" placeholder="Describe brevemente el avance, proyecto o noticia que deseas comunicar a los clientes..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newsImage">URL de la Imagen (Opcional)</label>
+            <input type="url" id="newsImage" class="form-input" placeholder="Ej: https://... o deja vacío para usar imagen corporativa">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newsLink">Enlace Externo / Noticia Completa (Opcional)</label>
+            <input type="url" id="newsLink" class="form-input" placeholder="Ej: https://linkedin.com/posts/... o PDF">
+          </div>
+
+          <div class="form-actions-group">
+            <button type="submit" id="btnPublish" class="btn-primary">
+              Publicar Noticia en la Web
+            </button>
+            <button type="button" id="btnCancelEdit" class="btn-cancel-edit" style="display: none;">
+              Cancelar Edición
+            </button>
+          </div>
+        </form>
+
+        <div id="publishAlert" class="alert-box"></div>
+      </section>
+
+      <!-- Columna 2: Lista de Noticias Activas -->
+      <section class="dash-card">
+        <h2 class="dash-card-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+          Noticias en la Base de Datos
+        </h2>
+
+        <div id="adminNewsList" class="news-list">
+          <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Cargando lista de noticias...</p>
+        </div>
+      </section>
+
+      <!-- Fila 2: Control de Seguridad y Administradores (Full Width) -->
+      <section class="dash-card dash-card-full">
+        <div class="dash-sec-header">
+          <div>
+            <h2 class="dash-card-title">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7B61FF" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Control de Seguridad y Acceso a Administradores
+            </h2>
+            <p class="dash-sec-subtitle">Gestiona los correos autorizados y la clave maestra de registro. Todos los datos se sincronizan y encriptan directamente en Firebase.</p>
+          </div>
+          <span class="dash-sec-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Encriptado SHA-256 en Firestore
+          </span>
+        </div>
+
+        <div class="dash-sec-grid">
+          <!-- Subcolumna 1: Lista Blanca de Correos -->
+          <div>
+            <h3 class="dash-sec-col-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Lista Blanca de Correos Autorizados
+            </h3>
+            <p class="dash-sec-subtitle">Solo las personas con estos correos podrán registrarse en el sistema.</p>
+
+            <form id="addEmailForm" class="dash-inline-form">
+              <input type="email" id="newAuthEmail" class="form-input dash-input-compact" placeholder="correo@stratumgroup.com" required>
+              <button type="submit" id="btnAddEmail" class="btn-primary dash-btn-compact">
+                + Autorizar
+              </button>
+            </form>
+
+            <div id="authorizedEmailsList" class="dash-email-list">
+              <p class="dash-sec-subtitle">Cargando correos autorizados desde Firebase...</p>
+            </div>
+          </div>
+
+          <!-- Subcolumna 2: Clave Maestra de Invitación -->
+          <div>
+            <h3 class="dash-sec-col-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Clave Maestra de Invitación
+            </h3>
+            <p class="dash-sec-subtitle">Se requiere esta clave para crear cuentas. Se almacena únicamente como hash criptográfico (SHA-256) en Firebase.</p>
+
+            <form id="updateMasterKeyForm">
+              <div class="form-group">
+                <input type="password" id="newMasterKey" class="form-input dash-input-compact" placeholder="Nueva clave maestra (ej: Stratum#2026)" required minlength="6">
+              </div>
+              <button type="submit" id="btnUpdateKey" class="btn-primary btn-register-action dash-btn-compact">
+                Guardar Clave en Firebase
+              </button>
+            </form>
+
+            <div id="securityAlert" class="alert-box"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- CONTROL Y GESTIÓN CON FIREBASE -->
+  <script type="module" src="js/admin.js?v=3"></script>
+</body>
+</html>
