@@ -18,3 +18,10 @@ yarn-error.log*
 # Firebase cache local
 .firebase/
 .firebaserc
+
+# Archivos de diseño originales (propiedad intelectual - no publicar)
+*.ai
+*.cdr
+*.psd
+img/logo_final.ai
+img/logo_curv.cdr

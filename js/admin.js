@@ -16,7 +16,7 @@ import {
   signOut, 
   onAuthStateChanged,
   escapeHTML
-} from "./firebase_noticias.js?v=3";
+} from "./firebase_noticias.js?v=4";
 
 // Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
@@ -177,10 +177,9 @@ if (registerForm) {
       if (secSnap.exists()) {
         const secData = secSnap.data();
         const correos = (secData.correos_autorizados || []).map(c => c.trim().toLowerCase());
-        const defaultAdmins = ["stratumgroupsas@gmail.com", "jhonmariog102015@gmail.com"];
 
-        // 1. Verificación en la Lista Blanca de Firebase
-        if (correos.length > 0 && !correos.includes(email) && !defaultAdmins.includes(email)) {
+        // 1. Verificación en la Lista Blanca de Firebase (sin puertas traseras en el código)
+        if (!correos.includes(email)) {
           if (loginAlert) {
             loginAlert.style.display = "block";
             loginAlert.className = "alert-box alert-error";
@@ -503,7 +502,9 @@ async function loadAdminNews() {
       const data = docSnap.data();
       const docId = docSnap.id;
       const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : "assets/drone_landscape.png";
-      const imgUrl = escapeHTML(rawImg);
+      // Seguridad: solo permitir URLs https:// o rutas relativas de assets (previene XSS via src)
+      const imgSafe = /^https:\/\//i.test(rawImg) || /^assets\//i.test(rawImg) ? rawImg : "assets/drone_landscape.png";
+      const imgUrl = escapeHTML(imgSafe);
       const tituloSeguro = escapeHTML(data.titulo || '');
       const fechaSegura = escapeHTML(data.fecha || 'Reciente');
       const catSegura = escapeHTML(data.categoria || 'General');
@@ -511,7 +512,7 @@ async function loadAdminNews() {
       const itemEl = document.createElement("div");
       itemEl.className = "news-item-card";
       itemEl.innerHTML = `
-        <img src="${imgUrl}" alt="${tituloSeguro}" class="news-item-thumb" onerror="this.src='assets/drone_landscape.png'">
+        <img src="${imgUrl}" alt="${tituloSeguro}" class="news-item-thumb" onerror="this.onerror=null;this.src='assets/drone_landscape.png'">
         <div class="news-item-info">
           <h4>${tituloSeguro}</h4>
           <p>${fechaSegura} &bull; <strong style="color: var(--brand-purple);">${catSegura}</strong></p>
@@ -544,19 +545,47 @@ async function loadAdminNews() {
         document.getElementById("newsTitle").focus();
       });
 
-      // Evento de eliminar
-      itemEl.querySelector(".btn-delete").addEventListener("click", async () => {
-        if (confirm(`¿Estás seguro de que deseas eliminar la noticia: "${data.titulo}"?`)) {
+      // Evento de eliminar (sin confirm() que puede ser bloqueado por el navegador)
+      const deleteBtn = itemEl.querySelector(".btn-delete");
+      deleteBtn.addEventListener("click", async () => {
+        // Si ya está en modo confirmación, ejecutar la eliminación
+        if (deleteBtn.dataset.confirming === "true") {
           try {
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
             await deleteDoc(doc(db, "noticias", docId));
             if (editingNewsId && editingNewsId.value === docId) {
               resetNewsForm();
             }
             loadAdminNews();
           } catch (delErr) {
-            alert("Error al eliminar la noticia: " + delErr.message);
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+            deleteBtn.dataset.confirming = "false";
+            if (publishAlert) {
+              publishAlert.style.display = "block";
+              publishAlert.className = "alert-box alert-error";
+              publishAlert.textContent = "Error al eliminar: " + delErr.message;
+            }
           }
+          return;
         }
+        // Primer clic: cambiar a modo confirmación
+        deleteBtn.dataset.confirming = "true";
+        deleteBtn.title = "Haz clic de nuevo para confirmar";
+        deleteBtn.style.background = "#DC2626";
+        deleteBtn.style.color = "#fff";
+        deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+        // Auto-cancelar después de 3 segundos
+        setTimeout(() => {
+          if (deleteBtn.dataset.confirming === "true") {
+            deleteBtn.dataset.confirming = "false";
+            deleteBtn.title = "Eliminar noticia";
+            deleteBtn.style.background = "";
+            deleteBtn.style.color = "";
+            deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+          }
+        }, 3000);
       });
 
       adminNewsList.appendChild(itemEl);

@@ -98,14 +98,16 @@ export async function loadPublicNews() {
       const titulo = escapeHTML(data.titulo || '');
       const resumen = escapeHTML(data.resumen || '');
       const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : 'assets/drone_landscape.png';
-      const imagenUrl = escapeHTML(rawImg);
+      // Seguridad: solo permitir URLs https:// o rutas relativas de assets (previene XSS via src)
+      const imgSafe = /^https:\/\//i.test(rawImg) || /^assets\//i.test(rawImg) ? rawImg : 'assets/drone_landscape.png';
+      const imagenUrl = escapeHTML(imgSafe);
       // Validar que el enlace sea estrictamente una URL web http o https para evitar javascript:
       const enlaceUrl = data.enlace && /^https?:\/\//i.test(data.enlace.trim()) ? escapeHTML(data.enlace.trim()) : null;
 
       const articleHTML = `
         <article class="news-card-d6">
           <div class="news-card-img-wrap">
-            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img" onerror="this.src='assets/drone_landscape.png'">
+            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img" onerror="this.onerror=null;this.src='assets/drone_landscape.png'">
             <span class="news-card-badge">
               ${categoria}
             </span>

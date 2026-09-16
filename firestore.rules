@@ -1,25 +1,36 @@
 rules_version = '2';
 
 // Reglas de Seguridad de Cloud Firestore para Stratum Group
-// Diseñadas para proteger la base de datos contra accesos no autorizados.
+// ENDURECIDAS: Validan correos autorizados directamente en el servidor de Google,
+// no solo en el navegador del usuario.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Función auxiliar: verifica si el correo del usuario autenticado
+    // está en la lista blanca almacenada en Firestore.
+    function esAdminAutorizado() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && get(/databases/$(database)/documents/configuracion/seguridad)
+           .data.correos_autorizados.hasAny([request.auth.token.email]);
+    }
+
     // 1. Colección de NOTICIAS
     // - Lectura pública: cualquier visitante puede ver las noticias en noticias.html
-    // - Escritura protegida: solo usuarios autenticados (administradores con sesión activa) pueden crear o borrar noticias.
+    // - Escritura: SOLO administradores autenticados cuyo correo esté en la lista blanca.
     match /noticias/{noticiaId} {
       allow read: if true;
-      allow create, update, delete: if request.auth != null;
+      allow create, update, delete: if esAdminAutorizado();
     }
 
     // 2. Colección de CONFIGURACIÓN DE SEGURIDAD (Lista blanca y clave maestra)
     // - Lectura: necesaria para verificar la lista blanca antes de registrar una cuenta.
-    // - Escritura protegida: solo administradores autenticados pueden agregar correos a la lista blanca o rotar la clave maestra.
+    //   Se mantiene pública porque el formulario de registro necesita consultarla.
+    // - Escritura: SOLO administradores cuyo correo esté en la lista blanca.
     match /configuracion/seguridad {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if esAdminAutorizado();
     }
 
     // 3. Bloqueo por defecto para cualquier otra colección o documento no especificado
