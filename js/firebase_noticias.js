@@ -12,6 +12,9 @@ import {
   doc, 
   query, 
   orderBy, 
+  limit,
+  arrayUnion,
+  arrayRemove,
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { 
@@ -58,7 +61,7 @@ export async function loadPublicNews() {
   if (!newsContainer) return;
 
   try {
-    const q = query(collection(db, "noticias"), orderBy("fecha_creacion", "desc"));
+    const q = query(collection(db, "noticias"), orderBy("fecha_creacion", "desc"), limit(12));
     let querySnapshot;
     
     try {
@@ -167,6 +170,9 @@ export {
   doc, 
   query, 
   orderBy, 
+  limit,
+  arrayUnion,
+  arrayRemove,
   serverTimestamp,
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,

@@ -11,31 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/diseno6.css">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
-  <script>
-    function switchAuthTab(tab) {
-      const tabLogin = document.getElementById("tabLogin");
-      const tabRegister = document.getElementById("tabRegister");
-      const loginForm = document.getElementById("loginForm");
-      const registerForm = document.getElementById("registerForm");
-      const authSubtitle = document.getElementById("authSubtitle");
-      const loginAlert = document.getElementById("loginAlert");
-
-      if (tab === 'login') {
-        if (tabLogin) tabLogin.classList.add("active");
-        if (tabRegister) tabRegister.classList.remove("active");
-        if (loginForm) loginForm.style.display = "block";
-        if (registerForm) registerForm.style.display = "none";
-        if (authSubtitle) authSubtitle.textContent = "Ingresa con tus credenciales de Stratum Group";
-      } else {
-        if (tabRegister) tabRegister.classList.add("active");
-        if (tabLogin) tabLogin.classList.remove("active");
-        if (loginForm) loginForm.style.display = "none";
-        if (registerForm) registerForm.style.display = "block";
-        if (authSubtitle) authSubtitle.textContent = "Crea tu cuenta administradora para gestionar noticias";
-      }
-      if (loginAlert) loginAlert.style.display = "none";
-    }
-  </script>
 </head>
 <body>
 
@@ -266,6 +241,6 @@
   </div>
 
   <!-- CONTROL Y GESTIÓN CON FIREBASE -->
-  <script type="module" src="js/admin.js?v=4"></script>
+  <script type="module" src="js/admin.js?v=5"></script>
 </body>
 </html>

@@ -263,7 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        const response = await fetch('https://formsubmit.co/ajax/jhonmariog102015@gmail.com', {
+        const target = atob('amhvbm1hcmlvZzEwMjAxNUBnbWFpbC5jb20=');
+        const response = await fetch(`https://formsubmit.co/ajax/${target}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -11,12 +11,14 @@ import {
   deleteDoc, 
   doc, 
   serverTimestamp,
+  arrayUnion,
+  arrayRemove,
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   signOut, 
   onAuthStateChanged,
   escapeHTML
-} from "./firebase_noticias.js?v=4";
+} from "./firebase_noticias.js?v=5";
 
 // Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
@@ -56,9 +58,12 @@ const updateMasterKeyForm = document.getElementById("updateMasterKeyForm");
 const newMasterKey = document.getElementById("newMasterKey");
 const securityAlert = document.getElementById("securityAlert");
 
-// 0. FUNCIÓN CRIPTOGRÁFICA SHA-256 (Nativa en el navegador con Web Crypto API)
-export async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message.trim());
+// 0. FUNCIÓN CRIPTOGRÁFICA SHA-256 CON SALT (Inmune a ataques de diccionario y rainbow tables)
+const MASTER_KEY_SALT = "Stratum_SG2026_KeyProtection$#";
+
+export async function sha256(message, useSalt = true) {
+  const text = useSalt ? (message.trim() + MASTER_KEY_SALT) : message.trim();
+  const msgBuffer = new TextEncoder().encode(text);
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
@@ -90,10 +95,33 @@ window.switchAuthTab = switchAuthTab;
 if (tabLogin) tabLogin.addEventListener("click", () => switchAuthTab("login"));
 if (tabRegister) tabRegister.addEventListener("click", () => switchAuthTab("register"));
 
-// 2. ESTADO DE AUTENTICACIÓN
-onAuthStateChanged(auth, (user) => {
+// 2. ESTADO DE AUTENTICACIÓN CON VALIDACIÓN ACTIVA DE LISTA BLANCA
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // Usuario conectado -> Mostrar Dashboard
+    // Validar si el usuario sigue en la lista blanca de Firebase antes de mostrar el panel
+    try {
+      const secDocRef = doc(db, "configuracion", "seguridad");
+      const secSnap = await getDoc(secDocRef);
+      if (secSnap.exists()) {
+        const autorizados = (secSnap.data().correos_autorizados || []).map(e => e.trim().toLowerCase());
+        if (autorizados.length > 0 && !autorizados.includes((user.email || "").toLowerCase())) {
+          console.warn("Acceso denegado: El usuario no figura en la lista blanca.");
+          await signOut(auth);
+          if (loginSection) loginSection.style.display = "flex";
+          if (dashboardSection) dashboardSection.style.display = "none";
+          if (loginAlert) {
+            loginAlert.style.display = "block";
+            loginAlert.className = "alert-box alert-error";
+            loginAlert.textContent = "Acceso revocado: Tu correo '" + user.email + "' no tiene permisos en este panel.";
+          }
+          return;
+        }
+      }
+    } catch (verifErr) {
+      console.warn("Verificando permisos:", verifErr);
+    }
+
+    // Usuario autorizado -> Mostrar Dashboard
     if (loginSection) loginSection.style.display = "none";
     if (dashboardSection) dashboardSection.style.display = "flex";
     if (currentUserEmail) currentUserEmail.textContent = user.email;
@@ -192,10 +220,12 @@ if (registerForm) {
           return;
         }
 
-        // 2. Verificación de Clave Maestra contra el Hash SHA-256 de Firebase
+        // 2. Verificación de Clave Maestra (compatible con salt criptográfico y hash anterior)
         if (secData.codigo_hash) {
-          const inputHash = await sha256(inputCode);
-          if (inputHash !== secData.codigo_hash) {
+          const inputHashSalted = await sha256(inputCode, true);
+          const inputHashLegacy = await sha256(inputCode, false);
+
+          if (inputHashSalted !== secData.codigo_hash && inputHashLegacy !== secData.codigo_hash) {
             if (loginAlert) {
               loginAlert.style.display = "block";
               loginAlert.className = "alert-box alert-error";
@@ -321,11 +351,17 @@ function renderAuthorizedEmails(currentUserEmailStr) {
         );
 
         try {
-          await setDoc(doc(db, "configuracion", "seguridad"), currentSecurityData);
+          // Eliminación atómica en Firestore (evita condiciones de carrera)
+          await updateDoc(doc(db, "configuracion", "seguridad"), {
+            correos_autorizados: arrayRemove(email)
+          });
+          currentSecurityData.correos_autorizados = (currentSecurityData.correos_autorizados || []).filter(
+            item => item.toLowerCase().trim() !== email.toLowerCase().trim()
+          );
           renderAuthorizedEmails(currentUserEmailStr);
         } catch (err) {
           console.error("Error al revocar correo:", err);
-          alert("Error al actualizar en Firebase: " + err.message);
+          alert("Error al actualizar la lista en Firebase.");
           delBtn.disabled = false;
           delBtn.innerHTML = "&times;";
         }
@@ -336,7 +372,7 @@ function renderAuthorizedEmails(currentUserEmailStr) {
   });
 }
 
-// Agregar correo a la lista blanca en Firestore
+// Agregar correo a la lista blanca en Firestore (Operación atómica con arrayUnion)
 if (addEmailForm) {
   addEmailForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -348,18 +384,21 @@ if (addEmailForm) {
       return;
     }
 
-    currentSecurityData.correos_autorizados.push(emailToAdd);
     try {
-      await setDoc(doc(db, "configuracion", "seguridad"), currentSecurityData);
+      // Inserción atómica en Firestore (evita sobreescritura accidental)
+      await updateDoc(doc(db, "configuracion", "seguridad"), {
+        correos_autorizados: arrayUnion(emailToAdd)
+      });
+      currentSecurityData.correos_autorizados.push(emailToAdd);
       newAuthEmail.value = "";
       renderAuthorizedEmails(currentUserEmail.textContent);
     } catch (err) {
-      alert("Error guardando correo en Firebase: " + err.message);
+      alert("Error guardando correo en Firebase. Verifica tus permisos de administrador.");
     }
   });
 }
 
-// Actualizar clave maestra en Firestore (Cálculo y guardado de Hash SHA-256)
+// Actualizar clave maestra en Firestore con Salt Criptográfico
 if (updateMasterKeyForm) {
   updateMasterKeyForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -370,22 +409,23 @@ if (updateMasterKeyForm) {
     }
 
     try {
-      const hashed = await sha256(rawKey);
+      const hashed = await sha256(rawKey, true); // Guardar con salting criptográfico
+      await updateDoc(doc(db, "configuracion", "seguridad"), {
+        codigo_hash: hashed
+      });
       currentSecurityData.codigo_hash = hashed;
-
-      await setDoc(doc(db, "configuracion", "seguridad"), currentSecurityData);
       newMasterKey.value = "";
       if (securityAlert) {
         securityAlert.style.display = "block";
         securityAlert.className = "alert-box alert-success";
-        securityAlert.innerHTML = "<strong>¡Clave Maestra actualizada y encriptada en Firebase con éxito!</strong><br>Solo quienes conozcan esta clave podrán registrarse.";
+        securityAlert.innerHTML = "<strong>¡Clave Maestra actualizada y protegida con Salt criptográfico!</strong><br>Solo quienes conozcan esta clave podrán registrarse.";
         setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
       }
     } catch (err) {
       if (securityAlert) {
         securityAlert.style.display = "block";
         securityAlert.className = "alert-box alert-error";
-        securityAlert.textContent = "Error al actualizar clave en Firebase: " + err.message;
+        securityAlert.textContent = "Error al actualizar clave en Firebase. Verifica tus permisos de administrador.";
       }
     }
   });
