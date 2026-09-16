@@ -29,7 +29,7 @@ const firebaseConfig = {
   projectId: "stratum-group",
   storageBucket: "stratum-group.firebasestorage.app",
   messagingSenderId: "1060403201870",
-  appId: "1:1060403201870:web:c72ab431d64984bf00401f",
+  appId: "",
   measurementId: "G-XV8K98LN1V"
 };
 
