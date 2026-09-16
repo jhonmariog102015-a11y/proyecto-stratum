@@ -1,38 +1,52 @@
 rules_version = '2';
 
 // Reglas de Seguridad de Cloud Firestore para Stratum Group
-// ENDURECIDAS: Validan correos autorizados directamente en el servidor de Google,
-// no solo en el navegador del usuario.
+// ENDURECIDAS: Validación de identidad, lista blanca en servidor y validación de esquema de datos.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Función auxiliar: verifica si el correo del usuario autenticado
-    // está registrado en la lista blanca de Firestore.
+    // Función auxiliar: verifica si el usuario autenticado está en la lista blanca
     function esAdminAutorizado() {
       return request.auth != null
         && exists(/databases/$(database)/documents/configuracion/seguridad)
         && request.auth.token.email in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados;
     }
 
+    // Validación de campos y tamaño de Noticias para evitar inyecciones masivas o corrupción de datos
+    function esNoticiaValida() {
+      let data = request.resource.data;
+      return data.titulo is string && data.titulo.size() >= 3 && data.titulo.size() <= 200
+        && data.resumen is string && data.resumen.size() <= 1500
+        && data.categoria is string && data.categoria.size() <= 50;
+    }
+
+    // Validación de estructura para el documento de seguridad
+    function esSeguridadValida() {
+      let data = request.resource.data;
+      return data.correos_autorizados is list && data.correos_autorizados.size() <= 50
+        && data.codigo_hash is string && (data.codigo_hash.size() == 64 || data.codigo_hash.size() == 0);
+    }
+
     // 1. Colección de NOTICIAS
-    // - Lectura pública: cualquier visitante puede ver las noticias en noticias.html
-    // - Escritura: SOLO administradores autenticados cuyo correo esté en la lista blanca.
+    // - Lectura pública para la página web
+    // - Creación y Edición: solo admins autorizados con datos válidos
+    // - Eliminación: solo admins autorizados
     match /noticias/{noticiaId} {
       allow read: if true;
-      allow create, update, delete: if esAdminAutorizado();
+      allow create, update: if esAdminAutorizado() && esNoticiaValida();
+      allow delete: if esAdminAutorizado();
     }
 
     // 2. Colección de CONFIGURACIÓN DE SEGURIDAD (Lista blanca y clave maestra)
-    // - Lectura: necesaria para verificar la lista blanca antes de registrar una cuenta.
-    //   Se mantiene pública porque el formulario de registro necesita consultarla.
-    // - Escritura: SOLO administradores cuyo correo esté en la lista blanca.
+    // - Lectura pública requerida para que el formulario de registro valide la autorización previa
+    // - Escritura: solo admins autorizados con datos conformes
     match /configuracion/seguridad {
       allow read: if true;
-      allow write: if esAdminAutorizado();
+      allow write: if esAdminAutorizado() && esSeguridadValida();
     }
 
-    // 3. Bloqueo por defecto para cualquier otra colección o documento no especificado
+    // 3. Bloqueo estricto por defecto para cualquier otra ruta o colección
     match /{document=**} {
       allow read, write: if false;
     }

@@ -18,7 +18,7 @@ import {
   signOut, 
   onAuthStateChanged,
   escapeHTML
-} from "./firebase_noticias.js?v=5";
+} from "./firebase_noticias.js?v=6";
 
 // Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
@@ -134,11 +134,42 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 3. INICIAR SESIÓN
+// 3. INICIAR SESIÓN CON PROTECCIÓN CONTRA FUERZA BRUTA
+let failedAttempts = parseInt(sessionStorage.getItem("login_failed_attempts") || "0", 10);
+let lockoutUntil = parseInt(sessionStorage.getItem("login_lockout_until") || "0", 10);
+
+function checkLockout() {
+  const now = Date.now();
+  if (now < lockoutUntil) {
+    const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
+    if (btnLogin) {
+      btnLogin.disabled = true;
+      btnLogin.textContent = `Bloqueado temporalmente (${remainingSec}s)`;
+    }
+    if (loginAlert) {
+      loginAlert.style.display = "block";
+      loginAlert.className = "alert-box alert-error";
+      loginAlert.textContent = `Demasiados intentos fallidos. Por seguridad, espera ${remainingSec} segundos.`;
+    }
+    return true;
+  }
+  if (btnLogin && btnLogin.textContent.includes("Bloqueado")) {
+    btnLogin.disabled = false;
+    btnLogin.textContent = "Iniciar Sesión";
+  }
+  return false;
+}
+
+// Verificar bloqueo al cargar
+checkLockout();
+setInterval(checkLockout, 1000);
+
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (checkLockout()) return;
     if (loginAlert) loginAlert.style.display = "none";
+
     if (btnLogin) {
       btnLogin.disabled = true;
       btnLogin.textContent = "Verificando...";
@@ -147,24 +178,38 @@ if (loginForm) {
     try {
       await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
       loginForm.reset();
+      failedAttempts = 0;
+      sessionStorage.removeItem("login_failed_attempts");
+      sessionStorage.removeItem("login_lockout_until");
     } catch (error) {
-      console.error("Error de login:", error);
+      console.warn("Error de autenticación:", error.code);
+      failedAttempts++;
+      sessionStorage.setItem("login_failed_attempts", failedAttempts.toString());
+
+      if (failedAttempts >= 5) {
+        lockoutUntil = Date.now() + 60000; // 60 segundos de bloqueo
+        sessionStorage.setItem("login_lockout_until", lockoutUntil.toString());
+        checkLockout();
+        return;
+      }
+
       if (loginAlert) {
         loginAlert.style.display = "block";
         loginAlert.className = "alert-box alert-error";
         
         if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
-          loginAlert.textContent = "Correo o contraseña incorrectos. Si aún no te has registrado, usa la pestaña 'Registrar Admin'.";
+          const restantes = 5 - failedAttempts;
+          loginAlert.textContent = `Correo o contraseña incorrectos. (${restantes} intento${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} antes de bloqueo).`;
         } else if (error.code === "auth/too-many-requests") {
-          loginAlert.textContent = "Demasiados intentos fallidos. Espera unos minutos.";
+          loginAlert.textContent = "Demasiados intentos fallidos detectados por Firebase. Por favor espera unos minutos.";
         } else if (error.code === "auth/configuration-not-found") {
-          loginAlert.innerHTML = "<strong>Falta activar la Autenticación en Firebase:</strong><br>Abre este enlace: <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Stratum Group</a>, haz clic en <strong>Comenzar</strong> y activa <strong>Correo electrónico/Contraseña</strong>.";
+          loginAlert.innerHTML = "<strong>Falta activar Autenticación en Firebase:</strong><br>Abre la <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Firebase</a> y activa Correo/Contraseña.";
         } else {
-          loginAlert.textContent = "Error al iniciar sesión: " + error.message;
+          loginAlert.textContent = "No se pudo iniciar sesión. Verifica tus datos o intenta nuevamente.";
         }
       }
     } finally {
-      if (btnLogin) {
+      if (btnLogin && !checkLockout()) {
         btnLogin.disabled = false;
         btnLogin.textContent = "Iniciar Sesión";
       }
