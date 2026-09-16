@@ -24,12 +24,12 @@ import {
 
 // Credenciales oficiales de Stratum Group
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "AIzaSyCmhk8GsGVn3qcMsUgGNvHOUExV-Q48AT",
   authDomain: "stratum-group.firebaseapp.com",
   projectId: "stratum-group",
   storageBucket: "stratum-group.firebasestorage.app",
   messagingSenderId: "1060403201870",
-  appId: "",
+  appId: "1:1060403201870:web:c72ab431d64984bf00401f",
   measurementId: "G-XV8K98LN1V"
 };
 
