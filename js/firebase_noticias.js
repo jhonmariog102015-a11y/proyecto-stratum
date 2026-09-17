@@ -95,6 +95,9 @@ export async function loadPublicNews() {
 
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
+      // Ignorar noticias archivadas o eliminadas lógicamente
+      if (data.activo === false) return;
+
       const rawFecha = data.fecha || (data.fecha_creacion?.toDate ? data.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente');
       const fechaTexto = escapeHTML(rawFecha);
       const categoria = escapeHTML(data.categoria || 'Corporativo');

@@ -10,7 +10,7 @@ service cloud.firestore {
     function esAdminAutorizado() {
       return request.auth != null
         && exists(/databases/$(database)/documents/configuracion/seguridad)
-        && request.auth.token.email in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados;
+        && request.auth.token.email.lower() in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados;
     }
 
     // Validación de campos y tamaño de Noticias para evitar inyecciones masivas o corrupción de datos

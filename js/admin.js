@@ -18,7 +18,7 @@ import {
   signOut, 
   onAuthStateChanged,
   escapeHTML
-} from "./firebase_noticias.js?v=6";
+} from "./firebase_noticias.js?v=7";
 
 // Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
@@ -265,23 +265,34 @@ if (registerForm) {
           return;
         }
 
-        // 2. Verificación de Clave Maestra (compatible con salt criptográfico y hash anterior)
-        if (secData.codigo_hash) {
-          const inputHashSalted = await sha256(inputCode, true);
-          const inputHashLegacy = await sha256(inputCode, false);
-
-          if (inputHashSalted !== secData.codigo_hash && inputHashLegacy !== secData.codigo_hash) {
-            if (loginAlert) {
-              loginAlert.style.display = "block";
-              loginAlert.className = "alert-box alert-error";
-              loginAlert.textContent = "Código de Invitación / Clave Maestra incorrecto. No tienes autorización para crear una cuenta.";
-            }
-            if (btnRegister) {
-              btnRegister.disabled = false;
-              btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-            }
-            return;
+        // 2. Verificación obligatoria de Clave Maestra
+        if (!secData.codigo_hash || secData.codigo_hash.trim().length === 0) {
+          if (loginAlert) {
+            loginAlert.style.display = "block";
+            loginAlert.className = "alert-box alert-error";
+            loginAlert.textContent = "El registro de nuevos administradores está desactivado temporalmente. Se requiere configurar la Clave Maestra previamente.";
           }
+          if (btnRegister) {
+            btnRegister.disabled = false;
+            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
+          }
+          return;
+        }
+
+        const inputHashSalted = await sha256(inputCode, true);
+        const inputHashLegacy = await sha256(inputCode, false);
+
+        if (inputHashSalted !== secData.codigo_hash && inputHashLegacy !== secData.codigo_hash) {
+          if (loginAlert) {
+            loginAlert.style.display = "block";
+            loginAlert.className = "alert-box alert-error";
+            loginAlert.textContent = "Código de Invitación / Clave Maestra incorrecto. No tienes autorización para crear una cuenta.";
+          }
+          if (btnRegister) {
+            btnRegister.disabled = false;
+            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
+          }
+          return;
         }
       }
 
@@ -539,6 +550,7 @@ if (publishNewsForm) {
           resumen: resumen,
           imagen: imagen || "assets/drone_landscape.png",
           enlace: enlace || "",
+          activo: true,
           fecha: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
           fecha_creacion: serverTimestamp()
         });
@@ -585,6 +597,8 @@ async function loadAdminNews() {
 
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
+      // Omitir noticias que hayan sido eliminadas lógicamente
+      if (data.activo === false) return;
       const docId = docSnap.id;
       const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : "assets/drone_landscape.png";
       // Seguridad: solo permitir URLs https:// o rutas relativas de assets (previene XSS via src)
@@ -633,12 +647,16 @@ async function loadAdminNews() {
       // Evento de eliminar (sin confirm() que puede ser bloqueado por el navegador)
       const deleteBtn = itemEl.querySelector(".btn-delete");
       deleteBtn.addEventListener("click", async () => {
-        // Si ya está en modo confirmación, ejecutar la eliminación
+        // Si ya está en modo confirmación, ejecutar la eliminación lógica (Soft Delete)
         if (deleteBtn.dataset.confirming === "true") {
           try {
             deleteBtn.disabled = true;
             deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
-            await deleteDoc(doc(db, "noticias", docId));
+            // Soft delete: mantiene el respaldo en Firestore pero oculta la noticia
+            await updateDoc(doc(db, "noticias", docId), {
+              activo: false,
+              fecha_eliminacion: serverTimestamp()
+            });
             if (editingNewsId && editingNewsId.value === docId) {
               resetNewsForm();
             }
@@ -681,3 +699,33 @@ async function loadAdminNews() {
     adminNewsList.innerHTML = "<p style='text-align:center; color: #EF4444;'>Error cargando noticias.</p>";
   }
 }
+
+// 9. CIERRE DE SESIÓN AUTOMÁTICO POR INACTIVIDAD (20 MINUTOS)
+const INACTIVITY_LIMIT_MS = 20 * 60 * 1000;
+let idleTimer = null;
+
+function resetIdleTimer() {
+  if (idleTimer) clearTimeout(idleTimer);
+  if (!auth.currentUser) return;
+
+  idleTimer = setTimeout(async () => {
+    if (auth.currentUser) {
+      console.warn("Cerrando sesión de administrador por 20 minutos de inactividad.");
+      try {
+        await signOut(auth);
+        if (loginAlert) {
+          loginAlert.style.display = "block";
+          loginAlert.className = "alert-box alert-error";
+          loginAlert.textContent = "Tu sesión ha sido cerrada automáticamente por inactividad (20 minutos) para proteger el panel.";
+        }
+      } catch (logoutErr) {
+        console.error("Error en cierre automático:", logoutErr);
+      }
+    }
+  }, INACTIVITY_LIMIT_MS);
+}
+
+// Escuchar interacciones para reiniciar el temporizador
+['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(event => {
+  window.addEventListener(event, resetIdleTimer, { passive: true });
+});
