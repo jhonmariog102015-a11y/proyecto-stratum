@@ -143,6 +143,8 @@ El proyecto se puede subir a cualquier servicio de hosting:
 
 Instrucciones: Subir la carpeta completa tal cual esta estructurada. No requiere
 instalaciones previas de Node.js ni configuraciones de bases de datos locales.
+
+en caso de que quieran cambiar esto avisen a jhonmariog102015@gmail.com
 ================================================================================
 Documento oficial para el equipo tecnico y administrativo de Stratum Group S.A.S.
 ================================================================================
