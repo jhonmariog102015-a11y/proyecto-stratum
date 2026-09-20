@@ -11,6 +11,7 @@ import {
   deleteDoc, 
   doc, 
   query, 
+  where,
   orderBy, 
   limit,
   arrayUnion,
@@ -61,15 +62,26 @@ export async function loadPublicNews() {
   if (!newsContainer) return;
 
   try {
-    const q = query(collection(db, "noticias"), orderBy("fecha_creacion", "desc"), limit(12));
     let querySnapshot;
     
     try {
+      // Filtrar noticias activas directamente en Firestore para evitar que inactivas consuman el limit
+      const q = query(
+        collection(db, "noticias"), 
+        where("activo", "==", true), 
+        orderBy("fecha_creacion", "desc"), 
+        limit(12)
+      );
       querySnapshot = await getDocs(q);
     } catch (orderErr) {
-      // Fallback si aún no hay índice o fecha_creacion en docs antiguos
-      console.warn("Cargando sin ordenamiento específico:", orderErr);
-      querySnapshot = await getDocs(collection(db, "noticias"));
+      // Fallback si aún no se crea el índice compuesto en Firestore
+      console.warn("Consulta con índice compuesto en proceso o no disponible, usando fallback:", orderErr);
+      try {
+        const qFallback = query(collection(db, "noticias"), where("activo", "==", true), limit(25));
+        querySnapshot = await getDocs(qFallback);
+      } catch (e2) {
+        querySnapshot = await getDocs(collection(db, "noticias"));
+      }
     }
 
     if (querySnapshot.empty) {
@@ -104,8 +116,8 @@ export async function loadPublicNews() {
       const titulo = escapeHTML(data.titulo || '');
       const resumen = escapeHTML(data.resumen || '');
       const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : 'assets/drone_landscape.png';
-      // Seguridad: solo permitir URLs https:// o rutas relativas de assets (previene XSS via src)
-      const imgSafe = /^https:\/\//i.test(rawImg) || /^assets\//i.test(rawImg) ? rawImg : 'assets/drone_landscape.png';
+      // Seguridad: permitir URLs https:// o rutas locales seguras (assets/ o img/)
+      const imgSafe = /^(https:\/\/|assets\/|img\/)/i.test(rawImg) ? rawImg : 'assets/drone_landscape.png';
       const imagenUrl = escapeHTML(imgSafe);
       // Validar que el enlace sea estrictamente una URL web http o https para evitar javascript:
       const enlaceUrl = data.enlace && /^https?:\/\//i.test(data.enlace.trim()) ? escapeHTML(data.enlace.trim()) : null;
@@ -172,6 +184,7 @@ export {
   deleteDoc, 
   doc, 
   query, 
+  where,
   orderBy, 
   limit,
   arrayUnion,

@@ -2,8 +2,6 @@
    STRATUM GROUP - DISEÑO 6: RÉPLICA METÁLICA CONSULTORES STYLE
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
-
 :root {
   --brand-purple: #3B1E43;
   --brand-purple-dark: #1E0F23;
@@ -28,7 +26,7 @@
 }
 
 html, body {
-  width: 100vw;
+  width: 100%;
   max-width: 100%;
   overflow-x: hidden;
   font-family: var(--font-main);

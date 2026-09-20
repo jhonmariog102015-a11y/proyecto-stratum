@@ -1,4 +1,9 @@
 // Panel de Administración de Noticias y Seguridad - Stratum Group
+// Protección Anti-Clickjacking: evita que el panel sea incrustado en iframes de terceros
+if (window.top !== window.self) {
+  window.top.location = window.self.location;
+}
+
 import { 
   db, 
   auth, 
@@ -18,7 +23,7 @@ import {
   signOut, 
   onAuthStateChanged,
   escapeHTML
-} from "./firebase_noticias.js?v=7";
+} from "./firebase_noticias.js?v=9";
 
 // Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
@@ -118,7 +123,16 @@ onAuthStateChanged(auth, async (user) => {
         }
       }
     } catch (verifErr) {
-      console.warn("Verificando permisos:", verifErr);
+      console.warn("Acceso denegado o error de permisos en Firebase:", verifErr);
+      await signOut(auth);
+      if (loginSection) loginSection.style.display = "flex";
+      if (dashboardSection) dashboardSection.style.display = "none";
+      if (loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.className = "alert-box alert-error";
+        loginAlert.textContent = "Acceso denegado: Tu correo '" + user.email + "' no tiene permisos de administrador en este panel.";
+      }
+      return;
     }
 
     // Usuario autorizado -> Mostrar Dashboard
@@ -135,8 +149,8 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // 3. INICIAR SESIÓN CON PROTECCIÓN CONTRA FUERZA BRUTA
-let failedAttempts = parseInt(sessionStorage.getItem("login_failed_attempts") || "0", 10);
-let lockoutUntil = parseInt(sessionStorage.getItem("login_lockout_until") || "0", 10);
+let failedAttempts = parseInt(localStorage.getItem("login_failed_attempts") || "0", 10);
+let lockoutUntil = parseInt(localStorage.getItem("login_lockout_until") || "0", 10);
 
 function checkLockout() {
   const now = Date.now();
@@ -164,6 +178,35 @@ function checkLockout() {
 checkLockout();
 setInterval(checkLockout, 1000);
 
+// 3b. PROTECCIÓN CONTRA FUERZA BRUTA EN REGISTRO
+let regFailedAttempts = parseInt(localStorage.getItem("reg_failed_attempts") || "0", 10);
+let regLockoutUntil = parseInt(localStorage.getItem("reg_lockout_until") || "0", 10);
+
+function checkRegLockout() {
+  const now = Date.now();
+  if (now < regLockoutUntil) {
+    const remainingSec = Math.ceil((regLockoutUntil - now) / 1000);
+    if (btnRegister) {
+      btnRegister.disabled = true;
+      btnRegister.textContent = `Bloqueado (${remainingSec}s)`;
+    }
+    if (loginAlert) {
+      loginAlert.style.display = "block";
+      loginAlert.className = "alert-box alert-error";
+      loginAlert.textContent = `Demasiados intentos de registro fallidos. Espera ${remainingSec} segundos.`;
+    }
+    return true;
+  }
+  if (btnRegister && btnRegister.textContent.includes("Bloqueado")) {
+    btnRegister.disabled = false;
+    btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
+  }
+  return false;
+}
+
+checkRegLockout();
+setInterval(checkRegLockout, 1000);
+
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -179,16 +222,16 @@ if (loginForm) {
       await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
       loginForm.reset();
       failedAttempts = 0;
-      sessionStorage.removeItem("login_failed_attempts");
-      sessionStorage.removeItem("login_lockout_until");
+      localStorage.removeItem("login_failed_attempts");
+      localStorage.removeItem("login_lockout_until");
     } catch (error) {
       console.warn("Error de autenticación:", error.code);
       failedAttempts++;
-      sessionStorage.setItem("login_failed_attempts", failedAttempts.toString());
+      localStorage.setItem("login_failed_attempts", failedAttempts.toString());
 
       if (failedAttempts >= 5) {
         lockoutUntil = Date.now() + 60000; // 60 segundos de bloqueo
-        sessionStorage.setItem("login_lockout_until", lockoutUntil.toString());
+        localStorage.setItem("login_lockout_until", lockoutUntil.toString());
         checkLockout();
         return;
       }
@@ -217,16 +260,27 @@ if (loginForm) {
   });
 }
 
-// 4. REGISTRAR NUEVO ADMINISTRADOR CON VALIDACIÓN EN FIREBASE
+// 4. REGISTRAR NUEVO ADMINISTRADOR CON VALIDACIÓN SEGURA
+// Flujo: valida clave maestra desde doc público → crea cuenta → onAuthStateChanged verifica lista blanca
 if (registerForm) {
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (checkRegLockout()) return;
     if (loginAlert) loginAlert.style.display = "none";
 
     const email = regEmail.value.trim().toLowerCase();
     const inputCode = regSecretCode.value.trim();
     const password = regPassword.value;
     const confirmPassword = regPasswordConfirm.value;
+
+    if (password.length < 8) {
+      if (loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.className = "alert-box alert-error";
+        loginAlert.textContent = "La contraseña debe tener al menos 8 caracteres por seguridad.";
+      }
+      return;
+    }
 
     if (password !== confirmPassword) {
       if (loginAlert) {
@@ -243,66 +297,85 @@ if (registerForm) {
     }
 
     try {
-      // Consultar configuración de seguridad almacenada en Firestore
-      const secDocRef = doc(db, "configuracion", "seguridad");
-      const secSnap = await getDoc(secDocRef);
+      // Consultar hash de clave maestra desde documento PÚBLICO (no expone correos admin)
+      const regDocRef = doc(db, "configuracion", "registro");
+      const regSnap = await getDoc(regDocRef);
 
-      if (secSnap.exists()) {
-        const secData = secSnap.data();
-        const correos = (secData.correos_autorizados || []).map(c => c.trim().toLowerCase());
-
-        // 1. Verificación en la Lista Blanca de Firebase (sin puertas traseras en el código)
-        if (!correos.includes(email)) {
-          if (loginAlert) {
-            loginAlert.style.display = "block";
-            loginAlert.className = "alert-box alert-error";
-            loginAlert.textContent = "Acceso denegado: El correo '" + email + "' no figura en la lista blanca de administradores autorizados.";
-          }
-          if (btnRegister) {
-            btnRegister.disabled = false;
-            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-          }
-          return;
+      if (!regSnap.exists()) {
+        if (loginAlert) {
+          loginAlert.style.display = "block";
+          loginAlert.className = "alert-box alert-error";
+          loginAlert.textContent = "El sistema de registro no está configurado. Contacta al administrador principal.";
         }
-
-        // 2. Verificación obligatoria de Clave Maestra
-        if (!secData.codigo_hash || secData.codigo_hash.trim().length === 0) {
-          if (loginAlert) {
-            loginAlert.style.display = "block";
-            loginAlert.className = "alert-box alert-error";
-            loginAlert.textContent = "El registro de nuevos administradores está desactivado temporalmente. Se requiere configurar la Clave Maestra previamente.";
-          }
-          if (btnRegister) {
-            btnRegister.disabled = false;
-            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-          }
-          return;
+        if (btnRegister) {
+          btnRegister.disabled = false;
+          btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
         }
-
-        const inputHashSalted = await sha256(inputCode, true);
-        const inputHashLegacy = await sha256(inputCode, false);
-
-        if (inputHashSalted !== secData.codigo_hash && inputHashLegacy !== secData.codigo_hash) {
-          if (loginAlert) {
-            loginAlert.style.display = "block";
-            loginAlert.className = "alert-box alert-error";
-            loginAlert.textContent = "Código de Invitación / Clave Maestra incorrecto. No tienes autorización para crear una cuenta.";
-          }
-          if (btnRegister) {
-            btnRegister.disabled = false;
-            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-          }
-          return;
-        }
+        return;
       }
 
-      // Si pasó las validaciones de Firebase, se crea el usuario
+      const regData = regSnap.data();
+
+      // Verificación obligatoria de Clave Maestra
+      if (!regData.codigo_hash || regData.codigo_hash.trim().length === 0) {
+        if (loginAlert) {
+          loginAlert.style.display = "block";
+          loginAlert.className = "alert-box alert-error";
+          loginAlert.textContent = "El registro de nuevos administradores está desactivado temporalmente. Se requiere configurar la Clave Maestra previamente.";
+        }
+        if (btnRegister) {
+          btnRegister.disabled = false;
+          btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
+        }
+        return;
+      }
+
+      const inputHashSalted = await sha256(inputCode, true);
+      const inputHashLegacy = await sha256(inputCode, false);
+
+      if (inputHashSalted !== regData.codigo_hash && inputHashLegacy !== regData.codigo_hash) {
+        // Incrementar intentos fallidos de registro
+        regFailedAttempts++;
+        localStorage.setItem("reg_failed_attempts", regFailedAttempts.toString());
+
+        if (regFailedAttempts >= 5) {
+          regLockoutUntil = Date.now() + 120000; // 2 minutos de bloqueo (más estricto que login)
+          localStorage.setItem("reg_lockout_until", regLockoutUntil.toString());
+          checkRegLockout();
+          if (btnRegister) {
+            btnRegister.disabled = false;
+            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
+          }
+          return;
+        }
+
+        const restantes = 5 - regFailedAttempts;
+        if (loginAlert) {
+          loginAlert.style.display = "block";
+          loginAlert.className = "alert-box alert-error";
+          loginAlert.textContent = `Clave Maestra incorrecta. (${restantes} intento${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} antes de bloqueo).`;
+        }
+        if (btnRegister) {
+          btnRegister.disabled = false;
+          btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
+        }
+        return;
+      }
+
+      // Clave maestra válida → crear cuenta en Firebase Auth
+      // La verificación de lista blanca se hace POST-AUTH en onAuthStateChanged (no se exponen correos)
       if (btnRegister) btnRegister.textContent = "Creando cuenta en Firebase...";
       await createUserWithEmailAndPassword(auth, email, password);
+
+      // Registro exitoso: resetear contadores
+      regFailedAttempts = 0;
+      localStorage.removeItem("reg_failed_attempts");
+      localStorage.removeItem("reg_lockout_until");
+
       if (loginAlert) {
         loginAlert.style.display = "block";
         loginAlert.className = "alert-box alert-success";
-        loginAlert.textContent = "¡Administrador creado con éxito! Conectando al panel...";
+        loginAlert.textContent = "¡Cuenta creada! Verificando autorización...";
       }
       registerForm.reset();
     } catch (error) {
@@ -324,7 +397,7 @@ if (registerForm) {
         }
       }
     } finally {
-      if (btnRegister) {
+      if (btnRegister && !checkRegLockout()) {
         btnRegister.disabled = false;
         btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
       }
@@ -364,6 +437,17 @@ async function loadSecurityConfig(userEmail) {
         codigo_hash: ""
       };
       await setDoc(secDocRef, currentSecurityData);
+
+      // También crear el documento público de registro si no existe
+      try {
+        const regDocRef = doc(db, "configuracion", "registro");
+        const regSnap = await getDoc(regDocRef);
+        if (!regSnap.exists()) {
+          await setDoc(regDocRef, { codigo_hash: "" });
+        }
+      } catch (regErr) {
+        console.warn("No se pudo crear el documento de registro público:", regErr);
+      }
     }
 
     renderAuthorizedEmails(userEmail);
@@ -454,27 +538,37 @@ if (addEmailForm) {
   });
 }
 
-// Actualizar clave maestra en Firestore con Salt Criptográfico
+// Actualizar clave maestra en Firestore con Salt Criptográfico (escribe a AMBOS documentos)
 if (updateMasterKeyForm) {
   updateMasterKeyForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const rawKey = newMasterKey.value.trim();
-    if (rawKey.length < 6) {
-      alert("La clave maestra debe tener al menos 6 caracteres.");
+    if (rawKey.length < 8) {
+      alert("La clave maestra debe tener al menos 8 caracteres para mayor seguridad.");
       return;
     }
 
     try {
       const hashed = await sha256(rawKey, true); // Guardar con salting criptográfico
+
+      // Escribir a documento PRIVADO (configuracion/seguridad)
       await updateDoc(doc(db, "configuracion", "seguridad"), {
         codigo_hash: hashed
       });
+
+      // Escribir a documento PÚBLICO (configuracion/registro — solo contiene el hash)
+      try {
+        await setDoc(doc(db, "configuracion", "registro"), { codigo_hash: hashed });
+      } catch (regErr) {
+        console.warn("No se pudo sincronizar el documento de registro público:", regErr);
+      }
+
       currentSecurityData.codigo_hash = hashed;
       newMasterKey.value = "";
       if (securityAlert) {
         securityAlert.style.display = "block";
         securityAlert.className = "alert-box alert-success";
-        securityAlert.innerHTML = "<strong>¡Clave Maestra actualizada y protegida con Salt criptográfico!</strong><br>Solo quienes conozcan esta clave podrán registrarse.";
+        securityAlert.innerHTML = "<strong>¡Clave Maestra actualizada y sincronizada!</strong><br>Protegida con Salt criptográfico. Mínimo 8 caracteres.";
         setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
       }
     } catch (err) {
@@ -601,8 +695,8 @@ async function loadAdminNews() {
       if (data.activo === false) return;
       const docId = docSnap.id;
       const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : "assets/drone_landscape.png";
-      // Seguridad: solo permitir URLs https:// o rutas relativas de assets (previene XSS via src)
-      const imgSafe = /^https:\/\//i.test(rawImg) || /^assets\//i.test(rawImg) ? rawImg : "assets/drone_landscape.png";
+      // Seguridad: permitir URLs https:// o rutas relativas seguras (assets/ o img/)
+      const imgSafe = /^(https:\/\/|assets\/|img\/)/i.test(rawImg) ? rawImg : "assets/drone_landscape.png";
       const imgUrl = escapeHTML(imgSafe);
       const tituloSeguro = escapeHTML(data.titulo || '');
       const fechaSegura = escapeHTML(data.fecha || 'Reciente');

@@ -7,9 +7,12 @@
   <meta name="description" content="Panel de administración y gestión de noticias para Stratum Group S.A.S.">
   <meta name="robots" content="noindex, nofollow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com;">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/diseno6.css">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
 </head>
@@ -70,12 +73,12 @@
 
         <div class="form-group">
           <label class="form-label" for="regPassword">Crear Contraseña</label>
-          <input type="password" id="regPassword" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+          <input type="password" id="regPassword" class="form-input" placeholder="Mínimo 8 caracteres" required minlength="8" autocomplete="new-password">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="regPasswordConfirm">Confirmar Contraseña</label>
-          <input type="password" id="regPasswordConfirm" class="form-input" placeholder="Repite la contraseña" required minlength="6" autocomplete="new-password">
+          <input type="password" id="regPasswordConfirm" class="form-input" placeholder="Repite la contraseña" required minlength="8" autocomplete="new-password">
         </div>
 
         <button type="submit" id="btnRegister" class="btn-primary btn-register-action">
@@ -225,7 +228,7 @@
 
             <form id="updateMasterKeyForm">
               <div class="form-group">
-                <input type="password" id="newMasterKey" class="form-input dash-input-compact" placeholder="Nueva clave maestra (ej: Stratum#2026)" required minlength="6">
+                <input type="password" id="newMasterKey" class="form-input dash-input-compact" placeholder="Nueva clave maestra (mín. 8 caracteres)" required minlength="8">
               </div>
               <button type="submit" id="btnUpdateKey" class="btn-primary btn-register-action dash-btn-compact">
                 Guardar Clave en Firebase
@@ -242,6 +245,6 @@
   </div>
 
   <!-- CONTROL Y GESTIÓN CON FIREBASE -->
-  <script type="module" src="js/admin.js?v=7"></script>
+  <script type="module" src="js/admin.js?v=9"></script>
 </body>
 </html>

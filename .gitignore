@@ -25,3 +25,6 @@ yarn-error.log*
 *.psd
 img/logo_final.ai
 img/logo_curv.cdr
+
+# Documentación interna técnica confidencial
+ESPECIFICACION_TECNICA.txt

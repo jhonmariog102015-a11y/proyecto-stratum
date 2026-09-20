@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Servicios | Stratum Group</title>
   <meta name="description"
     content="Conoce nuestros servicios en Minería, Geología, Geotecnia, Ambiente y Seguridad y Salud en el Trabajo (SST).">
@@ -11,9 +13,12 @@
   <meta property="og:title" content="Servicios Especializados | Stratum Group">
   <meta property="og:description" content="Servicios integrales en Minería, Geología, Geotecnia, Gestión Ambiental, SG-SST y Soluciones Tecnológicas e IA en Colombia.">
   <meta property="og:image" content="img/logo_complet_sin_fondo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/diseno6.css">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
-  <script src="js/app.js" defer></script>
+  <script src="js/app.js?v=9" defer></script>
 </head>
 
 <body>
@@ -205,7 +210,7 @@
           <!-- 1: ANM -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_anm.png" alt="Agencia Nacional de Minería">
+              <img loading="lazy" src="img/entidades/logo_anm.png" alt="Agencia Nacional de Minería">
             </div>
             <h4 class="entity-card-title">Agencia Nacional de Minería</h4>
             <p class="entity-card-desc">Trámites de títulos, elaboración y radicación de PTO, FBM, FRI, atención a visitas técnicas y fiscalización oficial.</p>
@@ -214,7 +219,7 @@
           <!-- 2: ANLA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_anla.png" alt="ANLA">
+              <img loading="lazy" src="img/entidades/logo_anla.png" alt="ANLA">
             </div>
             <h4 class="entity-card-title">ANLA</h4>
             <p class="entity-card-desc">Licencias ambientales, Estudios de Impacto Ambiental (EIA), Diagnóstico de Alternativas, Informes ICA y seguimiento ambiental.</p>
@@ -223,7 +228,7 @@
           <!-- 3: CORPOBOYACÁ -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/CORPOBOYACA.png" alt="Corpoboyacá">
+              <img loading="lazy" src="img/entidades/CORPOBOYACA.png" alt="Corpoboyacá">
             </div>
             <h4 class="entity-card-title">Corpoboyacá</h4>
             <p class="entity-card-desc">Permisos y concesiones de aguas, vertimientos, emisiones atmosféricas, aprovechamiento forestal y control ambiental en Boyacá.</p>
@@ -232,7 +237,7 @@
           <!-- 4: CAR -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/car-logo-cundinamarca.webp" alt="CAR Cundinamarca">
+              <img loading="lazy" src="img/entidades/car-logo-cundinamarca.webp" alt="CAR Cundinamarca">
             </div>
             <h4 class="entity-card-title">CAR Cundinamarca</h4>
             <p class="entity-card-desc">Trámites ambientales en Cundinamarca, concesiones de aguas, permisos de vertimientos, emisiones y atención de requerimientos.</p>
@@ -241,7 +246,7 @@
           <!-- 5: MINAMBIENTE -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/minambiente_clean.png" alt="MinAmbiente">
+              <img loading="lazy" src="img/entidades/minambiente_clean.png" alt="MinAmbiente">
             </div>
             <h4 class="entity-card-title">MinAmbiente</h4>
             <p class="entity-card-desc">Alineación técnica con políticas ambientales nacionales, normatividad de desarrollo sostenible y reportes sectoriales.</p>
@@ -250,7 +255,7 @@
           <!-- 6: IDEAM -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/Ideam_(Colombia)_logo.png" alt="IDEAM">
+              <img loading="lazy" src="img/entidades/Ideam_(Colombia)_logo.png" alt="IDEAM">
             </div>
             <h4 class="entity-card-title">IDEAM</h4>
             <p class="entity-card-desc">Reportes hidroclimatológicos, balances hídricos, registro en el SIRH y trámites de información técnica e hidrológica.</p>
@@ -259,7 +264,7 @@
           <!-- 7: SENA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_sena.svg" alt="SENA">
+              <img loading="lazy" src="img/entidades/logo_sena.svg" alt="SENA">
             </div>
             <h4 class="entity-card-title">SENA</h4>
             <p class="entity-card-desc">Capacitaciones especializadas, programas de formación en seguridad y rescate minero, y certificación de competencias laborales.</p>
@@ -268,7 +273,7 @@
           <!-- 8: CONTRALORÍA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_contraloria.png" alt="Contraloría General de la República">
+              <img loading="lazy" src="img/entidades/logo_contraloria.png" alt="Contraloría General de la República">
             </div>
             <h4 class="entity-card-title">Contraloría General</h4>
             <p class="entity-card-desc">Acompañamiento técnico en auditorías fiscales, liquidación y soporte de regalías, planes de mejoramiento y hallazgos.</p>
@@ -277,7 +282,7 @@
           <!-- 9: FISCALÍA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_fiscalia.svg" alt="Fiscalía General de la Nación">
+              <img loading="lazy" src="img/entidades/logo_fiscalia.svg" alt="Fiscalía General de la Nación">
             </div>
             <h4 class="entity-card-title">Fiscalía General</h4>
             <p class="entity-card-desc">Informes periciales técnicos, soporte jurídico-minero, peritajes en incidentes y atención a requerimientos judiciales.</p>
@@ -287,7 +292,7 @@
           <!-- 1: ANM -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_anm.png" alt="Agencia Nacional de Minería">
+              <img loading="lazy" src="img/entidades/logo_anm.png" alt="Agencia Nacional de Minería">
             </div>
             <h4 class="entity-card-title">Agencia Nacional de Minería</h4>
             <p class="entity-card-desc">Trámites de títulos, elaboración y radicación de PTO, FBM, FRI, atención a visitas técnicas y fiscalización oficial.</p>
@@ -296,7 +301,7 @@
           <!-- 2: ANLA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_anla.png" alt="ANLA">
+              <img loading="lazy" src="img/entidades/logo_anla.png" alt="ANLA">
             </div>
             <h4 class="entity-card-title">ANLA</h4>
             <p class="entity-card-desc">Licencias ambientales, Estudios de Impacto Ambiental (EIA), Diagnóstico de Alternativas, Informes ICA y seguimiento ambiental.</p>
@@ -305,7 +310,7 @@
           <!-- 3: CORPOBOYACÁ -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/CORPOBOYACA.png" alt="Corpoboyacá">
+              <img loading="lazy" src="img/entidades/CORPOBOYACA.png" alt="Corpoboyacá">
             </div>
             <h4 class="entity-card-title">Corpoboyacá</h4>
             <p class="entity-card-desc">Permisos y concesiones de aguas, vertimientos, emisiones atmosféricas, aprovechamiento forestal y control ambiental en Boyacá.</p>
@@ -314,7 +319,7 @@
           <!-- 4: CAR -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/car-logo-cundinamarca.webp" alt="CAR Cundinamarca">
+              <img loading="lazy" src="img/entidades/car-logo-cundinamarca.webp" alt="CAR Cundinamarca">
             </div>
             <h4 class="entity-card-title">CAR Cundinamarca</h4>
             <p class="entity-card-desc">Trámites ambientales en Cundinamarca, concesiones de aguas, permisos de vertimientos, emisiones y atención de requerimientos.</p>
@@ -323,7 +328,7 @@
           <!-- 5: MINAMBIENTE -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/minambiente_clean.png" alt="MinAmbiente">
+              <img loading="lazy" src="img/entidades/minambiente_clean.png" alt="MinAmbiente">
             </div>
             <h4 class="entity-card-title">MinAmbiente</h4>
             <p class="entity-card-desc">Alineación técnica con políticas ambientales nacionales, normatividad de desarrollo sostenible y reportes sectoriales.</p>
@@ -332,7 +337,7 @@
           <!-- 6: IDEAM -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/Ideam_(Colombia)_logo.png" alt="IDEAM">
+              <img loading="lazy" src="img/entidades/Ideam_(Colombia)_logo.png" alt="IDEAM">
             </div>
             <h4 class="entity-card-title">IDEAM</h4>
             <p class="entity-card-desc">Reportes hidroclimatológicos, balances hídricos, registro en el SIRH y trámites de información técnica e hidrológica.</p>
@@ -341,7 +346,7 @@
           <!-- 7: SENA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_sena.svg" alt="SENA">
+              <img loading="lazy" src="img/entidades/logo_sena.svg" alt="SENA">
             </div>
             <h4 class="entity-card-title">SENA</h4>
             <p class="entity-card-desc">Capacitaciones especializadas, programas de formación en seguridad y rescate minero, y certificación de competencias laborales.</p>
@@ -350,7 +355,7 @@
           <!-- 8: CONTRALORÍA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_contraloria.png" alt="Contraloría General de la República">
+              <img loading="lazy" src="img/entidades/logo_contraloria.png" alt="Contraloría General de la República">
             </div>
             <h4 class="entity-card-title">Contraloría General</h4>
             <p class="entity-card-desc">Acompañamiento técnico en auditorías fiscales, liquidación y soporte de regalías, planes de mejoramiento y hallazgos.</p>
@@ -359,7 +364,7 @@
           <!-- 9: FISCALÍA -->
           <div class="entity-card">
             <div class="entity-logo-box">
-              <img src="img/entidades/logo_fiscalia.svg" alt="Fiscalía General de la Nación">
+              <img loading="lazy" src="img/entidades/logo_fiscalia.svg" alt="Fiscalía General de la Nación">
             </div>
             <h4 class="entity-card-title">Fiscalía General</h4>
             <p class="entity-card-desc">Informes periciales técnicos, soporte jurídico-minero, peritajes en incidentes y atención a requerimientos judiciales.</p>

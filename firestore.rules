@@ -1,7 +1,8 @@
 rules_version = '2';
 
-// Reglas de Seguridad de Cloud Firestore para Stratum Group
-// ENDURECIDAS: Validación de identidad, lista blanca en servidor y validación de esquema de datos.
+// Reglas de Seguridad de Cloud Firestore para Stratum Group — v8
+// ENDURECIDAS: Esquema cerrado (hasOnly), separación público/privado,
+// validación de identidad, lista blanca en servidor, lectura blindada y noticias inactivas protegidas.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -13,40 +14,64 @@ service cloud.firestore {
         && request.auth.token.email.lower() in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados;
     }
 
-    // Validación de campos y tamaño de Noticias para evitar inyecciones masivas o corrupción de datos
+    // Validación estricta de Noticias (esquema cerrado — bloquea campos no autorizados)
     function esNoticiaValida() {
       let data = request.resource.data;
-      return data.titulo is string && data.titulo.size() >= 3 && data.titulo.size() <= 200
+      let permitidos = ['titulo', 'resumen', 'categoria', 'imagen', 'enlace', 'activo', 'fecha', 'fecha_creacion', 'fecha_actualizacion', 'fecha_eliminacion'];
+      return request.resource.data.keys().hasOnly(permitidos)
+        && data.titulo is string && data.titulo.size() >= 3 && data.titulo.size() <= 200
         && data.resumen is string && data.resumen.size() <= 1500
-        && data.categoria is string && data.categoria.size() <= 50;
+        && data.categoria is string && data.categoria.size() <= 50
+        && (!('imagen' in data) || (data.imagen is string && data.imagen.size() <= 500))
+        && (!('enlace' in data) || (data.enlace is string && data.enlace.size() <= 500))
+        && (!('activo' in data) || data.activo is bool);
     }
 
-    // Validación de estructura para el documento de seguridad
+    // Validación de estructura del documento de seguridad (privado)
     function esSeguridadValida() {
       let data = request.resource.data;
-      return data.correos_autorizados is list && data.correos_autorizados.size() <= 50
+      return request.resource.data.keys().hasOnly(['correos_autorizados', 'codigo_hash'])
+        && data.correos_autorizados is list && data.correos_autorizados.size() >= 1 && data.correos_autorizados.size() <= 50
+        && data.codigo_hash is string && (data.codigo_hash.size() == 64 || data.codigo_hash.size() == 0);
+    }
+
+    // Validación del documento de registro público (solo hash de clave maestra)
+    function esRegistroValido() {
+      let data = request.resource.data;
+      return request.resource.data.keys().hasOnly(['codigo_hash'])
         && data.codigo_hash is string && (data.codigo_hash.size() == 64 || data.codigo_hash.size() == 0);
     }
 
     // 1. Colección de NOTICIAS
-    // - Lectura pública para la página web
-    // - Creación y Edición: solo admins autorizados con datos válidos
+    // - Lectura pública: solo noticias activas (o que no tengan el campo activo por retrocompatibilidad) o admins
+    // - Creación y Edición: solo admins autorizados con esquema estricto
     // - Eliminación: solo admins autorizados
     match /noticias/{noticiaId} {
-      allow read: if true;
+      allow read: if (resource.data.activo == true || !('activo' in resource.data)) || esAdminAutorizado();
       allow create, update: if esAdminAutorizado() && esNoticiaValida();
       allow delete: if esAdminAutorizado();
     }
 
-    // 2. Colección de CONFIGURACIÓN DE SEGURIDAD (Lista blanca y clave maestra)
-    // - Lectura pública requerida para que el formulario de registro valide la autorización previa
+    // 2. Documento de REGISTRO PÚBLICO (solo hash de clave maestra)
+    // - Lectura pública: necesaria para validar la clave durante el registro
+    // - Escritura: solo admins autorizados
+    // - NO contiene la lista de correos — esa información es privada
+    match /configuracion/registro {
+      allow read: if true;
+      allow write: if esAdminAutorizado() && esRegistroValido();
+    }
+
+    // 3. Documento de SEGURIDAD PRIVADO (lista blanca + hash)
+    // - Lectura: solo administradores autorizados que figuren en la lista blanca
     // - Escritura: solo admins autorizados con datos conformes
     match /configuracion/seguridad {
-      allow read: if true;
+      allow read: if request.auth != null && (
+        request.auth.token.email.lower() in resource.data.correos_autorizados
+      );
       allow write: if esAdminAutorizado() && esSeguridadValida();
     }
 
-    // 3. Bloqueo estricto por defecto para cualquier otra ruta o colección
+    // 4. Bloqueo estricto por defecto para cualquier otra ruta o colección
     match /{document=**} {
       allow read, write: if false;
     }

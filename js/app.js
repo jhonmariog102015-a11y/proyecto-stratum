@@ -92,16 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     observer.observe(statsBanner);
   }
 
-  // 4. ACORDEÓN DE SERVICIOS (servicios.html)
-  const pillars = document.querySelectorAll('.service-pillar');
-  pillars.forEach(pillar => {
-    const header = pillar.querySelector('.pillar-header');
-    if (header) {
-      header.addEventListener('click', () => {
-        pillar.classList.toggle('active');
-      });
-    }
-  });
 
   // 4b. TARJETAS DESPLEGABLES DE SECTORES (index.html)
   const sectorCards = document.querySelectorAll('.sector-card-interactive');

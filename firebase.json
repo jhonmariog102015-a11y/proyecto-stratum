@@ -6,7 +6,12 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      "firestore.rules",
+      "README.md",
+      "ESPECIFICACION_TECNICA.txt",
       "**/.*",
+      "**/.git/**",
+      ".gitignore",
       "**/node_modules/**",
       "files/**"
     ]
