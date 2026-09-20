@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('btnReset').addEventListener('click', () => {
       document.body.classList.remove('large-text', 'high-contrast', 'grayscale');
-      saveAccessPrefs();
+      localStorage.removeItem('stratum_access_prefs');
     });
   }
 

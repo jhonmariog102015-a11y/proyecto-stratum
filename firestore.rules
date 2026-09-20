@@ -43,11 +43,11 @@ service cloud.firestore {
     }
 
     // 1. Colección de NOTICIAS
-    // - Lectura pública: solo noticias activas (o que no tengan el campo activo por retrocompatibilidad) o admins
+    // - Lectura pública: noticias corporativas abiertas para clientes y visitantes
     // - Creación y Edición: solo admins autorizados con esquema estricto
     // - Eliminación: solo admins autorizados
     match /noticias/{noticiaId} {
-      allow read: if (resource.data.activo == true || !('activo' in resource.data)) || esAdminAutorizado();
+      allow read: if true;
       allow create, update: if esAdminAutorizado() && esNoticiaValida();
       allow delete: if esAdminAutorizado();
     }

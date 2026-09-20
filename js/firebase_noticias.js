@@ -65,26 +65,34 @@ export async function loadPublicNews() {
     let querySnapshot;
     
     try {
-      // Filtrar noticias activas directamente en Firestore para evitar que inactivas consuman el limit
+      // Intentar ordenar por fecha_creacion descendente
       const q = query(
         collection(db, "noticias"), 
-        where("activo", "==", true), 
         orderBy("fecha_creacion", "desc"), 
-        limit(12)
+        limit(20)
       );
       querySnapshot = await getDocs(q);
     } catch (orderErr) {
-      // Fallback si aún no se crea el índice compuesto en Firestore
-      console.warn("Consulta con índice compuesto en proceso o no disponible, usando fallback:", orderErr);
-      try {
-        const qFallback = query(collection(db, "noticias"), where("activo", "==", true), limit(25));
-        querySnapshot = await getDocs(qFallback);
-      } catch (e2) {
-        querySnapshot = await getDocs(collection(db, "noticias"));
-      }
+      // Si la colección no tiene índice o tiene documentos legacy sin fecha_creacion
+      querySnapshot = null;
     }
 
-    if (querySnapshot.empty) {
+    // Si la consulta ordenada falló o vino vacía, consultar la colección directa
+    if (!querySnapshot || querySnapshot.empty) {
+      querySnapshot = await getDocs(collection(db, "noticias"));
+    }
+
+    // Filtrar en memoria: incluir noticias activas y noticias legacy (donde 'activo' aún no esté definido)
+    // Excluir únicamente las que hayan sido eliminadas lógicamente (activo === false)
+    const docsActivos = [];
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data.activo !== false) {
+        docsActivos.push({ id: docSnap.id, data });
+      }
+    });
+
+    if (docsActivos.length === 0) {
       if (loadingMsg) {
         loadingMsg.innerHTML = `
           <div style="text-align: center; padding: 3rem 1rem; color: #64748B;">
@@ -102,13 +110,10 @@ export async function loadPublicNews() {
     // Limpiar mensaje de carga
     newsContainer.innerHTML = "";
 
-    // Optimización de rendimiento: acumular en array e insertar de un solo golpe (evita repintar en cada loop)
+    // Optimización de rendimiento: acumular en array e insertar de un solo golpe
     const tarjetas = [];
 
-    querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      // Ignorar noticias archivadas o eliminadas lógicamente
-      if (data.activo === false) return;
+    docsActivos.forEach(({ id, data }) => {
 
       const rawFecha = data.fecha || (data.fecha_creacion?.toDate ? data.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente');
       const fechaTexto = escapeHTML(rawFecha);
