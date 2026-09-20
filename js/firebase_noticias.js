@@ -125,7 +125,7 @@ export async function loadPublicNews() {
       const articleHTML = `
         <article class="news-card-d6">
           <div class="news-card-img-wrap">
-            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img" onerror="this.onerror=null;this.src='assets/drone_landscape.png'">
+            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img">
             <span class="news-card-badge">
               ${categoria}
             </span>
@@ -151,6 +151,13 @@ export async function loadPublicNews() {
     });
 
     newsContainer.innerHTML = tarjetas.join("");
+
+    // Manejo seguro de fallback para imágenes rotas sin inline handlers (CSP seguro)
+    newsContainer.querySelectorAll(".news-card-img").forEach((img) => {
+      img.addEventListener("error", () => {
+        img.src = "assets/drone_landscape.png";
+      }, { once: true });
+    });
 
   } catch (error) {
     console.error("Error cargando noticias desde Firebase:", error);

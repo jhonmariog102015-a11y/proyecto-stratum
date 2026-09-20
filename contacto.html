@@ -128,7 +128,7 @@
           </div>
           <div class="c-text">
             <h4>WhatsApp</h4>
-            <p><a href="https://wa.me/573124117482" target="_blank" style="color: inherit; text-decoration: none;">+57 312 411 7482</a> / <a href="https://wa.me/573102600619" target="_blank" style="color: inherit; text-decoration: none;">+57 310 260 0619</a></p>
+            <p><a href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">+57 312 411 7482</a> / <a href="https://wa.me/573102600619" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">+57 310 260 0619</a></p>
           </div>
         </div>
 
@@ -156,18 +156,18 @@
           <!-- Desactiva captcha HTML interactivo en AJAX para evitar pantallas intermedias -->
           <input type="hidden" name="_captcha" value="false">
           <!-- Honeypot invisible para neutralizar bots -->
-          <input type="text" name="_honey" id="formHoney" style="display:none">
+          <input type="text" name="_honey" id="formHoney" style="display:none" tabindex="-1" autocomplete="off">
 
           <div class="form-row">
-            <input type="text" name="nombre" id="formNombre" placeholder="Nombre" required>
-            <input type="text" name="empresa" id="formEmpresa" placeholder="Empresa">
+            <input type="text" name="nombre" id="formNombre" placeholder="Nombre" maxlength="100" required>
+            <input type="text" name="empresa" id="formEmpresa" placeholder="Empresa" maxlength="120">
           </div>
           <div class="form-row">
-            <input type="tel" name="telefono" id="formTelefono" placeholder="Teléfono" required>
-            <input type="email" name="email" id="formEmail" placeholder="Email" required>
+            <input type="tel" name="telefono" id="formTelefono" placeholder="Teléfono" maxlength="25" required>
+            <input type="email" name="email" id="formEmail" placeholder="Email" maxlength="120" required>
           </div>
-          <input type="text" name="motivo" id="formMotivo" class="full-width" placeholder="Motivo" required>
-          <textarea name="mensaje" id="formMensaje" class="full-width" rows="5" placeholder="Mensaje" required></textarea>
+          <input type="text" name="motivo" id="formMotivo" class="full-width" placeholder="Motivo" maxlength="150" required>
+          <textarea name="mensaje" id="formMensaje" class="full-width" rows="5" placeholder="Mensaje" maxlength="3000" required></textarea>
           <button type="submit" id="btnSubmitContact" class="btn-submit">ENVIAR</button>
           <div id="contactAlert" class="alert-box"></div>
         </form>

@@ -1,3 +1,12 @@
+// PROTECCIÓN UNIVERSAL ANTI-CLICKJACKING (Aplica a todas las páginas públicas del sitio)
+if (window.top !== window.self) {
+  try {
+    window.top.location = window.self.location;
+  } catch (e) {
+    document.documentElement.style.display = 'none';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // 1. ANIMACIÓN DEL HEADER AL HACER SCROLL (Optimized with requestAnimationFrame)
   const header = document.getElementById('mainHeader');
@@ -235,6 +244,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const honey = document.getElementById('formHoney')?.value;
       if (honey) return;
 
+      // Rate limit antispam: mínimo 45 segundos entre envíos sucesivos
+      const lastSubmit = parseInt(localStorage.getItem('stratum_last_contact_ts') || '0', 10);
+      const now = Date.now();
+      if (now - lastSubmit < 45000) {
+        const waitSec = Math.ceil((45000 - (now - lastSubmit)) / 1000);
+        if (alertBox) {
+          alertBox.style.display = 'block';
+          alertBox.className = 'alert-box alert-error';
+          alertBox.textContent = `Por seguridad, espera ${waitSec} segundos antes de enviar otro mensaje.`;
+        }
+        return;
+      }
+
       if (btn) {
         btn.disabled = true;
         btn.textContent = 'Enviando mensaje...';
@@ -266,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok || data.success === 'true' || data.success === true) {
+          localStorage.setItem('stratum_last_contact_ts', Date.now().toString());
           window.location.href = 'gracias.html';
         } else {
           throw new Error(data.message || 'Error al procesar el mensaje');

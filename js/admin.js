@@ -1,7 +1,11 @@
 // Panel de Administración de Noticias y Seguridad - Stratum Group
 // Protección Anti-Clickjacking: evita que el panel sea incrustado en iframes de terceros
 if (window.top !== window.self) {
-  window.top.location = window.self.location;
+  try {
+    window.top.location = window.self.location;
+  } catch (e) {
+    document.documentElement.style.display = "none";
+  }
 }
 
 import { 
@@ -705,7 +709,7 @@ async function loadAdminNews() {
       const itemEl = document.createElement("div");
       itemEl.className = "news-item-card";
       itemEl.innerHTML = `
-        <img src="${imgUrl}" alt="${tituloSeguro}" class="news-item-thumb" onerror="this.onerror=null;this.src='assets/drone_landscape.png'">
+        <img src="${imgUrl}" alt="${tituloSeguro}" class="news-item-thumb">
         <div class="news-item-info">
           <h4>${tituloSeguro}</h4>
           <p>${fechaSegura} &bull; <strong style="color: var(--brand-purple);">${catSegura}</strong></p>
@@ -719,6 +723,14 @@ async function loadAdminNews() {
           </button>
         </div>
       `;
+
+      // Manejo seguro de error de imagen sin atributo inline (conforme a CSP)
+      const thumbImg = itemEl.querySelector(".news-item-thumb");
+      if (thumbImg) {
+        thumbImg.addEventListener("error", () => {
+          thumbImg.src = "assets/drone_landscape.png";
+        }, { once: true });
+      }
 
       // Evento de editar
       itemEl.querySelector(".btn-edit").addEventListener("click", () => {
