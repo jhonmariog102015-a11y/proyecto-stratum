@@ -397,7 +397,7 @@ if (registerForm) {
         } else if (error.code === "auth/operation-not-allowed" || error.code === "auth/configuration-not-found") {
           loginAlert.innerHTML = "<strong>Falta activar la Autenticación en Firebase:</strong><br>Abre este enlace: <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Stratum Group</a>, haz clic en <strong>Comenzar</strong> (o <em>Get Started</em>) y activa <strong>Correo electrónico/Contraseña</strong>.";
         } else {
-          loginAlert.textContent = "Error al crear cuenta: " + error.message;
+          loginAlert.textContent = "No se pudo crear la cuenta. Verifica tus datos o intenta nuevamente.";
         }
       }
     } finally {
@@ -505,7 +505,12 @@ function renderAuthorizedEmails(currentUserEmailStr) {
           renderAuthorizedEmails(currentUserEmailStr);
         } catch (err) {
           console.error("Error al revocar correo:", err);
-          alert("Error al actualizar la lista en Firebase.");
+          if (securityAlert) {
+            securityAlert.style.display = "block";
+            securityAlert.className = "alert-box alert-error";
+            securityAlert.textContent = "Error al actualizar la lista en Firebase.";
+            setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
+          }
           delBtn.disabled = false;
           delBtn.innerHTML = "&times;";
         }
@@ -524,7 +529,12 @@ if (addEmailForm) {
     if (!emailToAdd) return;
 
     if (currentSecurityData.correos_autorizados.map(c => c.toLowerCase()).includes(emailToAdd)) {
-      alert("El correo '" + emailToAdd + "' ya se encuentra en la lista blanca.");
+      if (securityAlert) {
+        securityAlert.style.display = "block";
+        securityAlert.className = "alert-box alert-error";
+        securityAlert.textContent = "El correo '" + emailToAdd + "' ya se encuentra en la lista blanca.";
+        setTimeout(() => { securityAlert.style.display = "none"; }, 5000);
+      }
       return;
     }
 
@@ -537,7 +547,12 @@ if (addEmailForm) {
       newAuthEmail.value = "";
       renderAuthorizedEmails(currentUserEmail.textContent);
     } catch (err) {
-      alert("Error guardando correo en Firebase. Verifica tus permisos de administrador.");
+      if (securityAlert) {
+        securityAlert.style.display = "block";
+        securityAlert.className = "alert-box alert-error";
+        securityAlert.textContent = "Error guardando correo en Firebase. Verifica tus permisos de administrador.";
+        setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
+      }
     }
   });
 }
