@@ -257,6 +257,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Validación obligatoria de Habeas Data (Ley 1581 de 2012)
+      const consent = document.getElementById('formConsent');
+      if (consent && !consent.checked) {
+        if (alertBox) {
+          alertBox.style.display = 'block';
+          alertBox.className = 'alert-box alert-error';
+          alertBox.textContent = 'Debes autorizar el tratamiento de datos personales para poder enviar el formulario.';
+        }
+        return;
+      }
+
       if (btn) {
         btn.disabled = true;
         btn.textContent = 'Enviando mensaje...';
@@ -309,4 +320,108 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 8. MODAL UNIVERSAL DE POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (LEY 1581 DE 2012)
+  initPrivacyModal();
 });
+
+// Función creadora y controladora del Modal Legal
+function initPrivacyModal() {
+  // Solo inyectar si aún no existe en el DOM
+  if (!document.getElementById('legalPrivacyModal')) {
+    const modalHTML = `
+      <div id="legalPrivacyModal" class="legal-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle">
+        <div class="legal-modal-window">
+          <div class="legal-modal-header">
+            <h3 id="privacyModalTitle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Política de Tratamiento de Datos Personales
+            </h3>
+            <button type="button" class="legal-modal-close" id="btnClosePrivacyModal" aria-label="Cerrar política">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="legal-modal-body">
+            <h4>1. Responsable del Tratamiento</h4>
+            <p><strong>Stratum Group S.A.S.</strong>, sociedad comercial legalmente constituida en la República de Colombia, con domicilio principal en Ubaté, Cundinamarca, y correo de atención y notificaciones: <a href="mailto:stratumgroupsas@gmail.com" style="color:var(--accent-gold);">stratumgroupsas@gmail.com</a>.</p>
+
+            <h4>2. Marco Legal y Cumplimiento</h4>
+            <p>Dando estricto cumplimiento a lo preceptuado en la <strong>Ley Estatutaria 1581 de 2012</strong>, el <strong>Decreto 1377 de 2013</strong> y la Circular Externa de la Superintendencia de Industria y Comercio (SIC), se adopta la presente Política para garantizar la debida recolección, almacenamiento, uso y protección de los datos suministrados por visitantes y clientes.</p>
+
+            <h4>3. Finalidad de la Recolección de Datos</h4>
+            <p>Los datos solicitados a través del formulario de contacto (Nombre, Correo, Teléfono, Empresa y Motivo de Consulta) serán tratados exclusivamente con los siguientes fines:</p>
+            <ul>
+              <li>Atender, tramitar y responder formalmente a solicitudes de contacto, cotizaciones e inquietudes sobre servicios de consultoría e ingeniería.</li>
+              <li>Presentar propuestas técnico-económicas para proyectos mineros, geológicos, ambientales o de software e inteligencia artificial solicitados expresamente por el titular.</li>
+              <li>Establecer canales directos de comunicación comercial e institucional entre el solicitante y nuestro equipo de ingenieros y especialistas.</li>
+            </ul>
+            <p><strong>Garantía de Confidencialidad:</strong> Stratum Group S.A.S. <u>no vende, cede ni transfiere</u> datos personales a terceros comerciales bajo ninguna circunstancia.</p>
+
+            <h4>4. Derechos del Titular (Habeas Data)</h4>
+            <p>En concordancia con el artículo 8 de la Ley 1581 de 2012, usted como titular de la información tiene derecho en cualquier momento a:</p>
+            <ul>
+              <li><strong>Conocer, actualizar y rectificar</strong> sus datos personales frente al Responsable.</li>
+              <li><strong>Solicitar prueba</strong> de la autorización otorgada para su tratamiento.</li>
+              <li><strong>Ser informado</strong> respecto del uso que se le ha dado a sus datos personales.</li>
+              <li><strong>Revocar la autorización</strong> o solicitar la supresión de sus datos mediante comunicación formal dirigida al correo <em>stratumgroupsas@gmail.com</em>.</li>
+            </ul>
+
+            <h4>5. Seguridad de la Información</h4>
+            <p>Contamos con protocolos técnicos, criptográficos y de seguridad informática (cabeceras seguras HSTS, sanitización de datos y canales cifrados HTTPS) para salvaguardar la integridad de la información contra pérdida, consulta o acceso no autorizado.</p>
+          </div>
+          <div class="legal-modal-footer">
+            <span>Stratum Group S.A.S. • Ubaté, Colombia</span>
+            <button type="button" class="legal-modal-btn-accept" id="btnAcceptPrivacyModal">Entendido y Aceptar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  const modal = document.getElementById('legalPrivacyModal');
+  const btnClose = document.getElementById('btnClosePrivacyModal');
+  const btnAccept = document.getElementById('btnAcceptPrivacyModal');
+
+  function openModal(e) {
+    if (e) e.preventDefault();
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeModal() {
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Vincular a todos los botones o enlaces con la clase .js-open-privacy
+  document.querySelectorAll('.js-open-privacy').forEach(trigger => {
+    trigger.addEventListener('click', openModal);
+  });
+
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+  if (btnAccept) btnAccept.addEventListener('click', closeModal);
+
+  // Cerrar al hacer clic en el fondo oscuro
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  // Cerrar con la tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+}
+

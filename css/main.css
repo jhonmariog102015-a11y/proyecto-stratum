@@ -3093,3 +3093,223 @@ body.large-text {
   transform: translateY(-2px);
 }
 
+/* ==========================================================================
+   CUMPLIMIENTO LEGAL: HABEAS DATA, MODAL POLÍTICA Y DESCARGOS REGULATORIOS
+   ========================================================================== */
+
+/* 1. Casilla de consentimiento en Formulario de Contacto */
+.form-consent-group {
+  margin: 0.4rem 0 0.8rem 0;
+}
+
+.consent-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: #D1D5DB;
+  line-height: 1.45;
+  cursor: pointer;
+  user-select: none;
+}
+
+.consent-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.btn-privacy-trigger {
+  background: none;
+  border: none;
+  color: var(--accent-gold);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  display: inline;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  vertical-align: baseline;
+}
+
+.btn-privacy-trigger:hover,
+.btn-privacy-trigger:focus {
+  color: #FACC15;
+  outline: none;
+}
+
+/* 2. Modal de Política de Tratamiento de Datos (Ley 1581 de 2012) */
+.legal-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 5, 15, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.legal-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.legal-modal-window {
+  background: linear-gradient(135deg, #1E0F23 0%, #2A1532 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.15);
+  border-radius: 12px;
+  max-width: 760px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.legal-modal-backdrop.active .legal-modal-window {
+  transform: translateY(0) scale(1);
+}
+
+.legal-modal-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.legal-modal-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.legal-modal-close {
+  background: transparent;
+  border: none;
+  color: #9CA3AF;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.legal-modal-close:hover {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.legal-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  color: #E5E7EB;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.legal-modal-body h4 {
+  color: var(--accent-gold);
+  margin: 1.2rem 0 0.4rem 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  border-left: 3px solid var(--accent-gold);
+  padding-left: 8px;
+}
+
+.legal-modal-body h4:first-of-type {
+  margin-top: 0.2rem;
+}
+
+.legal-modal-body p {
+  margin-bottom: 0.75rem;
+  color: #D1D5DB;
+}
+
+.legal-modal-body ul {
+  padding-left: 1.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.legal-modal-body li {
+  margin-bottom: 0.35rem;
+  color: #D1D5DB;
+}
+
+.legal-modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legal-modal-footer span {
+  font-size: 0.78rem;
+  color: #9CA3AF;
+}
+
+.legal-modal-btn-accept {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #B8860B 100%);
+  color: #1E0F23;
+  font-weight: 700;
+  border: none;
+  padding: 0.6rem 1.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.legal-modal-btn-accept:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
+}
+
+/* 3. Descargo de responsabilidad en carrusel de entidades */
+.entities-disclaimer-box {
+  margin-top: 2rem;
+  padding: 1rem 1.5rem;
+  background: rgba(30, 15, 35, 0.65);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  text-align: center;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.entities-disclaimer-text {
+  font-size: 0.78rem;
+  color: #9CA3AF;
+  line-height: 1.55;
+  margin: 0;
+}
+
+
