@@ -2158,7 +2158,7 @@ body.large-text {
 }
 
 /* ==========================================
-   7. MEDIA QUERIES (RESPONSIVE DESIGN)
+   7. MEDIA QUERIES (SISTEMA RESPONSIVO TOTAL)
    ========================================== */
 .mobile-menu-btn {
   display: none;
@@ -2168,10 +2168,16 @@ body.large-text {
   font-size: 1.8rem;
   cursor: pointer;
   z-index: 1001;
+  padding: 6px;
+  line-height: 1;
 }
 
-@media (max-width: 900px) {
-  /* Stats Banner Adjustment */
+/* TABLETS Y PANTALLAS MEDIANAS (<= 992px) */
+@media (max-width: 992px) {
+  .header-d6 {
+    padding: 14px 4%;
+  }
+
   .stats-grid-d6 {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
@@ -2179,105 +2185,389 @@ body.large-text {
   .stat-item-d6:nth-child(2) {
     border-right: none;
   }
+  
+  .services-grid-d6 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .footer-grid-new {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 1.5rem;
+  }
+
+  .dash-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
+/* SMARTPHONES Y TABLETS VERTICALES (<= 768px) */
 @media (max-width: 768px) {
-  /* Mobile Menu Header */
+  /* Header & Navegación móvil */
+  .header-d6 {
+    padding: 12px 4%;
+    background: rgba(15, 10, 20, 0.96); /* Contraste y legibilidad asegurada */
+  }
+
+  .header-left-d6 {
+    gap: 8px;
+  }
+
+  .header-left-d6 img {
+    height: 36px;
+    max-width: 155px;
+  }
+
+  /* Ocultar lema en móviles para evitar que colisione con el menú hamburguesa */
+  .slogan-tag-d6 {
+    display: none !important;
+  }
+
   .mobile-menu-btn {
     display: block;
   }
-  
+
   .nav-menu-d6 {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 250px;
+    width: min(80vw, 290px);
     height: 100vh;
     background-color: var(--brand-purple-dark);
     flex-direction: column;
-    padding-top: 80px;
-    padding-left: 30px;
-    gap: 2rem;
-    transition: right 0.3s ease;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    padding: 85px 24px 30px 24px;
+    gap: 1.6rem;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -8px 0 25px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
   }
-  
+
   .nav-menu-d6.active {
     right: 0;
   }
 
   .social-icons-d6 {
-    display: none; /* Ocultar íconos sociales en móvil para más espacio */
+    display: none;
   }
 
-  /* Hero adjustments */
+  /* Hero Banner Principal */
+  .hero-d6 {
+    padding: 110px 1.25rem 60px 1.25rem;
+    min-height: auto;
+    height: auto;
+    padding-top: 130px;
+    padding-bottom: 70px;
+  }
+
   .hero-title-d6 {
-    font-size: 2.2rem;
-  }
-  .hero-desc-d6 {
-    font-size: 1rem;
+    font-size: clamp(1.75rem, 6.5vw, 2.4rem);
+    line-height: 1.25;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    margin-bottom: 1rem;
   }
 
-  /* Stats adjustments */
+  .hero-desc-d6 {
+    font-size: 0.98rem;
+    margin-bottom: 1.8rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Barra de Estadísticas - Ajuste de ángulo para no cortar números */
   .stats-banner-d6 {
-    padding-top: 50px;
+    padding: 45px 5% 35px 5%;
+    clip-path: polygon(0 25px, 100% 0, 100% 100%, 0 100%);
+    margin-top: -25px;
   }
-  
-  .footer-bottom-d6 {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+
+  .stat-number-d6 {
+    font-size: 2.4rem;
   }
-  .contact-page-container {
+
+  .stat-label-d6 {
+    font-size: 0.85rem;
+  }
+
+  /* Márgenes y rellenos adaptados en secciones principales */
+  .services-section-d6,
+  .sectors-section-d6,
+  .why-us-section,
+  .values-section,
+  .about-section,
+  .mv-section,
+  .methodology-section,
+  .contact-page-section,
+  .news-public-section {
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+  }
+
+  .services-grid-d6 {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  
-  .contact-form-panel {
-    padding: 2rem;
+
+  .service-card-d6 {
+    width: 100%;
   }
-  
-  .form-row {
+
+  .service-body-d6 {
+    padding: 1.4rem;
+  }
+
+  /* Tarjetas Interactivas de Sectores - Ajuste fluido */
+  .sector-card-interactive {
+    flex: 1 1 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 1.6rem 1.2rem;
+  }
+
+  .sectors-grid-d6 {
+    gap: 1.2rem;
+  }
+
+  /* Workflow Metodología */
+  .workflow-container {
     flex-direction: column;
     gap: 1.5rem;
   }
-  
-  .sc-row, .sc-row.reverse {
-    flex-direction: column;
-    gap: 2rem;
+
+  .workflow-card {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 1.5rem 1.2rem;
   }
-  
-  .meth-grid {
+
+  .workflow-arrow {
+    display: none;
+  }
+
+  /* Acordeón en Servicios (Evita cortes de texto y flechas) */
+  .service-details summary {
+    padding: 1.1rem 1.2rem;
+    gap: 0.8rem;
+  }
+
+  .acc-header-left {
+    gap: 0.8rem;
+  }
+
+  .acc-icon {
+    font-size: 1.8rem;
+  }
+
+  .acc-header-left h2 {
+    font-size: 1.12rem;
+    line-height: 1.35;
+  }
+
+  .acc-content {
+    padding: 1.4rem 1.2rem;
+  }
+
+  /* Carrusel de Evidencias */
+  .evidence-slide {
+    width: min(85vw, 320px);
+    height: 200px;
+  }
+
+  .evidence-slide-track {
+    width: calc(min(85vw, 320px) * 10);
+  }
+
+  /* Contacto: Solución al bug de columnas en móvil */
+  .contact-page-container {
     grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+
+  .contact-info-panel {
+    padding: 2rem 1.4rem;
+    gap: 1.5rem;
+  }
+
+  .contact-form-panel {
+    padding: 2rem 1.4rem;
+  }
+
+  .contact-form-panel h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr !important; /* 1 sola columna para que no se corte ni amontone */
+    gap: 1.2rem;
+  }
+
+  /* Footer Responsivo */
+  .footer-new {
+    padding: 3rem 1.25rem 0 1.25rem;
+  }
+
+  .footer-bottom-new {
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    padding: 1.2rem 1rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .footer-bottom-new p {
+    font-size: 0.82rem;
+  }
+
+  /* Botón de Accesibilidad Flotante en Móvil */
+  .btn-accessibility {
+    bottom: 15px;
+    left: 15px;
+    width: 44px;
+    height: 44px;
   }
 }
 
+/* SMARTPHONES PEQUEÑOS (<= 480px, ej. iPhone SE, Galaxy A, etc.) */
 @media (max-width: 480px) {
+  .header-d6 {
+    padding: 10px 3.5%;
+  }
+
+  .header-left-d6 img {
+    height: 32px;
+    max-width: 140px;
+  }
+
+  .hero-d6 {
+    padding-top: 110px;
+    padding-bottom: 50px;
+  }
+
+  .hero-title-d6 {
+    font-size: 1.65rem;
+  }
+
   .stats-grid-d6 {
     grid-template-columns: 1fr;
+    gap: 0;
   }
+
   .stat-item-d6 {
-    border-right: none;
+    border-right: none !important;
     border-bottom: 1px solid var(--border-glass);
+    padding: 1.2rem 0.5rem;
   }
+
   .stat-item-d6:last-child {
     border-bottom: none;
   }
-  
-  .hero-title-d6 {
-    font-size: 1.8rem;
+
+  .stat-number-d6 {
+    font-size: 2.1rem;
   }
-  
-  .about-container, .mv-container {
+
+  /* Encabezados interiores (Nosotros, Servicios, Noticias, Contacto) */
+  .hero-interior {
+    padding: 120px 1rem 70px 1rem;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 25px), 0 100%);
+  }
+
+  .hero-interior-content h1 {
+    font-size: 1.85rem;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .hero-interior-content p {
+    font-size: 0.95rem;
+  }
+
+  .section-header-d6 h2 {
+    font-size: 1.7rem;
+  }
+
+  .entities-main-title-standout {
+    font-size: 1.35rem;
+  }
+
+  .entities-disclaimer-box {
+    padding: 0.8rem 1rem;
+  }
+
+  .footer-grid-new {
     grid-template-columns: 1fr;
     gap: 2rem;
+    text-align: center;
   }
-  
-  .hero-interior {
-    padding-top: 120px;
+
+  .footer-col-new {
+    align-items: center;
   }
-  
-  .hero-interior-content h1 {
-    font-size: 2.2rem;
+
+  /* News Feed */
+  .news-grid-d6 {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  /* Admin Login & Panel */
+  .login-card {
+    padding: 2.2rem 1.3rem;
+    border-radius: 16px;
+  }
+
+  .login-title {
+    font-size: 1.3rem;
+  }
+
+  .dash-card {
+    padding: 1.5rem 1.1rem;
+  }
+
+  .dash-brand span {
+    font-size: 0.95rem;
+  }
+
+  .user-badge {
+    display: none; /* Ocultar el email en la barra superior móvil para dar espacio al botón salir */
+  }
+
+  /* Modal de Política Legal */
+  .legal-modal-backdrop {
+    padding: 0.8rem;
+  }
+
+  .legal-modal-window {
+    max-height: 92vh;
+  }
+
+  .legal-modal-header {
+    padding: 1rem 1.1rem;
+  }
+
+  .legal-modal-header h3 {
+    font-size: 0.98rem;
+  }
+
+  .legal-modal-body {
+    padding: 1.1rem 1rem;
+    font-size: 0.84rem;
+  }
+
+  .legal-modal-footer {
+    padding: 0.8rem 1rem;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .legal-modal-footer span {
+    text-align: center;
+  }
+
+  .legal-modal-btn-accept {
+    width: 100%;
+    text-align: center;
   }
 }
 
