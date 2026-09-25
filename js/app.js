@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                       document.getElementById('newsListAdmin');
 
   if (!isAdminView) {
-    // 5.1 Asegurar que el botón flotante exista y tenga el ícono oficial de accesibilidad SENA
+    // 5.1 Asegurar que el botón flotante exista y tenga el ícono corporativo de accesibilidad Stratum
     let accessBtn = document.querySelector('.btn-accessibility');
     if (!accessBtn) {
       accessBtn = document.createElement('button');
@@ -151,11 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(accessBtn);
     }
     
-    // Inyectar el icono exacto de accesibilidad SENA (figura humana con brazos extendidos)
+    // Inyectar el icono estándar de accesibilidad universal
     accessBtn.innerHTML = `
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <circle cx="12" cy="4" r="2.2" />
-        <path d="M19 7.5h-14c-.55 0-1 .45-1 1s.45 1 1 1h4v11c0 .55.45 1 1 1s1-.45 1-1v-5h2v5c0 .55.45 1 1 1s1-.45 1-1v-11h4c.55 0 1-.45 1-1s-.45-1-1-1z" />
+        <path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm5 5.5h-3.5v6.5h-3v-6.5h-3.5v-2h10v2z"/>
       </svg>
     `;
     accessBtn.setAttribute('aria-expanded', 'false');
@@ -173,10 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="access-drawer-header">
             <div class="access-drawer-title-wrap">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="4" r="2.2" />
-                <path d="M19 7.5h-14c-.55 0-1 .45-1 1s.45 1 1 1h4v11c0 .55.45 1 1 1s1-.45 1-1v-5h2v5c0 .55.45 1 1 1s1-.45 1-1v-11h4c.55 0 1-.45 1-1s-.45-1-1-1z" />
+                <path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm5 5.5h-3.5v6.5h-3v-6.5h-3.5v-2h10v2z"/>
               </svg>
-              <h3 class="access-drawer-title">Accesibilidad</h3>
+              <h3 class="access-drawer-title">Accesibilidad Stratum</h3>
             </div>
             <button type="button" class="access-close-btn" id="accessCloseBtn" aria-label="Cerrar panel de accesibilidad">&times;</button>
           </div>
@@ -194,15 +192,22 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
 
-            <!-- TARJETA 2: OPCIONES DE CONTRASTE -->
+            <!-- TARJETA 2: OPCIONES DE CONTRASTE Y COLOR -->
             <div class="access-card">
-              <h4 class="access-card-title">OPCIONES DE CONTRASTE</h4>
-              <label class="access-toggle-row" for="chkHighContrast">
+              <h4 class="access-card-title">OPCIONES DE CONTRASTE Y COLOR</h4>
+              <label class="access-toggle-row" for="chkHighContrast" style="margin-bottom: 0.85rem;">
                 <div class="access-switch">
                   <input type="checkbox" id="chkHighContrast" aria-label="Activar alto contraste">
                   <span class="access-switch-slider"></span>
                 </div>
                 <span class="access-toggle-label">Alto Contraste</span>
+              </label>
+              <label class="access-toggle-row" for="chkGrayscale">
+                <div class="access-switch">
+                  <input type="checkbox" id="chkGrayscale" aria-label="Activar escala de grises">
+                  <span class="access-switch-slider"></span>
+                </div>
+                <span class="access-toggle-label">Escala de Grises</span>
               </label>
             </div>
 
@@ -211,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
               <h4 class="access-card-title">TEMAS VISUALES</h4>
               <div class="access-radio-group">
                 <label class="access-radio-row">
-                  <input type="radio" name="accessThemeRadio" id="radioThemeLight" value="sena-light" checked>
-                  <span class="access-radio-label">SENA Oficial (Claro)</span>
+                  <input type="radio" name="accessThemeRadio" id="radioThemeLight" value="stratum-light" checked>
+                  <span class="access-radio-label">Stratum Oficial (Claro)</span>
                 </label>
                 <label class="access-radio-row">
                   <input type="radio" name="accessThemeRadio" id="radioThemeDark" value="dark">
@@ -240,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnFontNorm = document.getElementById('btnFontNorm');
     const btnFontInc = document.getElementById('btnFontInc');
     const chkHighContrast = document.getElementById('chkHighContrast');
+    const chkGrayscale = document.getElementById('chkGrayscale');
     const radioThemeLight = document.getElementById('radioThemeLight');
     const radioThemeDark = document.getElementById('radioThemeDark');
     const btnReset = document.getElementById('btnAccessReset');
@@ -323,6 +329,15 @@ document.addEventListener('DOMContentLoaded', () => {
       saveAccessPrefs(current);
     };
 
+    const applyGrayscale = (isGray) => {
+      document.documentElement.classList.toggle('grayscale', isGray);
+      document.body.classList.toggle('grayscale', isGray);
+      if (chkGrayscale) chkGrayscale.checked = isGray;
+      const current = getCurrentPrefs();
+      current.grayscale = isGray;
+      saveAccessPrefs(current);
+    };
+
     const applyTheme = (theme) => {
       const isDark = (theme === 'dark');
       document.documentElement.classList.toggle('dark-mode', isDark);
@@ -330,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (radioThemeLight) radioThemeLight.checked = !isDark;
       if (radioThemeDark) radioThemeDark.checked = isDark;
       const current = getCurrentPrefs();
-      current.theme = isDark ? 'dark' : 'sena-light';
+      current.theme = isDark ? 'dark' : 'stratum-light';
       saveAccessPrefs(current);
     };
 
@@ -345,9 +360,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    if (chkGrayscale) {
+      chkGrayscale.addEventListener('change', (e) => {
+        applyGrayscale(e.target.checked);
+      });
+    }
+
     if (radioThemeLight) {
       radioThemeLight.addEventListener('change', () => {
-        if (radioThemeLight.checked) applyTheme('sena-light');
+        if (radioThemeLight.checked) applyTheme('stratum-light');
       });
     }
 
@@ -361,7 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btnReset.addEventListener('click', () => {
         applyFontSize('normal');
         applyContrast(false);
-        applyTheme('sena-light');
+        applyGrayscale(false);
+        applyTheme('stratum-light');
         try {
           localStorage.removeItem('stratum_access_prefs');
         } catch (e) {}
@@ -372,7 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const saved = getCurrentPrefs();
     applyFontSize(saved.fontSize || 'normal');
     applyContrast(!!saved.highContrast);
-    applyTheme(saved.theme || 'sena-light');
+    applyGrayscale(!!saved.grayscale);
+    applyTheme(saved.theme || 'stratum-light');
   }
 
   // 6. ANIMACIONES AL HACER SCROLL (INTERSECTION OBSERVER)
