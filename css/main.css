@@ -3602,4 +3602,628 @@ body.large-text {
   margin: 0;
 }
 
+/* ==========================================================================
+   SISTEMA MAESTRO DE RESPONSIVIDAD MÓVIL (TABLETS Y SMARTPHONES)
+   Garantiza 100% fluidez, sin cortes, sin desbordamiento ni amontonamientos.
+   ========================================================================== */
+
+/* Estilos base para el pie de página legal */
+.footer-legal-text {
+  font-size: 0.9rem;
+  color: #CBD5E1;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.footer-sep {
+  display: inline;
+  margin: 0 0.4rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-privacy-trigger {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--accent-gold) !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  display: inline !important;
+  transition: color 0.2s ease !important;
+  vertical-align: baseline !important;
+}
+
+.btn-privacy-trigger:hover,
+.btn-privacy-trigger:focus {
+  color: #FACC15 !important;
+}
+
+/* RESPONSIVE MÓVIL PRINCIPAL (<= 768px: SmartPhones y Tablets Verticales) */
+@media (max-width: 768px) {
+  /* Control global de anchura y desbordamiento */
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  * {
+    box-sizing: border-box !important;
+  }
+
+  /* 1. BOTÓN DE ACCESIBILIDAD FLOTANTE EN MÓVIL (Sin obstruir texto ni pie de página) */
+  .btn-accessibility {
+    position: fixed !important;
+    bottom: 16px !important;
+    right: 16px !important;
+    left: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    z-index: 99999 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .access-menu {
+    position: fixed !important;
+    bottom: 68px !important;
+    right: 16px !important;
+    left: auto !important;
+    width: min(92vw, 330px) !important;
+    max-width: calc(100vw - 32px) !important;
+    z-index: 99999 !important;
+  }
+
+  /* 2. ENCABEZADO Y MENÚ MÓVIL */
+  .header-d6 {
+    padding: 10px 4% !important;
+    min-height: 56px !important;
+    background: rgba(15, 10, 20, 0.98) !important;
+  }
+
+  .header-left-d6 {
+    gap: 8px !important;
+  }
+
+  .header-left-d6 img {
+    height: 36px !important;
+    width: auto !important;
+    max-width: 155px !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  .slogan-tag-d6 {
+    display: none !important;
+  }
+
+  /* 3. HERO PRINCIPAL (index.html) */
+  .hero-d6 {
+    padding: 110px 1.25rem 55px 1.25rem !important;
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .hero-title-d6 {
+    font-size: clamp(1.8rem, 6.5vw, 2.35rem) !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-desc-d6 {
+    font-size: 0.96rem !important;
+    line-height: 1.65 !important;
+    padding: 0 0.25rem !important;
+    margin-bottom: 1.8rem !important;
+  }
+
+  /* 4. FRANJA DE ESTADÍSTICAS (index.html: Corte diagonal suave sin cortar números) */
+  .stats-banner-d6 {
+    padding: 55px 5% 35px 5% !important;
+    clip-path: polygon(0 20px, 100% 0, 100% 100%, 0 100%) !important;
+    margin-top: -20px !important;
+  }
+
+  .stats-grid-d6 {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .stat-item-d6 {
+    padding: 0.8rem 0.5rem !important;
+    border-right: none !important;
+    border-bottom: none !important;
+  }
+
+  .stat-item-d6:nth-child(1),
+  .stat-item-d6:nth-child(2) {
+    border-bottom: 1px solid var(--border-glass) !important;
+    padding-bottom: 1.2rem !important;
+  }
+
+  .stat-item-d6:nth-child(odd) {
+    border-right: 1px solid var(--border-glass) !important;
+  }
+
+  .stat-number-d6 {
+    font-size: clamp(1.9rem, 6vw, 2.3rem) !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .stat-label-d6 {
+    font-size: 0.82rem !important;
+    line-height: 1.35 !important;
+    letter-spacing: 0.4px !important;
+  }
+
+  /* 5. SECCIÓN SECTORES INTERACTIVOS (index.html) */
+  .sectors-interactive-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.4rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .sector-card-interactive {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+    box-sizing: border-box !important;
+    padding: 1.8rem 1.3rem !important;
+  }
+
+  /* 6. METODOLOGÍA / WORKFLOW (index.html) */
+  .workflow-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+  }
+
+  .workflow-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 1.8rem 1.3rem !important;
+  }
+
+  .workflow-arrow {
+    display: none !important;
+  }
+
+  /* 7. HERO INTERIOR (nosotros, servicios, noticias, contacto, 404, gracias) */
+  .hero-interior {
+    padding: 110px 1.25rem 55px 1.25rem !important;
+    min-height: auto !important;
+    clip-path: none !important;
+    border-bottom: 3px solid var(--accent-gold) !important;
+  }
+
+  .hero-interior-content h1 {
+    font-size: clamp(1.85rem, 6.5vw, 2.35rem) !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .hero-interior-content p {
+    font-size: 0.96rem !important;
+    line-height: 1.65 !important;
+    max-width: 650px !important;
+    margin: 0 auto !important;
+  }
+
+  /* 8. PÁGINA NOSOTROS: ¿QUIÉNES SOMOS?, MISIÓN Y VISIÓN, VALORES */
+  .about-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .about-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2.2rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .about-text {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .about-text h2 {
+    font-size: clamp(1.85rem, 6.5vw, 2.3rem) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 1.2rem !important;
+    word-break: break-word !important;
+  }
+
+  .about-text p {
+    font-size: 0.98rem !important;
+    line-height: 1.75 !important;
+    margin-bottom: 1.1rem !important;
+    color: #4B5563 !important;
+  }
+
+  .about-image {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .about-img-wrapper {
+    width: 100% !important;
+    height: 250px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .about-img-wrapper img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Misión y Visión (nosotros.html) */
+  .mv-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .mv-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.8rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .mv-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 2.2rem 1.4rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .mv-card h3 {
+    font-size: 1.35rem !important;
+    margin-bottom: 0.9rem !important;
+  }
+
+  .mv-card p {
+    font-size: 0.95rem !important;
+    line-height: 1.65 !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  /* Enfoque Diferencial & Valores (nosotros.html) */
+  .values-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .values-header h2 {
+    font-size: clamp(1.6rem, 5.5vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.9rem !important;
+  }
+
+  .values-header p {
+    font-size: 0.95rem !important;
+    line-height: 1.65 !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .values-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.6rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .value-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 2.2rem 1.4rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .value-card h4 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+    word-break: break-word !important;
+  }
+
+  .value-card p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+  }
+
+  /* 9. PÁGINA SERVICIOS: ¿POR QUÉ ELEGIRNOS? Y CTA */
+  .why-us-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .why-us-header h2 {
+    font-size: clamp(1.6rem, 5.5vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .why-us-header p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .why-us-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.6rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .why-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 2.2rem 1.4rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .why-card h4 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+    word-break: break-word !important;
+  }
+
+  .why-card p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .cta-services-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .cta-services-content h2 {
+    font-size: 1.65rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.9rem !important;
+  }
+
+  .cta-services-content p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1.8rem !important;
+  }
+
+  .cta-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+
+  .btn-cta-primary,
+  .btn-cta-secondary {
+    width: 100% !important;
+    max-width: 320px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    padding: 0.9rem 1.5rem !important;
+  }
+
+  /* 10. PÁGINA CONTACTO */
+  .contact-page-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .contact-page-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+    width: 100% !important;
+  }
+
+  .contact-info-panel,
+  .contact-form-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 2rem 1.3rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.2rem !important;
+  }
+
+  /* 11. PÁGINA NOTICIAS */
+  .news-public-section {
+    padding: 3.5rem 1.25rem !important;
+  }
+
+  .news-grid-d6 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.8rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .news-card-d6 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 12. PIE DE PÁGINA MAESTRO (TOTALMENTE FLUIDO, SIN AMONTONAMIENTO) */
+  .footer-new {
+    padding: 3.5rem 1.25rem 0 1.25rem !important;
+    text-align: center !important;
+    background-color: var(--brand-purple-dark) !important;
+  }
+
+  .footer-logo {
+    margin-bottom: 2rem !important;
+    text-align: center !important;
+  }
+
+  .footer-logo img {
+    height: 48px !important;
+    width: auto !important;
+    max-width: 180px !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+
+  .footer-grid-new {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2.2rem !important;
+    margin-bottom: 2.8rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  .footer-col-new {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .footer-icon {
+    margin-bottom: 0.6rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .footer-col-new h4 {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.5rem !important;
+    color: #FFFFFF !important;
+  }
+
+  .footer-col-new p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    color: #CBD5E1 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .footer-col-new p a {
+    color: #CBD5E1 !important;
+    text-decoration: none !important;
+    word-break: break-all !important;
+    overflow-wrap: anywhere !important;
+    transition: color 0.2s ease !important;
+  }
+
+  .footer-col-new p a:hover {
+    color: var(--accent-gold) !important;
+    text-decoration: underline !important;
+  }
+
+  .footer-btn {
+    width: min(100%, 280px) !important;
+    padding: 0.85rem 1.5rem !important;
+    font-size: 0.95rem !important;
+    margin-top: 0.5rem !important;
+    text-align: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 6px !important;
+  }
+
+  .footer-bottom-new {
+    margin-left: -1.25rem !important;
+    margin-right: -1.25rem !important;
+    padding: 1.8rem 1.25rem 5.2rem 1.25rem !important; /* Espacio protegido para el botón flotante */
+    text-align: center !important;
+    background-color: #0B0710 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .footer-legal-text {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-size: 0.84rem !important;
+    line-height: 1.6 !important;
+    color: #CBD5E1 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .footer-sep {
+    display: none !important;
+  }
+}
+
+/* SMARTPHONES MUY COMPACTOS (<= 420px, ej. iPhone SE / Galaxy Mini) */
+@media (max-width: 420px) {
+  .header-left-d6 img {
+    height: 32px !important;
+    max-width: 140px !important;
+  }
+
+  .hero-title-d6 {
+    font-size: 1.65rem !important;
+  }
+
+  .stats-grid-d6 {
+    grid-template-columns: 1fr !important;
+    gap: 1.2rem !important;
+  }
+
+  .stat-item-d6 {
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-glass) !important;
+    padding: 1rem 0.5rem !important;
+  }
+
+  .stat-item-d6:last-child {
+    border-bottom: none !important;
+  }
+
+  .stat-number-d6 {
+    font-size: 2rem !important;
+  }
+}
+
+
 
