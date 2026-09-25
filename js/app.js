@@ -231,8 +231,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 7. ENVÍO ASÍNCRONO DEL FORMULARIO DE CONTACTO (AJAX / FORMSUBMIT)
+  // 7. ENVÍO ASÍNCRONO DEL FORMULARIO DE CONTACTO (AJAX / FORMSUBMIT) Y CAPTCHA (REQ. 45)
   const contactForm = document.getElementById('contactForm');
+  
+  // Generador de CAPTCHA matemático interactivo (Req. 45)
+  function initCaptcha() {
+    const textEl = document.getElementById('captchaText');
+    const expectedEl = document.getElementById('captchaExpected');
+    const answerEl = document.getElementById('formCaptchaAnswer');
+    if (!textEl || !expectedEl) return;
+
+    const num1 = Math.floor(Math.random() * 8) + 2;
+    const num2 = Math.floor(Math.random() * 8) + 1;
+    const sum = num1 + num2;
+    textEl.textContent = `${num1} + ${num2} = ?`;
+    expectedEl.value = sum.toString();
+    if (answerEl) answerEl.value = '';
+  }
+
+  const btnRefreshCaptcha = document.getElementById('btnRefreshCaptcha');
+  if (btnRefreshCaptcha) {
+    btnRefreshCaptcha.addEventListener('click', initCaptcha);
+  }
+  initCaptcha();
+
   if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -244,11 +266,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const honey = document.getElementById('formHoney')?.value;
       if (honey) return;
 
-      // Rate limit antispam: mínimo 45 segundos entre envíos sucesivos
+      // Validación de CAPTCHA (Req. 45)
+      const answerVal = document.getElementById('formCaptchaAnswer')?.value.trim();
+      const expectedVal = document.getElementById('captchaExpected')?.value;
+      if (!answerVal || answerVal !== expectedVal) {
+        if (alertBox) {
+          alertBox.style.display = 'block';
+          alertBox.className = 'alert-box alert-error';
+          alertBox.textContent = 'La respuesta de seguridad anti-spam es incorrecta. Por favor resuélvela de nuevo.';
+        }
+        initCaptcha();
+        document.getElementById('formCaptchaAnswer')?.focus();
+        return;
+      }
+
+      // Rate limit antispam: mínimo 30 segundos entre envíos sucesivos
       const lastSubmit = parseInt(localStorage.getItem('stratum_last_contact_ts') || '0', 10);
       const now = Date.now();
-      if (now - lastSubmit < 45000) {
-        const waitSec = Math.ceil((45000 - (now - lastSubmit)) / 1000);
+      if (now - lastSubmit < 30000) {
+        const waitSec = Math.ceil((30000 - (now - lastSubmit)) / 1000);
         if (alertBox) {
           alertBox.style.display = 'block';
           alertBox.className = 'alert-box alert-error';
@@ -277,6 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = {
         nombre: document.getElementById('formNombre')?.value.trim(),
         empresa: document.getElementById('formEmpresa')?.value.trim() || 'No especificada',
+        tipo_documento: document.getElementById('formTipoDoc')?.value || 'CC',
+        numero_documento: document.getElementById('formNumDoc')?.value.trim() || 'No especificado',
         telefono: document.getElementById('formTelefono')?.value.trim(),
         email: document.getElementById('formEmail')?.value.trim(),
         motivo: document.getElementById('formMotivo')?.value.trim(),
@@ -300,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok || data.success === 'true' || data.success === true) {
           localStorage.setItem('stratum_last_contact_ts', Date.now().toString());
+          initCaptcha();
           window.location.href = 'gracias.html';
         } else {
           throw new Error(data.message || 'Error al procesar el mensaje');

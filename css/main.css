@@ -609,21 +609,96 @@ body.large-text {
   gap: 1.2rem;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.req-star {
+  color: #EF4444 !important;
+  font-weight: 900 !important;
+  font-size: 0.95rem !important;
+}
+
 .contact-form input,
+.contact-form select,
 .contact-form textarea {
   width: 100%;
-  padding: 1rem;
+  padding: 0.9rem 1rem;
   background-color: #E5E7EB;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--text-dark);
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .contact-form input:focus,
+.contact-form select:focus,
 .contact-form textarea:focus {
-  outline: 2px solid var(--accent-gold);
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.4);
+}
+
+/* Caja de Verificación CAPTCHA (Req. 45) */
+.captcha-container {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.captcha-challenge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: #FFFFFF;
+}
+
+.captcha-badge {
+  background: var(--accent-gold);
+  color: #1E0F23;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  user-select: none;
+}
+
+.btn-captcha-refresh {
+  background: transparent;
+  border: none;
+  color: #CBD5E1;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.btn-captcha-refresh:hover {
+  color: var(--accent-gold);
 }
 
 .btn-submit {
@@ -3601,6 +3676,64 @@ body.large-text {
   line-height: 1.55;
   margin: 0;
 }
+
+/* ==========================================================================
+   BREADCRUMBS (MIGAS DE PAN - REQUERIMIENTO TÉCNICO 4)
+   ========================================================================== */
+.breadcrumb-nav {
+  padding: 0.85rem 5%;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: #64748B;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumb-item a {
+  color: var(--brand-purple);
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--accent-gold);
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #94A3B8;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.breadcrumb-item.active {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.breadcrumb-nav-admin {
+  margin-bottom: 1.5rem;
+  padding: 0.6rem 1rem;
+  background: #F1F5F9;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
 
 /* ==========================================================================
    SISTEMA MAESTRO DE RESPONSIVIDAD MÓVIL (TABLETS Y SMARTPHONES)

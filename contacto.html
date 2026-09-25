@@ -74,6 +74,15 @@
     </div>
   </section>
 
+  <!-- BREADCRUMB (MIGAS DE PAN - REQ. 4) -->
+  <nav class="breadcrumb-nav" aria-label="Migas de pan">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Inicio</a></li>
+      <li class="breadcrumb-separator">&gt;</li>
+      <li class="breadcrumb-item active" aria-current="page">Contacto</li>
+    </ol>
+  </nav>
+
   <!-- SECCIÓN CONTACTO -->
   <section class="contact-page-section">
     <div class="contact-page-container">
@@ -159,21 +168,73 @@
           <input type="text" name="_honey" id="formHoney" style="display:none" tabindex="-1" autocomplete="off">
 
           <div class="form-row">
-            <input type="text" name="nombre" id="formNombre" placeholder="Nombre" maxlength="100" required>
-            <input type="text" name="empresa" id="formEmpresa" placeholder="Empresa" maxlength="120">
+            <div class="form-group">
+              <label for="formNombre">Nombre Completo <span class="req-star">*</span></label>
+              <input type="text" name="nombre" id="formNombre" placeholder="Ingresa tu nombre completo" maxlength="100" required>
+            </div>
+            <div class="form-group">
+              <label for="formEmpresa">Empresa / Organización</label>
+              <input type="text" name="empresa" id="formEmpresa" placeholder="Nombre de tu empresa u operación" maxlength="120">
+            </div>
           </div>
+
+          <!-- Tipos de Documento Oficiales de Colombia (Req. 16) -->
           <div class="form-row">
-            <input type="tel" name="telefono" id="formTelefono" placeholder="Teléfono" maxlength="25" required>
-            <input type="email" name="email" id="formEmail" placeholder="Email" maxlength="120" required>
+            <div class="form-group">
+              <label for="formTipoDoc">Tipo de Documento</label>
+              <select name="tipo_documento" id="formTipoDoc">
+                <option value="CC" selected>Cédula de Ciudadanía (C.C.)</option>
+                <option value="CE">Cédula de Extranjería (C.E.)</option>
+                <option value="PAS">Pasaporte</option>
+                <option value="RC">Registro Civil (R.C.)</option>
+                <option value="TI">Tarjeta de Identidad (T.I.)</option>
+                <option value="PPT">Permiso por Protección Temporal (PPT)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="formNumDoc">Número de Documento</label>
+              <input type="text" name="numero_documento" id="formNumDoc" placeholder="Ej: 1020304050" maxlength="20">
+            </div>
           </div>
-          <input type="text" name="motivo" id="formMotivo" class="full-width" placeholder="Motivo" maxlength="150" required>
-          <textarea name="mensaje" id="formMensaje" class="full-width" rows="5" placeholder="Mensaje" maxlength="3000" required></textarea>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="formTelefono">Teléfono de Contacto <span class="req-star">*</span></label>
+              <input type="tel" name="telefono" id="formTelefono" placeholder="Ej: 312 411 7482" maxlength="25" required>
+            </div>
+            <div class="form-group">
+              <label for="formEmail">Correo Electrónico <span class="req-star">*</span></label>
+              <input type="email" name="email" id="formEmail" placeholder="ejemplo@correo.com" maxlength="120" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="formMotivo">Motivo de Consulta <span class="req-star">*</span></label>
+            <input type="text" name="motivo" id="formMotivo" class="full-width" placeholder="Ej: Consultoría ANM, Geología, SG-SST..." maxlength="150" required>
+          </div>
+
+          <div class="form-group">
+            <label for="formMensaje">Detalle del Mensaje <span class="req-star">*</span></label>
+            <textarea name="mensaje" id="formMensaje" class="full-width" rows="4" placeholder="Describe tu requerimiento técnico o consulta..." maxlength="3000" required></textarea>
+          </div>
           
+          <!-- Verificación Anti-Spam / CAPTCHA (Req. 45) -->
+          <div class="captcha-container">
+            <div class="captcha-challenge">
+              <span>Verificación de seguridad: <strong id="captchaText" class="captcha-badge">3 + 4 = ?</strong></span>
+              <button type="button" id="btnRefreshCaptcha" class="btn-captcha-refresh" title="Generar nueva pregunta" aria-label="Cambiar código captcha">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </button>
+            </div>
+            <input type="number" id="formCaptchaAnswer" placeholder="Escribe el resultado numérico *" required style="max-width: 240px; padding: 0.65rem 0.9rem;">
+            <input type="hidden" id="captchaExpected">
+          </div>
+
           <!-- Casilla de Aceptación Habeas Data (Ley 1581 de 2012) -->
           <div class="form-consent-group">
             <label class="consent-checkbox-label">
               <input type="checkbox" id="formConsent" name="consentimiento_datos" required>
-              <span>Autorizo el tratamiento de mis datos personales conforme a la <button type="button" class="btn-privacy-trigger js-open-privacy">Política de Tratamiento de Datos (Ley 1581 de 2012)</button>.</span>
+              <span>Autorizo el tratamiento de mis datos personales conforme a la <button type="button" class="btn-privacy-trigger js-open-privacy">Política de Tratamiento de Datos (Ley 1581 de 2012)</button>. <span class="req-star">*</span></span>
             </label>
           </div>
 

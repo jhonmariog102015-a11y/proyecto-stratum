@@ -1,0 +1,27 @@
+{
+  "name": "proyecto-stratum",
+  "version": "3.0.0",
+  "description": "Portal corporativo y sistema administrativo de noticias para Stratum Group S.A.S. - Ingeniería Minera y Consultoría",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 5500",
+    "serve": "npx serve -l 5500 .",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore:rules"
+  },
+  "keywords": [
+    "stratum-group",
+    "ingenieria-minera",
+    "consultoria",
+    "geologia",
+    "colombia",
+    "firebase"
+  ],
+  "author": "Stratum Group S.A.S.",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  }
+}

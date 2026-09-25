@@ -850,3 +850,145 @@ function resetIdleTimer() {
 ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(event => {
   window.addEventListener(event, resetIdleTimer, { passive: true });
 });
+
+// ==========================================
+// 12. MÓDULO DE COPIAS DE SEGURIDAD (BACKUP & RESTORE - REQ. 21)
+// ==========================================
+const btnExportBackup = document.getElementById("btnExportBackup");
+const backupFileInput = document.getElementById("backupFileInput");
+const backupStatusMsg = document.getElementById("backupStatusMsg");
+
+if (btnExportBackup) {
+  btnExportBackup.addEventListener("click", async () => {
+    try {
+      if (backupStatusMsg) {
+        backupStatusMsg.style.color = "#7B61FF";
+        backupStatusMsg.textContent = "Generando copia de seguridad...";
+      }
+
+      const snap = await getDocs(collection(db, "noticias"));
+      const records = [];
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        records.push({
+          id: docSnap.id,
+          titulo: d.titulo || "",
+          categoria: d.categoria || "",
+          resumen: d.resumen || "",
+          imagen: d.imagen || "",
+          enlace: d.enlace || "",
+          fecha: d.fecha || "",
+          autor: d.autor || "",
+          createdAt: d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toISOString() : d.createdAt) : new Date().toISOString()
+        });
+      });
+
+      const backupData = {
+        sistema: "Stratum Group S.A.S. - Panel de Noticias",
+        version: "3.0",
+        fecha_exportacion: new Date().toISOString(),
+        usuario_exportador: auth.currentUser?.email || "admin",
+        total_registros: records.length,
+        datos: records
+      };
+
+      const jsonStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const dateStr = new Date().toISOString().split("T")[0];
+      a.href = url;
+      a.download = `backup_stratum_noticias_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if (backupStatusMsg) {
+        backupStatusMsg.style.color = "#10B981";
+        backupStatusMsg.textContent = `Copia descargada exitosamente (${records.length} registros).`;
+      }
+    } catch (err) {
+      console.error("Error al exportar respaldo:", err);
+      if (backupStatusMsg) {
+        backupStatusMsg.style.color = "#EF4444";
+        backupStatusMsg.textContent = "Error al exportar respaldo: " + err.message;
+      }
+    }
+  });
+}
+
+if (backupFileInput) {
+  backupFileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!confirm(`¿Estás seguro de que deseas restaurar los datos desde '${file.name}'? Los registros existentes se sincronizarán.`)) {
+      backupFileInput.value = "";
+      return;
+    }
+
+    try {
+      if (backupStatusMsg) {
+        backupStatusMsg.style.color = "#7B61FF";
+        backupStatusMsg.textContent = "Leyendo archivo y restaurando...";
+      }
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          const items = Array.isArray(parsed) ? parsed : (parsed.datos || []);
+          if (!Array.isArray(items) || items.length === 0) {
+            throw new Error("El archivo no contiene un arreglo válido de noticias.");
+          }
+
+          let restoredCount = 0;
+          for (const item of items) {
+            if (!item.titulo || !item.resumen) continue;
+            const docId = item.id || undefined;
+            const dataToSave = {
+              titulo: item.titulo,
+              categoria: item.categoria || "Corporativo",
+              resumen: item.resumen,
+              imagen: item.imagen || "",
+              enlace: item.enlace || "",
+              fecha: item.fecha || new Date().toISOString().split("T")[0],
+              autor: item.autor || auth.currentUser?.email || "Admin",
+              updatedAt: serverTimestamp()
+            };
+
+            if (docId) {
+              await setDoc(doc(db, "noticias", docId), dataToSave, { merge: true });
+            } else {
+              await addDoc(collection(db, "noticias"), { ...dataToSave, createdAt: serverTimestamp() });
+            }
+            restoredCount++;
+          }
+
+          if (backupStatusMsg) {
+            backupStatusMsg.style.color = "#10B981";
+            backupStatusMsg.textContent = `Restauración completada: ${restoredCount} noticias sincronizadas.`;
+          }
+          loadAdminNews();
+        } catch (parseErr) {
+          console.error("Error al procesar archivo:", parseErr);
+          if (backupStatusMsg) {
+            backupStatusMsg.style.color = "#EF4444";
+            backupStatusMsg.textContent = "Error: Formato de archivo JSON inválido.";
+          }
+        }
+      };
+      reader.readAsText(file);
+    } catch (err) {
+      console.error("Error al restaurar respaldo:", err);
+      if (backupStatusMsg) {
+        backupStatusMsg.style.color = "#EF4444";
+        backupStatusMsg.textContent = "Error en la restauración: " + err.message;
+      }
+    } finally {
+      backupFileInput.value = "";
+    }
+  });
+}
+
