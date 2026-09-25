@@ -771,52 +771,157 @@ html.font-size-large {
 
 /* ==========================================================================
    ESCALA DE GRISES (GRAYSCALE)
+   Aplica filtro únicamente al contenido de la página, sin alterar body ni
+   el contexto de apilamiento para que el botón flotante y el drawer sigan fijos.
    ========================================================================== */
-html.grayscale body {
+html.grayscale body > *:not(.access-drawer):not(.btn-accessibility):not(.access-backdrop) {
   filter: grayscale(100%) !important;
-}
-
-html.grayscale .access-drawer,
-html.grayscale .btn-accessibility {
-  filter: none !important;
+  -webkit-filter: grayscale(100%) !important;
 }
 
 /* ==========================================================================
-   ALTO CONTRASTE (WCAG AAA)
+   ALTO CONTRASTE (WCAG AAA - FONDO NEGRO PURO, BORDES Y TEXTOS LEGIBLES)
    ========================================================================== */
 html.high-contrast,
 html.high-contrast body {
   background-color: #000000 !important;
+  background: #000000 !important;
   color: #FFFFFF !important;
 }
 
+/* Regla universal para eliminar fondos blancos en cualquier sección o tarjeta */
 html.high-contrast header,
-html.high-contrast nav:not(.breadcrumb-nav),
+html.high-contrast nav,
 html.high-contrast section,
 html.high-contrast footer,
 html.high-contrast main,
 html.high-contrast article,
-html.high-contrast aside {
+html.high-contrast aside,
+html.high-contrast div:not(.access-drawer):not(.access-drawer *):not(.btn-accessibility):not(.btn-accessibility *):not(.access-switch):not(.access-switch *):not(.access-switch-slider) {
   background-color: #000000 !important;
+  background: #000000 !important;
   color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+/* Tarjetas interactivas de servicios (evita tarjetas blancas) */
+html.high-contrast .sector-card-interactive,
+html.high-contrast .sector-card-header,
+html.high-contrast .sector-dropdown-content {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .sector-card-title,
+html.high-contrast .sector-card-summary,
+html.high-contrast .sector-service-list li span,
+html.high-contrast .sector-service-list li strong {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .sector-toggle-bar {
+  background: #000000 !important;
+  border-top: 1px solid #FFFFFF !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .sector-toggle-bar span,
+html.high-contrast .sector-toggle-bar svg {
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .sector-icon-circle {
+  background: #000000 !important;
+  border: 2px solid #FFFF00 !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .sector-icon-circle svg {
+  stroke: #FFFF00 !important;
+}
+
+/* Tarjetas de metodología y pasos 1, 2, 3, 4 */
+html.high-contrast .workflow-card {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .workflow-badge {
+  background: #FFFF00 !important;
+  color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  font-weight: 900 !important;
+}
+
+html.high-contrast .workflow-icon-box {
+  background: #000000 !important;
+  border: 2px solid #FFFF00 !important;
+}
+
+html.high-contrast .workflow-icon-box svg {
+  stroke: #FFFF00 !important;
+}
+
+html.high-contrast .workflow-title,
+html.high-contrast .workflow-desc,
+html.high-contrast .workflow-list li span {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .workflow-arrow svg {
+  stroke: #FFFF00 !important;
+}
+
+/* Tarjetas de valores, nosotros, servicios y noticias */
+html.high-contrast .value-card,
+html.high-contrast .why-card,
+html.high-contrast .pillar-card,
+html.high-contrast .method-card,
+html.high-contrast .service-card-d6,
+html.high-contrast .news-card-d6,
+html.high-contrast .contact-info-panel,
+html.high-contrast .contact-form-container,
+html.high-contrast .breadcrumb-nav {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .value-icon {
+  background: #000000 !important;
+  border: 2px solid #FFFF00 !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .value-icon svg {
+  stroke: #FFFF00 !important;
+}
+
+/* Carrusel de entidades */
+html.high-contrast .entities-section,
+html.high-contrast .entity-carousel,
+html.high-contrast .entity-banner,
+html.high-contrast .entity-track,
+html.high-contrast .entity-item {
+  background: #000000 !important;
+  background-color: #000000 !important;
   border-color: #FFFFFF !important;
 }
 
-html.high-contrast .header-d6 {
-  background: #000000 !important;
-  border-bottom: 2px solid #FFFFFF !important;
+html.high-contrast .entity-item img {
+  background-color: #FFFFFF !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  border: 1px solid #FFFFFF !important;
 }
 
-html.high-contrast .nav-menu-d6 a {
-  color: #FFFFFF !important;
-}
-
-html.high-contrast .nav-menu-d6 a.active,
-html.high-contrast .nav-menu-d6 a:hover {
-  color: #FFFF00 !important;
-  text-decoration: underline !important;
-}
-
+/* Textos y títulos */
 html.high-contrast h1,
 html.high-contrast h2,
 html.high-contrast h3,
@@ -825,11 +930,13 @@ html.high-contrast h5,
 html.high-contrast h6,
 html.high-contrast p,
 html.high-contrast span,
-html.high-contrast li {
+html.high-contrast li,
+html.high-contrast strong {
   color: #FFFFFF !important;
 }
 
-html.high-contrast a {
+/* Enlaces y botones interactivos */
+html.high-contrast a:not(.access-drawer *):not(.btn-accessibility) {
   color: #FFFF00 !important;
   text-decoration: underline !important;
 }
@@ -838,25 +945,12 @@ html.high-contrast a:hover {
   color: #00FFFF !important;
 }
 
-html.high-contrast .service-card-d6,
-html.high-contrast .why-card,
-html.high-contrast .value-card,
-html.high-contrast .pillar-card,
-html.high-contrast .method-card,
-html.high-contrast .news-card-d6,
-html.high-contrast .contact-info-panel,
-html.high-contrast .contact-form-container,
-html.high-contrast .breadcrumb-nav {
-  background: #000000 !important;
-  border: 2px solid #FFFFFF !important;
-  color: #FFFFFF !important;
-}
-
 html.high-contrast .btn-primary,
 html.high-contrast .btn-secondary,
 html.high-contrast .btn-d6-primary,
 html.high-contrast .btn-submit,
-html.high-contrast .footer-btn {
+html.high-contrast .footer-btn,
+html.high-contrast .sector-more-link {
   background-color: #000000 !important;
   color: #FFFF00 !important;
   border: 2px solid #FFFF00 !important;
@@ -864,26 +958,29 @@ html.high-contrast .footer-btn {
 
 html.high-contrast .btn-primary:hover,
 html.high-contrast .btn-submit:hover,
-html.high-contrast .footer-btn:hover {
+html.high-contrast .footer-btn:hover,
+html.high-contrast .sector-more-link:hover {
   background-color: #FFFF00 !important;
   color: #000000 !important;
 }
 
-html.high-contrast input,
-html.high-contrast select,
-html.high-contrast textarea {
+html.high-contrast input:not(.access-drawer *),
+html.high-contrast select:not(.access-drawer *),
+html.high-contrast textarea:not(.access-drawer *) {
   background-color: #000000 !important;
   color: #FFFFFF !important;
   border: 2px solid #FFFFFF !important;
 }
 
+/* Botón flotante de accesibilidad en Alto Contraste */
 html.high-contrast .btn-accessibility {
   background-color: #000000 !important;
   border: 3px solid #FFFF00 !important;
   color: #FFFF00 !important;
-  box-shadow: 0 0 15px #FFFF00 !important;
+  box-shadow: 0 0 16px #FFFF00 !important;
 }
 
+/* Panel lateral Drawer en Alto Contraste */
 html.high-contrast .access-drawer {
   background-color: #000000 !important;
   border-left: 2px solid #FFFF00 !important;

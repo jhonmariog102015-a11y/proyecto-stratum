@@ -151,10 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(accessBtn);
     }
     
-    // Inyectar el icono estándar de accesibilidad universal
+    // Inyectar el icono stickman con brazos abiertos y piernas abiertas
     accessBtn.innerHTML = `
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm5 5.5h-3.5v6.5h-3v-6.5h-3.5v-2h10v2z"/>
+        <circle cx="12" cy="4" r="2.2" />
+        <path d="M19 7.5h-14c-.55 0-1 .45-1 1s.45 1 1 1h4v11c0 .55.45 1 1 1s1-.45 1-1v-5h2v5c0 .55.45 1 1 1s1-.45 1-1v-11h4c.55 0 1-.45 1-1s-.45-1-1-1z" />
       </svg>
     `;
     accessBtn.setAttribute('aria-expanded', 'false');
@@ -172,7 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="access-drawer-header">
             <div class="access-drawer-title-wrap">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10-10-4.48-10-10 4.48-10 10-10zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm5 5.5h-3.5v6.5h-3v-6.5h-3.5v-2h10v2z"/>
+                <circle cx="12" cy="4" r="2.2" />
+                <path d="M19 7.5h-14c-.55 0-1 .45-1 1s.45 1 1 1h4v11c0 .55.45 1 1 1s1-.45 1-1v-5h2v5c0 .55.45 1 1 1s1-.45 1-1v-11h4c.55 0 1-.45 1-1s-.45-1-1-1z" />
               </svg>
               <h3 class="access-drawer-title">Accesibilidad Stratum</h3>
             </div>
@@ -331,7 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const applyGrayscale = (isGray) => {
       document.documentElement.classList.toggle('grayscale', isGray);
-      document.body.classList.toggle('grayscale', isGray);
       if (chkGrayscale) chkGrayscale.checked = isGray;
       const current = getCurrentPrefs();
       current.grayscale = isGray;
