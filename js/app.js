@@ -133,78 +133,246 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 5. ACCESSIBILITY MENU (CON PERSISTENCIA EN LOCALSTORAGE)
-  const accessBtn = document.querySelector('.btn-accessibility');
-  if (accessBtn) {
-    // Restaurar preferencias guardadas
-    try {
-      const savedPrefs = JSON.parse(localStorage.getItem('stratum_access_prefs') || '{}');
-      if (savedPrefs.largeText) document.body.classList.add('large-text');
-      if (savedPrefs.highContrast) document.body.classList.add('high-contrast');
-      if (savedPrefs.grayscale) document.body.classList.add('grayscale');
-    } catch (e) {
-      console.warn('Error leyendo accesibilidad:', e);
+  // 5. MÓDULO DE ACCESIBILIDAD Y PANEL LATERAL (DRAWER)
+  // Requisito: Excluir estrictamente de la interfaz administrativa
+  const isAdminView = window.location.pathname.toLowerCase().includes('admin_noticias') ||
+                      document.getElementById('loginSection') ||
+                      document.querySelector('.dash-header') ||
+                      document.getElementById('newsListAdmin');
+
+  if (!isAdminView) {
+    // 5.1 Asegurar que el botón flotante exista y tenga el ícono oficial de accesibilidad SENA
+    let accessBtn = document.querySelector('.btn-accessibility');
+    if (!accessBtn) {
+      accessBtn = document.createElement('button');
+      accessBtn.className = 'btn-accessibility';
+      accessBtn.setAttribute('aria-label', 'Abrir panel de accesibilidad');
+      accessBtn.setAttribute('title', 'Opciones de Accesibilidad');
+      document.body.appendChild(accessBtn);
+    }
+    
+    // Inyectar el icono exacto de accesibilidad SENA (figura humana con brazos extendidos)
+    accessBtn.innerHTML = `
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <circle cx="12" cy="4" r="2.2" />
+        <path d="M19 7.5h-14c-.55 0-1 .45-1 1s.45 1 1 1h4v11c0 .55.45 1 1 1s1-.45 1-1v-5h2v5c0 .55.45 1 1 1s1-.45 1-1v-11h4c.55 0 1-.45 1-1s-.45-1-1-1z" />
+      </svg>
+    `;
+    accessBtn.setAttribute('aria-expanded', 'false');
+
+    // 5.2 Inyectar el Telón de Fondo (Backdrop) y el Panel Lateral (Drawer) si no existen
+    if (!document.getElementById('accessBackdrop')) {
+      const backdropHtml = `<div class="access-backdrop" id="accessBackdrop" aria-hidden="true"></div>`;
+      document.body.insertAdjacentHTML('beforeend', backdropHtml);
     }
 
-    const saveAccessPrefs = () => {
-      try {
-        const prefs = {
-          largeText: document.body.classList.contains('large-text'),
-          highContrast: document.body.classList.contains('high-contrast'),
-          grayscale: document.body.classList.contains('grayscale')
-        };
-        localStorage.setItem('stratum_access_prefs', JSON.stringify(prefs));
-      } catch (e) {}
+    if (!document.getElementById('accessDrawer')) {
+      const drawerHtml = `
+        <aside class="access-drawer" id="accessDrawer" role="dialog" aria-modal="true" aria-label="Panel de opciones de accesibilidad">
+          <!-- Encabezado del Panel -->
+          <div class="access-drawer-header">
+            <div class="access-drawer-title-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="4" r="2.2" />
+                <path d="M19 7.5h-14c-.55 0-1 .45-1 1s.45 1 1 1h4v11c0 .55.45 1 1 1s1-.45 1-1v-5h2v5c0 .55.45 1 1 1s1-.45 1-1v-11h4c.55 0 1-.45 1-1s-.45-1-1-1z" />
+              </svg>
+              <h3 class="access-drawer-title">Accesibilidad</h3>
+            </div>
+            <button type="button" class="access-close-btn" id="accessCloseBtn" aria-label="Cerrar panel de accesibilidad">&times;</button>
+          </div>
+
+          <!-- Cuerpo con las 3 tarjetas requeridas -->
+          <div class="access-drawer-body">
+            
+            <!-- TARJETA 1: TAMAÑO DE TEXTO -->
+            <div class="access-card">
+              <h4 class="access-card-title">TAMAÑO DE TEXTO</h4>
+              <div class="access-btn-group" role="group" aria-label="Opciones de tamaño de fuente">
+                <button type="button" class="access-group-btn" id="btnFontDec" aria-label="Disminuir tamaño de texto">A -</button>
+                <button type="button" class="access-group-btn active" id="btnFontNorm" aria-label="Tamaño de texto normal">Normal</button>
+                <button type="button" class="access-group-btn" id="btnFontInc" aria-label="Aumentar tamaño de texto">A +</button>
+              </div>
+            </div>
+
+            <!-- TARJETA 2: OPCIONES DE CONTRASTE -->
+            <div class="access-card">
+              <h4 class="access-card-title">OPCIONES DE CONTRASTE</h4>
+              <label class="access-toggle-row" for="chkHighContrast">
+                <div class="access-switch">
+                  <input type="checkbox" id="chkHighContrast" aria-label="Activar alto contraste">
+                  <span class="access-switch-slider"></span>
+                </div>
+                <span class="access-toggle-label">Alto Contraste</span>
+              </label>
+            </div>
+
+            <!-- TARJETA 3: TEMAS VISUALES -->
+            <div class="access-card">
+              <h4 class="access-card-title">TEMAS VISUALES</h4>
+              <div class="access-radio-group">
+                <label class="access-radio-row">
+                  <input type="radio" name="accessThemeRadio" id="radioThemeLight" value="sena-light" checked>
+                  <span class="access-radio-label">SENA Oficial (Claro)</span>
+                </label>
+                <label class="access-radio-row">
+                  <input type="radio" name="accessThemeRadio" id="radioThemeDark" value="dark">
+                  <span class="access-radio-label">Modo Oscuro</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- BOTÓN RESTABLECER -->
+            <button type="button" class="access-reset-btn" id="btnAccessReset" title="Volver a la configuración predeterminada">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Restablecer valores iniciales
+            </button>
+
+          </div>
+        </aside>
+      `;
+      document.body.insertAdjacentHTML('beforeend', drawerHtml);
+    }
+
+    const drawer = document.getElementById('accessDrawer');
+    const backdrop = document.getElementById('accessBackdrop');
+    const closeBtn = document.getElementById('accessCloseBtn');
+    const btnFontDec = document.getElementById('btnFontDec');
+    const btnFontNorm = document.getElementById('btnFontNorm');
+    const btnFontInc = document.getElementById('btnFontInc');
+    const chkHighContrast = document.getElementById('chkHighContrast');
+    const radioThemeLight = document.getElementById('radioThemeLight');
+    const radioThemeDark = document.getElementById('radioThemeDark');
+    const btnReset = document.getElementById('btnAccessReset');
+
+    // 5.3 Apertura y Cierre del Panel Lateral
+    const openDrawer = () => {
+      drawer.classList.add('active');
+      backdrop.classList.add('active');
+      accessBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
     };
 
-    const menuHtml = `
-      <div class="access-menu" id="accessMenu">
-        <button class="access-btn" id="btnTextInc">Aumentar Texto</button>
-        <button class="access-btn" id="btnTextDec">Disminuir Texto</button>
-        <button class="access-btn" id="btnContrast">Alto Contraste</button>
-        <button class="access-btn" id="btnGrayscale">Escala de Grises</button>
-        <button class="access-btn" id="btnReset">Restablecer</button>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', menuHtml);
+    const closeDrawer = () => {
+      drawer.classList.remove('active');
+      backdrop.classList.remove('active');
+      accessBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    };
 
-    const accessMenu = document.getElementById('accessMenu');
     accessBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      accessMenu.classList.toggle('active');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!accessMenu.contains(e.target) && !accessBtn.contains(e.target)) {
-        accessMenu.classList.remove('active');
+      if (drawer.classList.contains('active')) {
+        closeDrawer();
+      } else {
+        openDrawer();
       }
     });
 
-    document.getElementById('btnTextInc').addEventListener('click', () => {
-      document.body.classList.add('large-text');
-      saveAccessPrefs();
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.classList.contains('active')) {
+        closeDrawer();
+      }
     });
-    
-    document.getElementById('btnTextDec').addEventListener('click', () => {
-      document.body.classList.remove('large-text');
-      saveAccessPrefs();
-    });
-    
-    document.getElementById('btnContrast').addEventListener('click', () => {
-      document.body.classList.toggle('high-contrast');
-      saveAccessPrefs();
-    });
-    
-    document.getElementById('btnGrayscale').addEventListener('click', () => {
-      document.body.classList.toggle('grayscale');
-      saveAccessPrefs();
-    });
-    
-    document.getElementById('btnReset').addEventListener('click', () => {
-      document.body.classList.remove('large-text', 'high-contrast', 'grayscale');
-      localStorage.removeItem('stratum_access_prefs');
-    });
+
+    // 5.4 Persistencia y sincronización de preferencias (localStorage)
+    const saveAccessPrefs = (prefs) => {
+      try {
+        localStorage.setItem('stratum_access_prefs', JSON.stringify(prefs));
+      } catch (err) {
+        console.warn('Error guardando accesibilidad:', err);
+      }
+    };
+
+    const getCurrentPrefs = () => {
+      try {
+        return JSON.parse(localStorage.getItem('stratum_access_prefs') || '{}');
+      } catch (e) {
+        return {};
+      }
+    };
+
+    const updateFontButtons = (size) => {
+      if (btnFontDec) btnFontDec.classList.toggle('active', size === 'small');
+      if (btnFontNorm) btnFontNorm.classList.toggle('active', size === 'normal');
+      if (btnFontInc) btnFontInc.classList.toggle('active', size === 'large');
+    };
+
+    const applyFontSize = (size) => {
+      document.documentElement.classList.remove('font-size-small', 'font-size-large');
+      if (size === 'small') {
+        document.documentElement.classList.add('font-size-small');
+      } else if (size === 'large') {
+        document.documentElement.classList.add('font-size-large');
+      }
+      updateFontButtons(size);
+      const current = getCurrentPrefs();
+      current.fontSize = size;
+      saveAccessPrefs(current);
+    };
+
+    const applyContrast = (isHigh) => {
+      document.documentElement.classList.toggle('high-contrast', isHigh);
+      document.body.classList.toggle('high-contrast', isHigh);
+      if (chkHighContrast) chkHighContrast.checked = isHigh;
+      const current = getCurrentPrefs();
+      current.highContrast = isHigh;
+      saveAccessPrefs(current);
+    };
+
+    const applyTheme = (theme) => {
+      const isDark = (theme === 'dark');
+      document.documentElement.classList.toggle('dark-mode', isDark);
+      document.body.classList.toggle('dark-mode', isDark);
+      if (radioThemeLight) radioThemeLight.checked = !isDark;
+      if (radioThemeDark) radioThemeDark.checked = isDark;
+      const current = getCurrentPrefs();
+      current.theme = isDark ? 'dark' : 'sena-light';
+      saveAccessPrefs(current);
+    };
+
+    // 5.5 Event Listeners de los Controles
+    if (btnFontDec) btnFontDec.addEventListener('click', () => applyFontSize('small'));
+    if (btnFontNorm) btnFontNorm.addEventListener('click', () => applyFontSize('normal'));
+    if (btnFontInc) btnFontInc.addEventListener('click', () => applyFontSize('large'));
+
+    if (chkHighContrast) {
+      chkHighContrast.addEventListener('change', (e) => {
+        applyContrast(e.target.checked);
+      });
+    }
+
+    if (radioThemeLight) {
+      radioThemeLight.addEventListener('change', () => {
+        if (radioThemeLight.checked) applyTheme('sena-light');
+      });
+    }
+
+    if (radioThemeDark) {
+      radioThemeDark.addEventListener('change', () => {
+        if (radioThemeDark.checked) applyTheme('dark');
+      });
+    }
+
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        applyFontSize('normal');
+        applyContrast(false);
+        applyTheme('sena-light');
+        try {
+          localStorage.removeItem('stratum_access_prefs');
+        } catch (e) {}
+      });
+    }
+
+    // 5.6 Cargar y aplicar preferencias al iniciar
+    const saved = getCurrentPrefs();
+    applyFontSize(saved.fontSize || 'normal');
+    applyContrast(!!saved.highContrast);
+    applyTheme(saved.theme || 'sena-light');
   }
 
   // 6. ANIMACIONES AL HACER SCROLL (INTERSECTION OBSERVER)
@@ -234,24 +402,45 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. ENVÍO ASÍNCRONO DEL FORMULARIO DE CONTACTO (AJAX / FORMSUBMIT) Y CAPTCHA (REQ. 45)
   const contactForm = document.getElementById('contactForm');
   
-  // Generador de CAPTCHA matemático interactivo (Req. 45)
-  function initCaptcha() {
+  // Generador de CAPTCHA matemático interactivo con garantía de cambio y animación (Req. 45)
+  let lastCaptchaEquation = '';
+  function initCaptcha(animate = false) {
     const textEl = document.getElementById('captchaText');
     const expectedEl = document.getElementById('captchaExpected');
     const answerEl = document.getElementById('formCaptchaAnswer');
+    const refreshBtn = document.getElementById('btnRefreshCaptcha');
     if (!textEl || !expectedEl) return;
 
-    const num1 = Math.floor(Math.random() * 8) + 2;
-    const num2 = Math.floor(Math.random() * 8) + 1;
-    const sum = num1 + num2;
-    textEl.textContent = `${num1} + ${num2} = ?`;
+    let num1, num2, equation, sum;
+    do {
+      num1 = Math.floor(Math.random() * 8) + 2;
+      num2 = Math.floor(Math.random() * 8) + 1;
+      equation = `${num1} + ${num2} = ?`;
+      sum = num1 + num2;
+    } while (equation === lastCaptchaEquation);
+
+    lastCaptchaEquation = equation;
+    textEl.textContent = equation;
     expectedEl.value = sum.toString();
     if (answerEl) answerEl.value = '';
+
+    if (animate && refreshBtn) {
+      refreshBtn.classList.remove('spin');
+      void refreshBtn.offsetWidth; // Forzar reflow para reiniciar giro
+      refreshBtn.classList.add('spin');
+      setTimeout(() => refreshBtn.classList.remove('spin'), 500);
+    }
   }
 
   const btnRefreshCaptcha = document.getElementById('btnRefreshCaptcha');
   if (btnRefreshCaptcha) {
-    btnRefreshCaptcha.addEventListener('click', initCaptcha);
+    btnRefreshCaptcha.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      initCaptcha(true);
+      const answerEl = document.getElementById('formCaptchaAnswer');
+      if (answerEl) answerEl.focus();
+    });
   }
   initCaptcha();
 
@@ -313,8 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = {
         nombre: document.getElementById('formNombre')?.value.trim(),
         empresa: document.getElementById('formEmpresa')?.value.trim() || 'No especificada',
-        tipo_documento: document.getElementById('formTipoDoc')?.value || 'CC',
-        numero_documento: document.getElementById('formNumDoc')?.value.trim() || 'No especificado',
         telefono: document.getElementById('formTelefono')?.value.trim(),
         email: document.getElementById('formEmail')?.value.trim(),
         motivo: document.getElementById('formMotivo')?.value.trim(),

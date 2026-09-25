@@ -448,82 +448,639 @@ html, body {
   margin-right: -2rem;
 }
 
+/* ==========================================================================
+   MÓDULO DE ACCESIBILIDAD Y PANEL LATERAL (DRAWER)
+   ========================================================================== */
 .btn-accessibility {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background-color: #003B73;
-  color: white;
-  border: 2px solid white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 9999;
-  transition: transform 0.3s;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background-color: #00885a !important; /* Verde oficial de accesibilidad SENA */
+  color: #FFFFFF !important;
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 99999 !important;
+  box-shadow: 0 4px 20px rgba(0, 136, 90, 0.45) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+  padding: 0 !important;
 }
 
 .btn-accessibility:hover {
-  transform: scale(1.1);
+  transform: scale(1.08) !important;
+  box-shadow: 0 6px 24px rgba(0, 136, 90, 0.65) !important;
 }
 
-/* Accessibility Menu */
-.access-menu {
+.btn-accessibility:active {
+  transform: scale(0.96) !important;
+}
+
+.btn-accessibility svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+/* Telón de fondo (Backdrop) del Panel Lateral */
+.access-backdrop {
   position: fixed;
-  bottom: 80px;
-  left: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  padding: 1rem;
-  display: none;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 9999;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 999998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.access-menu.active {
+.access-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Panel Lateral Desplegable (Drawer) */
+.access-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 330px;
+  max-width: calc(100vw - 30px);
+  height: 100vh;
+  height: 100dvh;
+  background: #FFFFFF;
+  z-index: 999999;
+  box-shadow: -8px 0 35px rgba(0, 0, 0, 0.16);
   display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
-.access-btn {
-  background: #f3f4f6;
+.access-drawer.active {
+  transform: translateX(0);
+}
+
+/* Encabezado del Panel Lateral */
+.access-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.access-drawer-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.access-drawer-title-wrap svg {
+  color: #00885a;
+  flex-shrink: 0;
+}
+
+.access-drawer-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.2px;
+}
+
+.access-close-btn {
+  background: transparent;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: #64748B;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s;
-  color: var(--text-dark);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
 }
 
-.access-btn:hover {
-  background: var(--brand-purple);
-  color: white;
+.access-close-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
 }
 
-/* Access Modes */
-body.high-contrast {
-  background-color: #000 !important;
-  color: #fff !important;
+/* Cuerpo del Panel Lateral */
+.access-drawer-body {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  flex: 1;
 }
 
-body.high-contrast * {
-  background-color: #000 !important;
-  color: #fff !important;
-  border-color: #fff !important;
+/* Tarjetas individuales de accesibilidad */
+.access-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 1.15rem 1.1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
 }
 
-body.grayscale {
-  filter: grayscale(100%);
+.access-card-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 0.85rem 0;
 }
 
-body.large-text {
-  font-size: 110%;
+/* 1. Selector de tamaño de texto (Segmented Control) */
+.access-btn-group {
+  display: flex;
+  border: 1px solid #64748B;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+.access-group-btn {
+  flex: 1;
+  padding: 0.65rem 0.4rem;
+  border: none;
+  background: transparent;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #334155;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+
+.access-group-btn:not(:first-child) {
+  border-left: 1px solid #CBD5E1;
+}
+
+.access-group-btn:hover:not(.active) {
+  background: #F8FAFC;
+  color: #0F172A;
+}
+
+.access-group-btn.active {
+  background: #475569 !important;
+  color: #FFFFFF !important;
+}
+
+/* 2. Switch de Contraste */
+.access-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+.access-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.access-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.access-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #CBD5E1;
+  transition: 0.25s ease;
+  border-radius: 24px;
+}
+
+.access-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #FFFFFF;
+  transition: 0.25s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.access-switch input:checked + .access-switch-slider {
+  background-color: #00885a;
+}
+
+.access-switch input:checked + .access-switch-slider:before {
+  transform: translateX(20px);
+}
+
+.access-toggle-label {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #0F172A;
+}
+
+/* 3. Selector de Temas Visuales */
+.access-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.access-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.access-radio-row input[type="radio"] {
+  accent-color: #2563EB;
+  width: 19px;
+  height: 19px;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* 4. Botón Restablecer */
+.access-reset-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s;
+  font-family: inherit;
+}
+
+.access-reset-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+/* REGLAS DE ESCALA DE TEXTO */
+html.font-size-small {
+  font-size: 90% !important;
+}
+
+html.font-size-large {
+  font-size: 115% !important;
+}
+
+/* ==========================================================================
+   ALTO CONTRASTE (WCAG AAA)
+   ========================================================================== */
+html.high-contrast,
+html.high-contrast body {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast header,
+html.high-contrast nav:not(.breadcrumb-nav),
+html.high-contrast section,
+html.high-contrast footer,
+html.high-contrast main,
+html.high-contrast article,
+html.high-contrast aside {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+}
+
+html.high-contrast .header-d6 {
+  background: #000000 !important;
+  border-bottom: 2px solid #FFFFFF !important;
+}
+
+html.high-contrast .nav-menu-d6 a {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .nav-menu-d6 a.active,
+html.high-contrast .nav-menu-d6 a:hover {
+  color: #FFFF00 !important;
+  text-decoration: underline !important;
+}
+
+html.high-contrast h1,
+html.high-contrast h2,
+html.high-contrast h3,
+html.high-contrast h4,
+html.high-contrast h5,
+html.high-contrast h6,
+html.high-contrast p,
+html.high-contrast span,
+html.high-contrast li {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast a {
+  color: #FFFF00 !important;
+  text-decoration: underline !important;
+}
+
+html.high-contrast a:hover {
+  color: #00FFFF !important;
+}
+
+html.high-contrast .service-card-d6,
+html.high-contrast .why-card,
+html.high-contrast .value-card,
+html.high-contrast .pillar-card,
+html.high-contrast .method-card,
+html.high-contrast .news-card-d6,
+html.high-contrast .contact-info-panel,
+html.high-contrast .contact-form-container,
+html.high-contrast .breadcrumb-nav {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .btn-primary,
+html.high-contrast .btn-secondary,
+html.high-contrast .btn-d6-primary,
+html.high-contrast .btn-submit,
+html.high-contrast .footer-btn {
+  background-color: #000000 !important;
+  color: #FFFF00 !important;
+  border: 2px solid #FFFF00 !important;
+}
+
+html.high-contrast .btn-primary:hover,
+html.high-contrast .btn-submit:hover,
+html.high-contrast .footer-btn:hover {
+  background-color: #FFFF00 !important;
+  color: #000000 !important;
+}
+
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
+}
+
+html.high-contrast .btn-accessibility {
+  background-color: #000000 !important;
+  border: 3px solid #FFFF00 !important;
+  color: #FFFF00 !important;
+  box-shadow: 0 0 15px #FFFF00 !important;
+}
+
+html.high-contrast .access-drawer {
+  background-color: #000000 !important;
+  border-left: 2px solid #FFFF00 !important;
+}
+
+html.high-contrast .access-drawer-header {
+  background-color: #000000 !important;
+  border-bottom: 2px solid #FFFFFF !important;
+}
+
+html.high-contrast .access-drawer-title,
+html.high-contrast .access-card-title,
+html.high-contrast .access-toggle-label,
+html.high-contrast .access-radio-label {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .access-close-btn {
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .access-card {
+  background-color: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+}
+
+html.high-contrast .access-btn-group {
+  border: 2px solid #FFFFFF !important;
+  background-color: #000000 !important;
+}
+
+html.high-contrast .access-group-btn {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .access-group-btn.active {
+  background-color: #FFFF00 !important;
+  color: #000000 !important;
+}
+
+html.high-contrast .access-reset-btn {
+  background-color: #000000 !important;
+  color: #FFFF00 !important;
+  border: 2px solid #FFFF00 !important;
+}
+
+/* ==========================================================================
+   MODO OSCURO (DARK MODE ELEGANTE Y CORPORATIVO)
+   ========================================================================== */
+html.dark-mode body {
+  background-color: #0B0F19 !important;
+  color: #E2E8F0 !important;
+}
+
+html.dark-mode .header-d6 {
+  background: rgba(11, 15, 25, 0.96) !important;
+  border-bottom: 1px solid #1E293B !important;
+}
+
+html.dark-mode .nav-menu-d6 a {
+  color: #E2E8F0 !important;
+}
+
+html.dark-mode .nav-menu-d6 a.active,
+html.dark-mode .nav-menu-d6 a:hover {
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .about-section,
+html.dark-mode .services-section-d6,
+html.dark-mode .services-accordion-section,
+html.dark-mode .news-public-section,
+html.dark-mode .contact-page-section,
+html.dark-mode .why-us-section,
+html.dark-mode .values-section {
+  background-color: #0F172A !important;
+  color: #E2E8F0 !important;
+}
+
+html.dark-mode .service-card-d6,
+html.dark-mode .why-card,
+html.dark-mode .value-card,
+html.dark-mode .pillar-card,
+html.dark-mode .method-card,
+html.dark-mode .news-card-d6,
+html.dark-mode .contact-info-panel,
+html.dark-mode .contact-form-container {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F1F5F9 !important;
+}
+
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode h5,
+html.dark-mode h6 {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode p,
+html.dark-mode span,
+html.dark-mode li {
+  color: #CBD5E1;
+}
+
+html.dark-mode .footer-d6,
+html.dark-mode .footer-bottom-new {
+  background-color: #070B12 !important;
+  border-top-color: #1E293B !important;
+}
+
+html.dark-mode .breadcrumb-nav {
+  background: #1E293B !important;
+  border-bottom-color: #334155 !important;
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .breadcrumb-item a {
+  color: #93C5FD !important;
+}
+
+html.dark-mode .contact-form input,
+html.dark-mode .contact-form select,
+html.dark-mode .contact-form textarea {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode .contact-form input:focus,
+html.dark-mode .contact-form select:focus,
+html.dark-mode .contact-form textarea:focus {
+  border-color: var(--accent-gold) !important;
+}
+
+html.dark-mode .access-drawer {
+  background-color: #1E293B !important;
+  border-left: 1px solid #334155 !important;
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .access-drawer-header {
+  background-color: #1E293B !important;
+  border-bottom-color: #334155 !important;
+}
+
+html.dark-mode .access-drawer-title {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .access-close-btn {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .access-close-btn:hover {
+  background-color: #334155 !important;
+  color: #FFFFFF !important;
+}
+
+html.dark-mode .access-card {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode .access-card-title {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .access-toggle-label,
+html.dark-mode .access-radio-label {
+  color: #F1F5F9 !important;
+}
+
+html.dark-mode .access-btn-group {
+  border-color: #475569 !important;
+  background-color: #0F172A !important;
+}
+
+html.dark-mode .access-group-btn {
+  color: #CBD5E1 !important;
+}
+
+html.dark-mode .access-group-btn.active {
+  background-color: #334155 !important;
+  color: #FFFFFF !important;
+}
+
+html.dark-mode .access-reset-btn {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .access-reset-btn:hover {
+  background-color: #334155 !important;
+  color: #FFFFFF !important;
+}
+
+/* Regla estricta: NUNCA mostrar botón ni drawer de accesibilidad en el panel de administración */
+body:has(.dash-container) .btn-accessibility,
+body:has(#loginSection) .btn-accessibility,
+body:has(.dash-header) .btn-accessibility,
+.login-wrapper ~ .btn-accessibility,
+.dash-container ~ .btn-accessibility {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* ==========================================
@@ -694,11 +1251,21 @@ body.large-text {
   padding: 4px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   transition: color 0.2s;
+}
+
+.btn-captcha-refresh svg {
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-captcha-refresh:hover {
   color: var(--accent-gold);
+}
+
+.btn-captcha-refresh.spin svg {
+  transform: rotate(360deg);
 }
 
 .btn-submit {
@@ -2496,10 +3063,11 @@ body.large-text {
 
   /* Botón de Accesibilidad Flotante en Móvil */
   .btn-accessibility {
-    bottom: 15px;
-    left: 15px;
-    width: 44px;
-    height: 44px;
+    bottom: 18px;
+    right: 18px;
+    left: auto;
+    width: 48px;
+    height: 48px;
   }
 }
 
@@ -3796,24 +4364,14 @@ body.large-text {
   /* 1. BOTÓN DE ACCESIBILIDAD FLOTANTE EN MÓVIL (Sin obstruir texto ni pie de página) */
   .btn-accessibility {
     position: fixed !important;
-    bottom: 16px !important;
-    right: 16px !important;
+    bottom: 18px !important;
+    right: 18px !important;
     left: auto !important;
-    width: 44px !important;
-    height: 44px !important;
+    width: 48px !important;
+    height: 48px !important;
     border-radius: 50% !important;
     z-index: 99999 !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
-  }
-
-  .access-menu {
-    position: fixed !important;
-    bottom: 68px !important;
-    right: 16px !important;
-    left: auto !important;
-    width: min(92vw, 330px) !important;
-    max-width: calc(100vw - 32px) !important;
-    z-index: 99999 !important;
+    box-shadow: 0 4px 18px rgba(0, 136, 90, 0.5) !important;
   }
 
   /* 2. ENCABEZADO Y MENÚ MÓVIL */
