@@ -3418,11 +3418,13 @@ body:has(.dash-header) .btn-accessibility,
 
   /* Botón de Accesibilidad Flotante en Móvil */
   .btn-accessibility {
-    bottom: 18px;
-    right: 18px;
-    left: auto;
-    width: 48px;
-    height: 48px;
+    position: fixed !important;
+    bottom: 18px !important;
+    right: 18px !important;
+    left: auto !important;
+    width: 48px !important;
+    height: 48px !important;
+    z-index: 99999 !important;
   }
 }
 

@@ -141,13 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
                       document.getElementById('newsListAdmin');
 
   if (!isAdminView) {
-    // 5.1 Asegurar que el botón flotante exista y tenga el ícono corporativo de accesibilidad Stratum
+    // 5.1 Asegurar que el botón flotante exista y sea hijo DIRECTO de document.body.
+    // Esto es crucial: Si está dentro del footer o un contenedor con filter: grayscale(100%),
+    // el filtro CSS crea un contexto de apilamiento y bloque de contención que atrapa
+    // position: fixed y hace que el botón se quede quieto abajo en lugar de seguir la pantalla.
     let accessBtn = document.querySelector('.btn-accessibility');
     if (!accessBtn) {
       accessBtn = document.createElement('button');
       accessBtn.className = 'btn-accessibility';
+      accessBtn.id = 'btnAccessibility';
       accessBtn.setAttribute('aria-label', 'Abrir panel de accesibilidad');
       accessBtn.setAttribute('title', 'Opciones de Accesibilidad');
+    }
+    
+    // Asegurar SIEMPRE que esté como hijo directo de body
+    if (accessBtn.parentElement !== document.body) {
       document.body.appendChild(accessBtn);
     }
     
