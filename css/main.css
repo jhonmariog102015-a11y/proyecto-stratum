@@ -1052,6 +1052,8 @@ html.dark-mode .nav-menu-d6 a:hover {
 html.dark-mode .about-section,
 html.dark-mode .services-section-d6,
 html.dark-mode .services-accordion-section,
+html.dark-mode .meth-section,
+html.dark-mode .entities-section,
 html.dark-mode .news-public-section,
 html.dark-mode .contact-page-section,
 html.dark-mode .why-us-section,
@@ -1060,6 +1062,221 @@ html.dark-mode .values-section {
   color: #E2E8F0 !important;
 }
 
+/* Acordeones de la página de Servicios (Imagen 1) */
+html.dark-mode .service-details {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark-mode .service-details summary {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .service-details summary:hover {
+  background-color: #243347 !important;
+}
+
+html.dark-mode .service-details[open] {
+  border-color: var(--accent-gold) !important;
+}
+
+html.dark-mode .service-details[open] summary {
+  background-color: #162032 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+html.dark-mode .acc-header-left h2 {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .acc-icon {
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .acc-icon svg {
+  stroke: var(--accent-gold) !important;
+}
+
+html.dark-mode .acc-toggle {
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .acc-content {
+  background-color: #1E293B !important;
+  border-top: 1px solid #334155 !important;
+  color: #CBD5E1 !important;
+}
+
+html.dark-mode .acc-content p,
+html.dark-mode .acc-list li {
+  color: #CBD5E1 !important;
+}
+
+html.dark-mode .acc-list li strong {
+  color: #FFFFFF !important;
+}
+
+/* Tarjetas interactivas de Sectores en Inicio (Imagen 2) */
+html.dark-mode .sector-card-interactive {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+  color: #F1F5F9 !important;
+}
+
+html.dark-mode .sector-card-interactive:hover {
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark-mode .sector-card-header {
+  background: transparent !important;
+}
+
+html.dark-mode .sector-card-title {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .sector-card-summary {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .sector-icon-circle {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode .sector-icon-circle svg {
+  stroke: var(--accent-gold) !important;
+}
+
+html.dark-mode .sector-toggle-bar {
+  background: #0F172A !important;
+  border-top: 1px solid #334155 !important;
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .sector-toggle-bar span,
+html.dark-mode .sector-toggle-bar svg {
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .sector-dropdown-content {
+  background: #162032 !important;
+  border-top: 1px solid #334155 !important;
+  color: #CBD5E1 !important;
+}
+
+html.dark-mode .sector-service-list li span {
+  color: #CBD5E1 !important;
+}
+
+html.dark-mode .sector-service-list li strong {
+  color: #FFFFFF !important;
+}
+
+html.dark-mode .sector-more-link {
+  background: #0F172A !important;
+  border: 1px solid var(--accent-gold) !important;
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .sector-more-link:hover {
+  background: var(--accent-gold) !important;
+  color: #0F172A !important;
+}
+
+/* Tarjetas de Metodología y Pasos de Trabajo (Imagen 3) */
+html.dark-mode .workflow-card {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+  color: #F1F5F9 !important;
+}
+
+html.dark-mode .workflow-card:hover {
+  border-color: var(--accent-gold) !important;
+}
+
+html.dark-mode .workflow-badge {
+  background: var(--accent-gold) !important;
+  color: #1E0F23 !important;
+  font-weight: 900 !important;
+}
+
+html.dark-mode .workflow-icon-box {
+  background: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode .workflow-icon-box svg {
+  stroke: var(--accent-gold) !important;
+}
+
+html.dark-mode .workflow-title {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .workflow-desc {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .workflow-list li span {
+  color: #CBD5E1 !important;
+}
+
+html.dark-mode .workflow-arrow svg {
+  stroke: var(--accent-gold) !important;
+}
+
+/* Carrusel de Entidades */
+html.dark-mode .entities-section,
+html.dark-mode .entities-advisor-section,
+html.dark-mode .entities-carousel-wrapper,
+html.dark-mode .entity-carousel,
+html.dark-mode .entity-banner,
+html.dark-mode .entity-track {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode .entities-main-title-standout {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .entity-card {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  border-right: 1px solid #334155 !important;
+}
+
+html.dark-mode .entity-card:hover {
+  background: #243347 !important;
+  background-color: #243347 !important;
+}
+
+html.dark-mode .entity-card-title {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .entity-card-desc {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .entity-item img,
+html.dark-mode .entity-logo-box img {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+}
+
+/* Tarjetas de valores, nosotros, servicios y noticias */
 html.dark-mode .service-card-d6,
 html.dark-mode .why-card,
 html.dark-mode .value-card,
@@ -1073,6 +1290,31 @@ html.dark-mode .contact-form-container {
   color: #F1F5F9 !important;
 }
 
+/* Campos de Formulario en Contacto */
+html.dark-mode .contact-form input,
+html.dark-mode .contact-form select,
+html.dark-mode .contact-form textarea {
+  background-color: #0F172A !important;
+  border: 1px solid #334155 !important;
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .contact-form input::placeholder,
+html.dark-mode .contact-form textarea::placeholder {
+  color: #64748B !important;
+}
+
+html.dark-mode .value-icon,
+html.dark-mode .service-icon-d6 {
+  background: #0F172A !important;
+  border: 1px solid #334155 !important;
+}
+
+html.dark-mode .value-icon svg,
+html.dark-mode .service-icon-d6 svg {
+  stroke: var(--accent-gold) !important;
+}
+
 html.dark-mode h1,
 html.dark-mode h2,
 html.dark-mode h3,
@@ -1083,9 +1325,13 @@ html.dark-mode h6 {
 }
 
 html.dark-mode p,
-html.dark-mode span,
+html.dark-mode span:not(.req-star):not(.captcha-badge):not(.slogan-tag-d6),
 html.dark-mode li {
   color: #CBD5E1;
+}
+
+html.dark-mode strong {
+  color: #FFFFFF !important;
 }
 
 html.dark-mode .footer-d6,
