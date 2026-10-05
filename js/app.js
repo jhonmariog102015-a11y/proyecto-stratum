@@ -578,6 +578,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok || data.success === 'true' || data.success === true) {
+          if (typeof gtag === 'function') {
+            gtag('event', 'generate_lead', {
+              event_category: 'contacto',
+              event_label: 'formulario_web'
+            });
+          }
           localStorage.setItem('stratum_last_contact_ts', Date.now().toString());
           initCaptcha();
           window.location.href = 'gracias.html';
@@ -602,7 +608,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 8. MODAL UNIVERSAL DE POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (LEY 1581 DE 2012)
   initPrivacyModal();
+
+  // 9. MEDICIÓN AUTOMÁTICA DE CONVERSIONES Y EVENTOS CLAVE EN GA4
+  initConversionTracking();
 });
+
+// Medición de eventos de conversión y contacto para Google Analytics 4 (GA4)
+function initConversionTracking() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+
+    const href = link.getAttribute('href') || '';
+    if (href.includes('wa.me') || href.includes('whatsapp.com')) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'contact', {
+          method: 'WhatsApp',
+          event_category: 'conversiones',
+          event_label: href
+        });
+      }
+    } else if (href.startsWith('tel:')) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'contact', {
+          method: 'Phone',
+          event_category: 'conversiones',
+          event_label: href.replace('tel:', '')
+        });
+      }
+    } else if (href.startsWith('mailto:')) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'contact', {
+          method: 'Email',
+          event_category: 'conversiones',
+          event_label: href.replace('mailto:', '')
+        });
+      }
+    }
+  });
+}
 
 // Función creadora y controladora del Modal Legal
 function initPrivacyModal() {
