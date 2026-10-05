@@ -15,7 +15,8 @@
       "**/.git/**",
       ".gitignore",
       "**/node_modules/**",
-      "files/**"
+      "files/**",
+      "prueba/**"
     ],
     "headers": [
       {

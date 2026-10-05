@@ -51,6 +51,13 @@
           <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
         </div>
 
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: -0.25rem; margin-bottom: 1.25rem;">
+          <input type="checkbox" id="rememberMe" style="width: 16px; height: 16px; accent-color: #7B61FF; cursor: pointer;">
+          <label for="rememberMe" style="font-size: 0.85rem; color: #64748B; cursor: pointer; user-select: none; margin: 0;">
+            Recordar sesión en este equipo
+          </label>
+        </div>
+
         <button type="submit" id="btnLogin" class="btn-primary">
           Iniciar Sesión
         </button>
@@ -96,7 +103,7 @@
   <!-- ==============================================
        VISTA 2: DASHBOARD DE CONTROL DE NOTICIAS
        ============================================== -->
-  <div id="dashboardSection" class="dashboard-wrapper">
+  <div id="dashboardSection" class="dashboard-wrapper" style="display: none;">
     
     <!-- Barra Superior -->
     <header class="dashboard-nav">
@@ -105,7 +112,7 @@
         <span>Gestor de Noticias</span>
       </div>
       <div class="dash-user-controls">
-        <span id="currentUserEmail" class="user-badge">admin@stratumgroup.com</span>
+        <span id="currentUserEmail" class="user-badge">...</span>
         <a href="noticias.html" target="_blank" rel="noopener noreferrer" class="dash-live-link">Ver Web en Vivo &rarr;</a>
         <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
       </div>

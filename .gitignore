@@ -28,3 +28,7 @@ img/logo_curv.cdr
 
 # Documentación interna técnica confidencial
 ESPECIFICACION_TECNICA.txt
+
+# Entornos y pruebas locales
+prueba/
+skills-lock.json

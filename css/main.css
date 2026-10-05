@@ -11,10 +11,12 @@
   --brand-accent: #D4AF37;
   --text-white: #FFFFFF;
   --text-muted: #CCCCCC;
+  --text-gray: #64748B;
   --text-dark: #1F2937;
   --text-body: #333333;
   --bg-light: #F9FAFB;
   --bg-white: #FFFFFF;
+  --border-color: #E2E8F0;
   --border-glass: rgba(255, 255, 255, 0.2);
   --font-main: 'Montserrat', sans-serif;
 }
@@ -454,8 +456,8 @@ html, body {
 .btn-accessibility {
   position: fixed !important;
   bottom: 24px !important;
-  right: 24px !important;
-  left: auto !important;
+  left: 24px !important;
+  right: auto !important;
   width: 56px !important;
   height: 56px !important;
   border-radius: 50% !important;
@@ -475,6 +477,49 @@ html, body {
 .btn-accessibility:hover {
   transform: scale(1.08) !important;
   box-shadow: 0 6px 24px rgba(0, 59, 115, 0.65) !important;
+}
+
+/* ==========================================================================
+   BOTÓN FLOTANTE DE WHATSAPP (CONVERSIÓN DIRECTA)
+   ========================================================================== */
+.btn-whatsapp-float {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+  width: 58px !important;
+  height: 58px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #25D366, #128C7E) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 99998 !important;
+  box-shadow: 0 4px 22px rgba(37, 211, 102, 0.5) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+  text-decoration: none !important;
+  outline: none;
+  padding: 0 !important;
+}
+
+.btn-whatsapp-float:hover {
+  transform: scale(1.1) translateY(-2px) !important;
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.7) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-whatsapp-float:active {
+  transform: scale(0.96) !important;
+}
+
+.btn-whatsapp-float svg {
+  width: 32px;
+  height: 32px;
+  fill: #FFFFFF;
+  pointer-events: none;
 }
 
 .btn-accessibility:active {
@@ -774,7 +819,7 @@ html.font-size-large {
    Aplica filtro únicamente al contenido de la página, sin alterar body ni
    el contexto de apilamiento para que el botón flotante y el drawer sigan fijos.
    ========================================================================== */
-html.grayscale body > *:not(.access-drawer):not(.btn-accessibility):not(.access-backdrop) {
+html.grayscale body > *:not(.access-drawer):not(.btn-accessibility):not(.btn-whatsapp-float):not(.access-backdrop):not(.legal-modal-backdrop) {
   filter: grayscale(100%) !important;
   -webkit-filter: grayscale(100%) !important;
 }
@@ -782,6 +827,11 @@ html.grayscale body > *:not(.access-drawer):not(.btn-accessibility):not(.access-
 /* ==========================================================================
    ALTO CONTRASTE (WCAG AAA - FONDO NEGRO PURO, BORDES Y TEXTOS LEGIBLES)
    ========================================================================== */
+html.high-contrast {
+  --text-gray: #FFFFFF;
+  --border-color: #FFFFFF;
+}
+
 html.high-contrast,
 html.high-contrast body {
   background-color: #000000 !important;
@@ -936,7 +986,7 @@ html.high-contrast strong {
 }
 
 /* Enlaces y botones interactivos */
-html.high-contrast a:not(.access-drawer *):not(.btn-accessibility) {
+html.high-contrast a:not(.access-drawer *):not(.btn-accessibility):not(.btn-whatsapp-float) {
   color: #FFFF00 !important;
   text-decoration: underline !important;
 }
@@ -978,6 +1028,17 @@ html.high-contrast .btn-accessibility {
   border: 3px solid #FFFF00 !important;
   color: #FFFF00 !important;
   box-shadow: 0 0 16px #FFFF00 !important;
+}
+
+/* Botón flotante de WhatsApp en Alto Contraste */
+html.high-contrast .btn-whatsapp-float {
+  background-color: #000000 !important;
+  border: 3px solid #25D366 !important;
+  color: #25D366 !important;
+  box-shadow: 0 0 16px #25D366 !important;
+}
+html.high-contrast .btn-whatsapp-float svg {
+  fill: #25D366 !important;
 }
 
 /* Panel lateral Drawer en Alto Contraste */
@@ -1030,6 +1091,11 @@ html.high-contrast .access-reset-btn {
 /* ==========================================================================
    MODO OSCURO (DARK MODE ELEGANTE Y CORPORATIVO)
    ========================================================================== */
+html.dark-mode {
+  --text-gray: #94A3B8;
+  --border-color: rgba(255, 255, 255, 0.12);
+}
+
 html.dark-mode body {
   background-color: #0B0F19 !important;
   color: #E2E8F0 !important;
@@ -1432,7 +1498,12 @@ body:has(.dash-container) .btn-accessibility,
 body:has(#loginSection) .btn-accessibility,
 body:has(.dash-header) .btn-accessibility,
 .login-wrapper ~ .btn-accessibility,
-.dash-container ~ .btn-accessibility {
+.dash-container ~ .btn-accessibility,
+body:has(.dash-container) .btn-whatsapp-float,
+body:has(#loginSection) .btn-whatsapp-float,
+body:has(.dash-header) .btn-whatsapp-float,
+.login-wrapper ~ .btn-whatsapp-float,
+.dash-container ~ .btn-whatsapp-float {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -3420,11 +3491,24 @@ body:has(.dash-header) .btn-accessibility,
   .btn-accessibility {
     position: fixed !important;
     bottom: 18px !important;
-    right: 18px !important;
-    left: auto !important;
+    left: 18px !important;
+    right: auto !important;
     width: 48px !important;
     height: 48px !important;
     z-index: 99999 !important;
+  }
+
+  .btn-whatsapp-float {
+    position: fixed !important;
+    bottom: 18px !important;
+    right: 18px !important;
+    left: auto !important;
+    width: 50px !important;
+    height: 50px !important;
+  }
+  .btn-whatsapp-float svg {
+    width: 28px !important;
+    height: 28px !important;
   }
 }
 
@@ -4722,13 +4806,22 @@ body:has(.dash-header) .btn-accessibility,
   .btn-accessibility {
     position: fixed !important;
     bottom: 18px !important;
-    right: 18px !important;
-    left: auto !important;
+    left: 18px !important;
+    right: auto !important;
     width: 48px !important;
     height: 48px !important;
     border-radius: 50% !important;
     z-index: 99999 !important;
     box-shadow: 0 4px 18px rgba(0, 59, 115, 0.5) !important;
+  }
+
+  .btn-whatsapp-float {
+    position: fixed !important;
+    bottom: 18px !important;
+    right: 18px !important;
+    left: auto !important;
+    width: 50px !important;
+    height: 50px !important;
   }
 
   /* 2. ENCABEZADO Y MENÚ MÓVIL */
@@ -5272,6 +5365,821 @@ body:has(.dash-header) .btn-accessibility,
     font-size: 2rem !important;
   }
 }
+
+/* ==========================================================================
+   MÓDULOS DE AUTORIDAD, CONFIANZA Y CONVERSIÓN (PÁGINA PRINCIPAL)
+   Stratum Group S.A.S. - Trust Badges, Intro, Casos, Testimonios, Noticias, CTA
+   ========================================================================== */
+
+/* 1. FRANJA DE RESPALDO NORMATIVO Y CONFIANZA (TRUST BADGES) */
+.trust-badges-section {
+  background: linear-gradient(180deg, #1E0F23 0%, #2A1532 100%);
+  padding: 3rem 5%;
+  border-top: 1px solid rgba(212, 175, 55, 0.25);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.trust-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.trust-badge-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+
+.trust-badge-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-gold, #D4AF37);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.trust-badge-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-gold, #D4AF37);
+}
+
+.trust-badge-info h4 {
+  color: #FFFFFF;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem 0;
+}
+
+.trust-badge-info p {
+  color: #D1D5DB;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* 2. BLOQUE "CONOCE A STRATUM GROUP" (PRESENTACIÓN INSTITUCIONAL) */
+.intro-stratum-section {
+  padding: 6rem 5%;
+  background: #FFFFFF;
+  position: relative;
+}
+
+.intro-stratum-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.intro-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--brand-purple, #3B1E43);
+  background: rgba(59, 30, 67, 0.08);
+  padding: 0.4rem 0.9rem;
+  border-radius: 50px;
+  margin-bottom: 1.2rem;
+  border: 1px solid rgba(59, 30, 67, 0.15);
+}
+
+.intro-title {
+  font-size: 2.3rem;
+  color: var(--brand-purple-dark, #1E0F23);
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 1.4rem;
+}
+
+.intro-title span {
+  color: var(--accent-gold, #D4AF37);
+}
+
+.intro-desc {
+  font-size: 1.05rem;
+  color: #4B5563;
+  line-height: 1.7;
+  margin-bottom: 1.8rem;
+}
+
+.intro-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 2.2rem;
+}
+
+.intro-highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.intro-highlight-item svg {
+  color: var(--accent-gold, #D4AF37);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.intro-highlight-item span {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: #1F2937;
+  line-height: 1.4;
+}
+
+.intro-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.btn-intro-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+  color: #FFFFFF;
+  padding: 0.85rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(59, 30, 67, 0.25);
+}
+
+.btn-intro-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 30, 67, 0.4);
+  color: #FFFFFF;
+}
+
+.btn-intro-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brand-purple, #3B1E43);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid rgba(59, 30, 67, 0.25);
+  border-radius: 8px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-intro-secondary:hover {
+  background: rgba(59, 30, 67, 0.05);
+  border-color: var(--brand-purple);
+}
+
+/* Visual e Imagen Flotante */
+.intro-visual-col {
+  position: relative;
+}
+
+.intro-img-frame {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(30, 15, 35, 0.18);
+  border: 4px solid #FFFFFF;
+  height: 420px;
+}
+
+.intro-img-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.intro-floating-badge {
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  background: linear-gradient(135deg, #1E0F23 0%, #3B1E43 100%);
+  color: #FFFFFF;
+  padding: 1.4rem 1.6rem;
+  border-radius: 14px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.intro-badge-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(212, 175, 55, 0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-gold);
+}
+
+.intro-badge-text strong {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  line-height: 1.1;
+}
+
+.intro-badge-text span {
+  font-size: 0.8rem;
+  color: #D1D5DB;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 3. CASOS DE ÉXITO / PROYECTOS DESTACADOS */
+.cases-section {
+  padding: 6rem 5%;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+}
+
+.cases-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 3.5rem auto;
+}
+
+.cases-header h2 {
+  font-size: 2.3rem;
+  color: var(--brand-purple-dark, #1E0F23);
+  font-weight: 800;
+  margin-bottom: 0.85rem;
+}
+
+.cases-header p {
+  color: #64748B;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.case-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(59, 30, 67, 0.12);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.case-card-header {
+  padding: 1.6rem 1.6rem 1rem 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.case-badge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(59, 30, 67, 0.08);
+  color: var(--brand-purple);
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+.case-location {
+  font-size: 0.82rem;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.case-card-body {
+  padding: 0 1.6rem 1.6rem 1.6rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-card-body h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--brand-purple-dark);
+  margin-bottom: 0.8rem;
+  line-height: 1.35;
+}
+
+.case-card-body p {
+  color: #4B5563;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  flex-grow: 1;
+}
+
+.case-results-box {
+  background: #F1F5F9;
+  border-left: 3px solid var(--accent-gold);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.case-results-box span {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--brand-purple);
+  display: block;
+}
+
+.case-results-box strong {
+  color: #0F172A;
+  font-size: 0.88rem;
+}
+
+/* 4. TESTIMONIOS Y AVALES DE TITULARES MINEROS */
+.testimonials-section {
+  padding: 6rem 5%;
+  background: #FFFFFF;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 2.2rem 1.8rem;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.04);
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-gold);
+}
+
+.testimonial-stars {
+  color: #F59E0B;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 1.2rem;
+}
+
+.testimonial-quote {
+  color: #374151;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 1.6rem;
+}
+
+.testimonial-author-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 1.2rem;
+}
+
+.author-avatar-initials {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
+  color: var(--accent-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.author-details h5 {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--brand-purple-dark);
+  margin: 0;
+}
+
+.author-details span {
+  font-size: 0.8rem;
+  color: #64748B;
+  display: block;
+}
+
+/* 5. SECCIÓN NOTICIAS DESTACADAS EN EL HOME */
+.home-news-section {
+  padding: 6rem 5%;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+}
+
+.home-news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  max-width: 1280px;
+  margin: 0 auto 3rem auto;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.home-news-title h2 {
+  font-size: 2.3rem;
+  color: var(--brand-purple-dark);
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.home-news-title p {
+  color: #64748B;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.home-news-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brand-purple);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid rgba(59, 30, 67, 0.25);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.home-news-all-btn:hover {
+  background: var(--brand-purple);
+  color: #FFFFFF;
+}
+
+.home-news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* 6. BANNER DE DIAGNÓSTICO TÉCNICO PRELIMINAR (CALL TO ACTION DE ALTO IMPACTO) */
+.cta-diagnosis-section {
+  padding: 5rem 5%;
+  background: linear-gradient(135deg, #1E0F23 0%, #3B1E43 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-diagnosis-section::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: radial-gradient(circle at 80% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.cta-diagnosis-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-diagnosis-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--accent-gold);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+}
+
+.cta-diagnosis-title {
+  color: #FFFFFF;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 1.2rem;
+}
+
+.cta-diagnosis-title span {
+  color: var(--accent-gold);
+}
+
+.cta-diagnosis-desc {
+  color: #E2E8F0;
+  font-size: 1.15rem;
+  line-height: 1.7;
+  max-width: 780px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.cta-diagnosis-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.btn-cta-gold {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #B8860B 100%);
+  color: #1E0F23;
+  padding: 1rem 2.2rem;
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-cta-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+  color: #1E0F23;
+}
+
+.btn-cta-outline {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-cta-outline:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #FFFFFF;
+}
+
+/* ==========================================================================
+   ADAPTACIONES DE MODO OSCURO (DARK MODE) PARA LOS NUEVOS MÓDULOS
+   ========================================================================== */
+html.dark-mode .intro-stratum-section,
+html.dark-mode .cases-section,
+html.dark-mode .testimonials-section,
+html.dark-mode .home-news-section {
+  background: #0B0F19 !important;
+}
+
+html.dark-mode .intro-title,
+html.dark-mode .cases-header h2,
+html.dark-mode .home-news-title h2 {
+  color: #FFFFFF !important;
+}
+
+html.dark-mode .intro-desc,
+html.dark-mode .cases-header p,
+html.dark-mode .home-news-title p {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .case-card,
+html.dark-mode .testimonial-card {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+}
+
+html.dark-mode .case-card-body h3,
+html.dark-mode .author-details h5 {
+  color: #F3F4F6 !important;
+}
+
+html.dark-mode .case-card-body p,
+html.dark-mode .testimonial-quote,
+html.dark-mode .intro-highlight-item span {
+  color: #D1D5DB !important;
+}
+
+html.dark-mode .case-results-box {
+  background: #1F2937 !important;
+}
+
+html.dark-mode .case-results-box strong {
+  color: #F9FAFB !important;
+}
+
+/* ==========================================================================
+   ADAPTACIONES DE ALTO CONTRASTE (HIGH CONTRAST WCAG AAA)
+   ========================================================================== */
+html.high-contrast .trust-badges-section,
+html.high-contrast .intro-stratum-section,
+html.high-contrast .cases-section,
+html.high-contrast .testimonials-section,
+html.high-contrast .home-news-section,
+html.high-contrast .cta-diagnosis-section {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .trust-badge-card,
+html.high-contrast .case-card,
+html.high-contrast .testimonial-card {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .trust-badge-icon,
+html.high-contrast .intro-badge-icon,
+html.high-contrast .author-avatar-initials {
+  background: #000000 !important;
+  border: 2px solid #FFFF00 !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .intro-title,
+html.high-contrast .cases-header h2,
+html.high-contrast .home-news-title h2,
+html.high-contrast .cta-diagnosis-title,
+html.high-contrast .case-card-body h3,
+html.high-contrast .author-details h5,
+html.high-contrast .trust-badge-info h4 {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .intro-desc,
+html.high-contrast .cases-header p,
+html.high-contrast .home-news-title p,
+html.high-contrast .cta-diagnosis-desc,
+html.high-contrast .case-card-body p,
+html.high-contrast .testimonial-quote,
+html.high-contrast .trust-badge-info p,
+html.high-contrast .author-details span {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .intro-tag,
+html.high-contrast .cta-diagnosis-badge,
+html.high-contrast .case-badge {
+  background: #000000 !important;
+  border: 2px solid #FFFF00 !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .case-results-box {
+  background: #000000 !important;
+  border-left: 4px solid #FFFF00 !important;
+  border-top: 1px solid #FFFFFF !important;
+  border-right: 1px solid #FFFFFF !important;
+  border-bottom: 1px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .case-results-box span {
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .case-results-box strong {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .btn-intro-primary,
+html.high-contrast .btn-cta-gold {
+  background: #FFFF00 !important;
+  color: #000000 !important;
+  border: 2px solid #FFFF00 !important;
+  font-weight: 900 !important;
+}
+
+html.high-contrast .btn-intro-secondary,
+html.high-contrast .btn-cta-outline,
+html.high-contrast .home-news-all-btn {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
+}
+
+html.high-contrast .btn-intro-secondary:hover,
+html.high-contrast .btn-cta-outline:hover,
+html.high-contrast .home-news-all-btn:hover {
+  background: #FFFF00 !important;
+  color: #000000 !important;
+}
+
+/* ==========================================================================
+   ADAPTACIONES RESPONSIVAS (MÓVIL / TABLET) PARA LOS NUEVOS MÓDULOS
+   ========================================================================== */
+@media (max-width: 992px) {
+  .intro-stratum-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .intro-visual-col {
+    order: -1;
+  }
+
+  .intro-floating-badge {
+    bottom: -15px;
+    left: 10px;
+    right: 10px;
+  }
+
+  .cta-diagnosis-title {
+    font-size: 2.1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .intro-highlights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intro-title {
+    font-size: 1.85rem;
+  }
+
+  .cta-diagnosis-title {
+    font-size: 1.75rem;
+  }
+
+  .cta-diagnosis-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-cta-gold, .btn-cta-outline {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 
 
 

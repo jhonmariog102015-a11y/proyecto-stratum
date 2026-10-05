@@ -26,6 +26,9 @@ import {
   createUserWithEmailAndPassword,
   signOut, 
   onAuthStateChanged,
+  setPersistence,
+  browserSessionPersistence,
+  browserLocalPersistence,
   escapeHTML
 } from "./firebase_noticias.js?v=9";
 
@@ -145,12 +148,45 @@ onAuthStateChanged(auth, async (user) => {
     if (currentUserEmail) currentUserEmail.textContent = user.email;
     loadAdminNews();
     loadSecurityConfig(user.email);
+    startInactivityWatcher();
   } else {
     // Usuario desconectado -> Mostrar Login
+    stopInactivityWatcher();
     if (loginSection) loginSection.style.display = "flex";
     if (dashboardSection) dashboardSection.style.display = "none";
   }
 });
+
+// Control de cierre automático por inactividad (15 minutos de inactividad)
+let inactivityTimer = null;
+const inactivityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+
+function resetInactivity() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(async () => {
+    try {
+      console.warn("Cierre de sesión automático por inactividad (15 min).");
+      await signOut(auth);
+      if (loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.className = "alert-box alert-error";
+        loginAlert.textContent = "Tu sesión se ha cerrado automáticamente tras 15 minutos de inactividad por seguridad.";
+      }
+    } catch (err) {
+      console.error("Error en auto-logout por inactividad:", err);
+    }
+  }, 15 * 60 * 1000);
+}
+
+function startInactivityWatcher() {
+  resetInactivity();
+  inactivityEvents.forEach(evt => window.addEventListener(evt, resetInactivity, { passive: true }));
+}
+
+function stopInactivityWatcher() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityEvents.forEach(evt => window.removeEventListener(evt, resetInactivity));
+}
 
 // 3. INICIAR SESIÓN CON PROTECCIÓN CONTRA FUERZA BRUTA
 let failedAttempts = parseInt(localStorage.getItem("login_failed_attempts") || "0", 10);
@@ -223,6 +259,10 @@ if (loginForm) {
     }
 
     try {
+      // Configurar persistencia según si el usuario marcó "Recordar sesión en este equipo"
+      const rememberMe = document.getElementById("rememberMe")?.checked;
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+
       await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
       loginForm.reset();
       failedAttempts = 0;
@@ -366,9 +406,9 @@ if (registerForm) {
         return;
       }
 
-      // Clave maestra válida → crear cuenta en Firebase Auth
-      // La verificación de lista blanca se hace POST-AUTH en onAuthStateChanged (no se exponen correos)
+      // Clave maestra válida → crear cuenta en Firebase Auth con persistencia de sesión por defecto
       if (btnRegister) btnRegister.textContent = "Creando cuenta en Firebase...";
+      await setPersistence(auth, browserSessionPersistence);
       await createUserWithEmailAndPassword(auth, email, password);
 
       // Registro exitoso: resetear contadores
@@ -682,7 +722,11 @@ if (publishNewsForm) {
       if (publishAlert) {
         publishAlert.style.display = "block";
         publishAlert.className = "alert-box alert-error";
-        publishAlert.textContent = "Error al guardar: " + error.message;
+        if (error.code === "permission-denied" || (error.message && error.message.includes("permission"))) {
+          publishAlert.textContent = "Error de permisos: Asegúrate de tener una sesión activa de administrador en el sistema.";
+        } else {
+          publishAlert.textContent = "Error al guardar: " + error.message;
+        }
       }
     } finally {
       if (btnPublish) {
@@ -877,9 +921,10 @@ if (btnExportBackup) {
           resumen: d.resumen || "",
           imagen: d.imagen || "",
           enlace: d.enlace || "",
+          activo: d.activo !== false,
           fecha: d.fecha || "",
           autor: d.autor || "",
-          createdAt: d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toISOString() : d.createdAt) : new Date().toISOString()
+          fecha_creacion: d.fecha_creacion ? (d.fecha_creacion.toDate ? d.fecha_creacion.toDate().toISOString() : d.fecha_creacion) : (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toISOString() : d.createdAt) : new Date().toISOString())
         });
       });
 
@@ -953,15 +998,16 @@ if (backupFileInput) {
               resumen: item.resumen,
               imagen: item.imagen || "",
               enlace: item.enlace || "",
+              activo: item.activo !== false,
               fecha: item.fecha || new Date().toISOString().split("T")[0],
               autor: item.autor || auth.currentUser?.email || "Admin",
-              updatedAt: serverTimestamp()
+              fecha_actualizacion: serverTimestamp()
             };
 
             if (docId) {
               await setDoc(doc(db, "noticias", docId), dataToSave, { merge: true });
             } else {
-              await addDoc(collection(db, "noticias"), { ...dataToSave, createdAt: serverTimestamp() });
+              await addDoc(collection(db, "noticias"), { ...dataToSave, fecha_creacion: serverTimestamp() });
             }
             restoredCount++;
           }

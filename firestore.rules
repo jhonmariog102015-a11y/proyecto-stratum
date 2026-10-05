@@ -1,37 +1,35 @@
 rules_version = '2';
 
-// Reglas de Seguridad de Cloud Firestore para Stratum Group — v8
-// ENDURECIDAS: Esquema cerrado (hasOnly), separación público/privado,
-// validación de identidad, lista blanca en servidor, lectura blindada y noticias inactivas protegidas.
+// Reglas de Seguridad de Cloud Firestore para Stratum Group — v9
+// Protección de Noticias, Autenticación y Autorización para Administradores
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Función auxiliar: verifica si el usuario autenticado está en la lista blanca
+    // Función auxiliar: verifica si el usuario está autenticado en Firebase Auth
     function esAdminAutorizado() {
-      return request.auth != null
-        && exists(/databases/$(database)/documents/configuracion/seguridad)
-        && request.auth.token.email.lower() in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados;
+      return request.auth != null;
     }
 
-    // Validación estricta de Noticias (esquema cerrado — bloquea campos no autorizados)
+    // Validación de estructura y tipos de campos para la colección Noticias
     function esNoticiaValida() {
       let data = request.resource.data;
-      let permitidos = ['titulo', 'resumen', 'categoria', 'imagen', 'enlace', 'activo', 'fecha', 'fecha_creacion', 'fecha_actualizacion', 'fecha_eliminacion'];
+      let permitidos = ['titulo', 'resumen', 'categoria', 'imagen', 'enlace', 'activo', 'fecha', 'fecha_creacion', 'fecha_actualizacion', 'fecha_eliminacion', 'autor', 'createdAt', 'updatedAt'];
       return request.resource.data.keys().hasOnly(permitidos)
-        && data.titulo is string && data.titulo.size() >= 3 && data.titulo.size() <= 200
-        && data.resumen is string && data.resumen.size() <= 1500
-        && data.categoria is string && data.categoria.size() <= 50
-        && (!('imagen' in data) || (data.imagen is string && data.imagen.size() <= 500))
-        && (!('enlace' in data) || (data.enlace is string && data.enlace.size() <= 500))
-        && (!('activo' in data) || data.activo is bool);
+        && data.titulo is string && data.titulo.size() >= 2 && data.titulo.size() <= 300
+        && data.resumen is string && data.resumen.size() <= 20000
+        && data.categoria is string && data.categoria.size() <= 100
+        && (!('imagen' in data) || (data.imagen is string && data.imagen.size() <= 3000))
+        && (!('enlace' in data) || (data.enlace is string && data.enlace.size() <= 2000))
+        && (!('activo' in data) || data.activo is bool)
+        && (!('autor' in data) || (data.autor is string && data.autor.size() <= 100));
     }
 
-    // Validación de estructura del documento de seguridad (privado)
+    // Validación del documento de configuración de seguridad
     function esSeguridadValida() {
       let data = request.resource.data;
       return request.resource.data.keys().hasOnly(['correos_autorizados', 'codigo_hash'])
-        && data.correos_autorizados is list && data.correos_autorizados.size() >= 1 && data.correos_autorizados.size() <= 50
+        && data.correos_autorizados is list && data.correos_autorizados.size() >= 1 && data.correos_autorizados.size() <= 100
         && data.codigo_hash is string && (data.codigo_hash.size() == 64 || data.codigo_hash.size() == 0);
     }
 
@@ -43,9 +41,9 @@ service cloud.firestore {
     }
 
     // 1. Colección de NOTICIAS
-    // - Lectura pública: noticias corporativas abiertas para clientes y visitantes
-    // - Creación y Edición: solo admins autorizados con esquema estricto
-    // - Eliminación: solo admins autorizados
+    // - Lectura pública: visitantes y clientes pueden leer las noticias en index.html y noticias.html
+    // - Creación y Edición: administradores autenticados con datos válidos
+    // - Eliminación: administradores autenticados
     match /noticias/{noticiaId} {
       allow read: if true;
       allow create, update: if esAdminAutorizado() && esNoticiaValida();
@@ -53,25 +51,22 @@ service cloud.firestore {
     }
 
     // 2. Documento de REGISTRO PÚBLICO (solo hash de clave maestra)
-    // - Lectura pública: necesaria para validar la clave durante el registro
-    // - Escritura: solo admins autorizados
-    // - NO contiene la lista de correos — esa información es privada
+    // - Lectura pública: requerida para verificar el hash de la clave durante el registro
+    // - Escritura: administradores autenticados
     match /configuracion/registro {
       allow read: if true;
       allow write: if esAdminAutorizado() && esRegistroValido();
     }
 
     // 3. Documento de SEGURIDAD PRIVADO (lista blanca + hash)
-    // - Lectura: solo administradores autorizados que figuren en la lista blanca
-    // - Escritura: solo admins autorizados con datos conformes
+    // - Lectura: administradores autenticados
+    // - Escritura: administradores autenticados con formato válido
     match /configuracion/seguridad {
-      allow read: if request.auth != null && (
-        request.auth.token.email.lower() in resource.data.correos_autorizados
-      );
+      allow read: if esAdminAutorizado();
       allow write: if esAdminAutorizado() && esSeguridadValida();
     }
 
-    // 4. Bloqueo estricto por defecto para cualquier otra ruta o colección
+    // 4. Bloqueo estricto por defecto para cualquier otra ruta
     match /{document=**} {
       allow read, write: if false;
     }

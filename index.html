@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.firebaseio.com;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Stratum Group | Liderando con Ingeniería Minera</title>
   <meta name="description" content="Stratum Group - Ingeniería de Minas Sostenible y Eficiente en Colombia. Soluciones integrales de consultoría, geología, ambiente y software e IA.">
@@ -14,10 +14,21 @@
   <meta property="og:image" content="https://jhonmariog102015-a11y.github.io/proyecto-stratum/img/logo_complet_sin_fondo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3.1">
+  <link rel="stylesheet" href="css/main.css?v=3.2">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
+  <!-- Google Analytics 4 (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV8K98LN1V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XV8K98LN1V');
+  </script>
   <script src="js/app.js?v=3.1" defer></script>
+  <script type="module" src="js/firebase_noticias.js?v=9"></script>
   <!-- Datos Estructurados Schema.org para Google y Motores de IA (JSON-LD) -->
   <script type="application/ld+json">
   {
@@ -166,6 +177,75 @@
         <div class="stat-number-d6" data-target="2018" data-prefix="">0</div>
         <div class="stat-label-d6">Desde 2018</div>
       </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       BLOQUE "CONOCE A STRATUM GROUP" (PRESENTACIÓN INSTITUCIONAL)
+       ========================================================================= -->
+  <section class="intro-stratum-section">
+    <div class="intro-stratum-container">
+      
+      <div>
+        <span class="intro-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          Sobre Stratum Group S.A.S.
+        </span>
+        <h2 class="intro-title">Respaldo Integral en Territorio: <span>Operaciones Viables, Seguras y en Regla</span></h2>
+        <p class="intro-desc">
+          Desde nuestra sede central en <strong>Ubaté, Cundinamarca</strong>, acompañamos de manera presencial a titulares y empresas mineras en la gestión de sus desafíos operativos y normativos más exigentes. Nuestro equipo multidisciplinario protege su patrimonio: resolvemos contingencias ante las autoridades, optimizamos la extracción y garantizamos que cada fase de su proyecto cuente con estricto rigor técnico y total tranquilidad jurídica.
+        </p>
+
+        <div class="intro-highlights-grid">
+          <div class="intro-highlight-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Acompañamiento directo en visitas de fiscalización ANM.</span>
+          </div>
+          <div class="intro-highlight-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Modelamiento geológico 3D y cálculo de reservas certificables.</span>
+          </div>
+          <div class="intro-highlight-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Gestión integral de permisos de agua y vertimientos (CAR).</span>
+          </div>
+          <div class="intro-highlight-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Respaldo jurídico en defensa de derechos mineros.</span>
+          </div>
+        </div>
+
+        <div class="intro-actions">
+          <a href="nosotros.html" class="btn-intro-primary">
+            Conocer Nuestra Trayectoria y Misión
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="assets/Portafolio_Stratum_Group.pdf" download class="btn-intro-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar Portafolio (PDF)
+          </a>
+        </div>
+      </div>
+
+      <div class="intro-visual-col">
+        <div class="intro-img-frame">
+          <img src="assets/drone_landscape.png" alt="Operación de Ingeniería Minera Stratum Group" loading="lazy">
+        </div>
+        <div class="intro-floating-badge">
+          <div class="intro-badge-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="intro-badge-text">
+            <strong>100% Viabilidad</strong>
+            <span>Estudios Técnicos Aprobados</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -377,6 +457,72 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECCIÓN NOTICIAS Y COMUNICADOS EN EL HOME (DINÁMICA DESDE FIREBASE)
+       ========================================================================= -->
+  <section class="home-news-section" id="noticias-destacadas">
+    <div class="home-news-header">
+      <div class="home-news-title">
+        <span class="intro-tag">Actualidad y Sector</span>
+        <h2>Noticias y Comunicados Oficiales</h2>
+        <p>Entérate de las últimas novedades, cambios normativos y avances técnicos de Stratum Group.</p>
+      </div>
+      <a href="noticias.html" class="home-news-all-btn">
+        Ver Todas las Noticias &rarr;
+      </a>
+    </div>
+
+    <div class="home-news-grid" id="home-news-container">
+      <!-- NOTICIA 1 (Fallback si no hay conexión o mientras carga Firestore) -->
+      <article class="news-card-d6" style="margin: 0;">
+        <div class="news-card-img-wrap">
+          <img src="assets/drone_landscape.png" alt="Normatividad Minera ANM" class="news-card-img" loading="lazy">
+          <span class="news-card-badge">Ingeniería Minera</span>
+        </div>
+        <div class="news-card-body">
+          <span class="news-card-date">24 Sep 2026</span>
+          <h3 class="news-card-title">Nuevos Lineamientos para la Radicación de Formatos FBM ante la ANM</h3>
+          <p class="news-card-excerpt">Conoce las directrices técnicas obligatorias que deben cumplir los titulares de contratos de concesión en el segundo semestre de 2026.</p>
+          <div class="news-card-footer">
+            <a href="noticias.html" class="news-card-link">Leer artículo completo &rarr;</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- NOTICIA 2 (Fallback) -->
+      <article class="news-card-d6" style="margin: 0;">
+        <div class="news-card-img-wrap">
+          <img src="assets/drone_landscape.png" alt="Tecnología e IA en Minería" class="news-card-img" loading="lazy">
+          <span class="news-card-badge">Tecnología e IA</span>
+        </div>
+        <div class="news-card-body">
+          <span class="news-card-date">18 Sep 2026</span>
+          <h3 class="news-card-title">Implementación de Drones Térmicos en Monitoreo de Taludes y Pilas</h3>
+          <p class="news-card-excerpt">Cómo la fotogrametría infrarroja y el análisis predictivo previenen desprendimientos y optimizan la seguridad de los trabajadores.</p>
+          <div class="news-card-footer">
+            <a href="noticias.html" class="news-card-link">Leer artículo completo &rarr;</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- NOTICIA 3 (Fallback) -->
+      <article class="news-card-d6" style="margin: 0;">
+        <div class="news-card-img-wrap">
+          <img src="assets/drone_landscape.png" alt="Cumplimiento Ambiental" class="news-card-img" loading="lazy">
+          <span class="news-card-badge">Gestión Ambiental</span>
+        </div>
+        <div class="news-card-body">
+          <span class="news-card-date">10 Sep 2026</span>
+          <h3 class="news-card-title">Protocolos de Monitoreo Hídrico Exigidos por las CAR en 2026</h3>
+          <p class="news-card-excerpt">Puntos clave para presentar balances de aguas y programas de ahorro y uso eficiente sin observaciones por parte de las autoridades ambientales.</p>
+          <div class="news-card-footer">
+            <a href="noticias.html" class="news-card-link">Leer artículo completo &rarr;</a>
+          </div>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -616,7 +762,9 @@
       <p class="footer-legal-text">
         <span>&copy; 2026 Stratum Group S.A.S.</span>
         <span class="footer-sep">&bull;</span>
-        <button type="button" class="btn-privacy-trigger js-open-privacy">Política de Tratamiento de Datos Personales</button>
+        <a href="aviso-legal.html" class="btn-privacy-trigger" style="text-decoration: none;">Aviso Legal</a>
+        <span class="footer-sep">&bull;</span>
+        <a href="politica-privacidad.html" class="btn-privacy-trigger" style="text-decoration: none;">Política de Tratamiento de Datos Personales</a>
         <span class="footer-sep">&bull;</span>
         <span>Todos los derechos reservados.</span>
       </p>

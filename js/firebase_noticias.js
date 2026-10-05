@@ -7,7 +7,7 @@ import {
   getDoc,
   setDoc,
   addDoc, 
-  updateDoc,
+  updateDoc, 
   deleteDoc, 
   doc, 
   query, 
@@ -23,7 +23,10 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  setPersistence,
+  browserSessionPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // Credenciales oficiales de Stratum Group
@@ -42,10 +45,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Carga automática de noticias en la página pública (noticias.html)
-const newsContainer = document.getElementById("firebase-news-container");
-const loadingMsg = document.getElementById("loading-msg");
-
 // SEGURIDAD: escapa cualquier texto que venga de Firestore antes de insertarlo en el DOM.
 // Evita ataques de Cross-Site Scripting (XSS almacenado).
 function escapeHTML(str) {
@@ -59,6 +58,8 @@ function escapeHTML(str) {
 }
 
 export async function loadPublicNews() {
+  const newsContainer = document.getElementById("firebase-news-container");
+  const loadingMsg = document.getElementById("loading-msg");
   if (!newsContainer) return;
 
   try {
@@ -177,9 +178,107 @@ export async function loadPublicNews() {
   }
 }
 
-// Ejecutar si estamos en noticias.html
-if (newsContainer) {
-  loadPublicNews();
+// Carga automática de noticias destacadas en la página principal (index.html)
+export async function loadHomeNews() {
+  const homeNewsContainer = document.getElementById("home-news-container");
+  if (!homeNewsContainer) return;
+
+  try {
+    let querySnapshot = null;
+    try {
+      const q = query(
+        collection(db, "noticias"), 
+        orderBy("fecha_creacion", "desc"), 
+        limit(6)
+      );
+      querySnapshot = await getDocs(q);
+    } catch (orderErr) {
+      querySnapshot = null;
+    }
+
+    if (!querySnapshot || querySnapshot.empty) {
+      querySnapshot = await getDocs(collection(db, "noticias"));
+    }
+
+    const docsActivos = [];
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data.activo !== false) {
+        docsActivos.push({ id: docSnap.id, data });
+      }
+    });
+
+    // Si no hay noticias en Firestore, mantenemos intactas las tarjetas de respaldo en el HTML (no rompe ni descuadra)
+    if (docsActivos.length === 0) return;
+
+    // Mostrar máximo 3 noticias en el inicio
+    const noticiasHome = docsActivos.slice(0, 3);
+    const tarjetas = [];
+
+    noticiasHome.forEach(({ id, data }) => {
+      const rawFecha = data.fecha || (data.fecha_creacion?.toDate ? data.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente');
+      const fechaTexto = escapeHTML(rawFecha);
+      const categoria = escapeHTML(data.categoria || 'Corporativo');
+      const titulo = escapeHTML(data.titulo || '');
+      const resumen = escapeHTML(data.resumen || '');
+      const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : 'assets/drone_landscape.png';
+      const imgSafe = /^(https:\/\/|assets\/|img\/)/i.test(rawImg) ? rawImg : 'assets/drone_landscape.png';
+      const imagenUrl = escapeHTML(imgSafe);
+      const enlaceUrl = data.enlace && /^https?:\/\//i.test(data.enlace.trim()) ? escapeHTML(data.enlace.trim()) : 'noticias.html';
+      const isExternal = enlaceUrl.startsWith('http');
+
+      const articleHTML = `
+        <article class="news-card-d6" style="margin: 0;">
+          <div class="news-card-img-wrap">
+            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img" loading="lazy">
+            <span class="news-card-badge">${categoria}</span>
+          </div>
+          <div class="news-card-body">
+            <span class="news-card-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ${fechaTexto}
+            </span>
+            <h3 class="news-card-title">${titulo}</h3>
+            <p class="news-card-excerpt">${resumen}</p>
+            <div class="news-card-footer">
+              <a href="${enlaceUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="news-card-link">
+                ${isExternal ? 'Ver noticia completa &rarr;' : 'Leer en Noticias &rarr;'}
+              </a>
+            </div>
+          </div>
+        </article>
+      `;
+      tarjetas.push(articleHTML);
+    });
+
+    homeNewsContainer.innerHTML = tarjetas.join("");
+
+    // Fallback de imágenes de forma segura
+    homeNewsContainer.querySelectorAll(".news-card-img").forEach((img) => {
+      img.addEventListener("error", () => {
+        img.src = "assets/drone_landscape.png";
+      }, { once: true });
+    });
+
+  } catch (error) {
+    console.warn("Aviso: No se pudo conectar con Firestore para noticias en el inicio, usando contenido local:", error);
+  }
+}
+
+// Inicialización automática y segura según el estado del DOM
+function initAllNews() {
+  if (document.getElementById("firebase-news-container")) {
+    loadPublicNews();
+  }
+  if (document.getElementById("home-news-container")) {
+    loadHomeNews();
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAllNews);
+} else {
+  initAllNews();
 }
 
 // Exportar servicios para el panel de administración
@@ -192,7 +291,7 @@ export {
   getDoc,
   setDoc,
   addDoc, 
-  updateDoc,
+  updateDoc, 
   deleteDoc, 
   doc, 
   query, 
@@ -206,5 +305,8 @@ export {
   createUserWithEmailAndPassword,
   signOut, 
   onAuthStateChanged,
+  setPersistence,
+  browserSessionPersistence,
+  browserLocalPersistence,
   escapeHTML
 };

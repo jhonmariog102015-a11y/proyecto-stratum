@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://formsubmit.co; frame-src https://www.google.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.firebaseio.com https://formsubmit.co; frame-src 'self' https://www.google.com;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Contacto | Stratum Group</title>
   <meta name="description"
@@ -18,6 +18,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css?v=3.1">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
+  <!-- Google Analytics 4 (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV8K98LN1V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XV8K98LN1V');
+  </script>
+  <!-- Datos Estructurados Schema.org (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contacto | Stratum Group S.A.S.",
+    "description": "Formulario y canales de contacto oficial para consultoría e interventoría minera y ambiental en Colombia.",
+    "mainEntity": {
+      "@type": "LocalBusiness",
+      "name": "Stratum Group S.A.S.",
+      "telephone": ["+57-312-411-7482", "+57-310-260-0619"],
+      "email": "stratumgroupsas@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Ubaté",
+        "addressRegion": "Cundinamarca",
+        "addressCountry": "CO"
+      }
+    }
+  }
+  </script>
   <script src="js/app.js?v=3.1" defer></script>
 </head>
 
@@ -293,7 +322,9 @@
       <p class="footer-legal-text">
         <span>&copy; 2026 Stratum Group S.A.S.</span>
         <span class="footer-sep">&bull;</span>
-        <button type="button" class="btn-privacy-trigger js-open-privacy">Política de Tratamiento de Datos Personales</button>
+        <a href="aviso-legal.html" class="btn-privacy-trigger" style="text-decoration: none;">Aviso Legal</a>
+        <span class="footer-sep">&bull;</span>
+        <a href="politica-privacidad.html" class="btn-privacy-trigger" style="text-decoration: none;">Política de Tratamiento de Datos Personales</a>
         <span class="footer-sep">&bull;</span>
         <span>Todos los derechos reservados.</span>
       </p>

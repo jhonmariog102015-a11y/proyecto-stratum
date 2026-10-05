@@ -137,6 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Requisito: Excluir estrictamente de la interfaz administrativa
   const isAdminView = window.location.pathname.toLowerCase().includes('admin_noticias') ||
                       document.getElementById('loginSection') ||
+                      document.getElementById('dashboardSection') ||
+                      document.getElementById('adminNewsList') ||
+                      document.querySelector('.dashboard-wrapper') ||
                       document.querySelector('.dash-header') ||
                       document.getElementById('newsListAdmin');
 
@@ -167,6 +170,25 @@ document.addEventListener('DOMContentLoaded', () => {
       </svg>
     `;
     accessBtn.setAttribute('aria-expanded', 'false');
+
+    // 5.1.2 Botón Flotante de WhatsApp para atención y conversión inmediata
+    let waFloatBtn = document.querySelector('.btn-whatsapp-float');
+    if (!waFloatBtn) {
+      waFloatBtn = document.createElement('a');
+      waFloatBtn.className = 'btn-whatsapp-float';
+      waFloatBtn.id = 'btnWhatsAppFloat';
+      waFloatBtn.href = 'https://wa.me/573124117482?text=Hola%2C%20quisiera%20solicitar%20asesor%C3%ADa%20profesional%20con%20Stratum%20Group.';
+      waFloatBtn.target = '_blank';
+      waFloatBtn.rel = 'noopener noreferrer';
+      waFloatBtn.setAttribute('aria-label', 'Contactar a Stratum Group por WhatsApp');
+      waFloatBtn.setAttribute('title', 'Chatea con nosotros por WhatsApp');
+      waFloatBtn.innerHTML = `
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.11 7.02C8.94 7.02 8.67 7.08 8.44 7.34C8.21 7.59 7.56 8.2 7.56 9.45C7.56 10.7 8.47 11.91 8.6 12.08C8.73 12.25 10.38 14.88 12.95 15.96C15.09 16.86 15.53 16.68 16 16.64C16.47 16.59 17.53 16 17.75 15.38C17.97 14.75 17.97 14.21 17.91 14.1C17.84 14 17.68 13.93 17.44 13.82C17.2 13.7 16.02 13.12 15.8 13.04C15.58 12.96 15.42 12.92 15.26 13.17C15.1 13.41 14.64 13.96 14.5 14.12C14.36 14.29 14.22 14.31 13.98 14.19C13.74 14.07 12.97 13.82 12.05 13C11.33 12.36 10.84 11.57 10.7 11.33C10.56 11.09 10.69 10.96 10.81 10.84C10.92 10.73 11.05 10.56 11.17 10.42C11.29 10.28 11.33 10.18 11.41 10.02C11.49 9.85 11.45 9.71 11.39 9.59C11.33 9.47 10.84 8.26 10.64 7.76C10.44 7.27 10.24 7.34 10.08 7.33C9.93 7.33 9.77 7.33 9.6 7.33L9.11 7.02Z"/>
+        </svg>
+      `;
+      document.body.appendChild(waFloatBtn);
+    }
 
     // 5.2 Inyectar el Telón de Fondo (Backdrop) y el Panel Lateral (Drawer) si no existen
     if (!document.getElementById('accessBackdrop')) {
@@ -630,6 +652,7 @@ function initPrivacyModal() {
 
             <h4>5. Seguridad de la Información</h4>
             <p>Contamos con protocolos técnicos, criptográficos y de seguridad informática (cabeceras seguras HSTS, sanitización de datos y canales cifrados HTTPS) para salvaguardar la integridad de la información contra pérdida, consulta o acceso no autorizado.</p>
+            <p style="margin-top: 1rem;"><a href="politica-privacidad.html" style="color:var(--accent-gold); text-decoration: underline; font-weight: 600;">Consultar documento completo de Política de Tratamiento &rarr;</a></p>
           </div>
           <div class="legal-modal-footer">
             <span>Stratum Group S.A.S. • Ubaté, Colombia</span>
