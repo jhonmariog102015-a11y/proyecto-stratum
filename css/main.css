@@ -27,10 +27,14 @@
   padding: 0;
 }
 
-html, body {
+html {
+  overflow-x: clip;
+}
+
+body {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-main);
   background-color: var(--bg-light);
   color: var(--text-body);
@@ -4795,7 +4799,7 @@ body:has(.dash-header) .btn-whatsapp-float,
   html, body {
     width: 100% !important;
     max-width: 100% !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
   }
 
   * {
@@ -5434,190 +5438,227 @@ body:has(.dash-header) .btn-whatsapp-float,
   margin: 0;
 }
 
-/* 2. BLOQUE "CONOCE A STRATUM GROUP" (PRESENTACIÓN INSTITUCIONAL) */
-.intro-stratum-section {
-  padding: 6rem 5%;
+/* 2. RESPALDO INTEGRAL EN TERRITORIO (DISEÑO EDITORIAL TÉCNICO) */
+.intro-territorio-section {
+  padding-block: clamp(4.5rem, 8vw, 7.5rem);
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
   background: #FFFFFF;
   position: relative;
 }
 
-.intro-stratum-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-.intro-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--brand-purple, #3B1E43);
-  background: rgba(59, 30, 67, 0.08);
-  padding: 0.4rem 0.9rem;
-  border-radius: 50px;
-  margin-bottom: 1.2rem;
-  border: 1px solid rgba(59, 30, 67, 0.15);
-}
-
-.intro-title {
-  font-size: 2.3rem;
-  color: var(--brand-purple-dark, #1E0F23);
-  font-weight: 800;
-  line-height: 1.25;
-  margin-bottom: 1.4rem;
-}
-
-.intro-title span {
-  color: var(--accent-gold, #D4AF37);
-}
-
-.intro-desc {
-  font-size: 1.05rem;
-  color: #4B5563;
-  line-height: 1.7;
-  margin-bottom: 1.8rem;
-}
-
-.intro-highlights-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
-  margin-bottom: 2.2rem;
-}
-
-.intro-highlight-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.intro-highlight-item svg {
-  color: var(--accent-gold, #D4AF37);
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-.intro-highlight-item span {
-  font-size: 0.94rem;
-  font-weight: 600;
-  color: #1F2937;
-  line-height: 1.4;
-}
-
-.intro-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  flex-wrap: wrap;
-}
-
-.btn-intro-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-purple-dark) 100%);
-  color: #FFFFFF;
-  padding: 0.85rem 1.8rem;
-  border-radius: 8px;
-  font-weight: 700;
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 15px rgba(59, 30, 67, 0.25);
-}
-
-.btn-intro-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 30, 67, 0.4);
-  color: #FFFFFF;
-}
-
-.btn-intro-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--brand-purple, #3B1E43);
-  font-weight: 700;
-  text-decoration: none;
-  font-size: 0.95rem;
-  padding: 0.85rem 1.4rem;
-  border: 1px solid rgba(59, 30, 67, 0.25);
-  border-radius: 8px;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.btn-intro-secondary:hover {
-  background: rgba(59, 30, 67, 0.05);
-  border-color: var(--brand-purple);
-}
-
-/* Visual e Imagen Flotante */
-.intro-visual-col {
-  position: relative;
-}
-
-.intro-img-frame {
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 20px 45px rgba(30, 15, 35, 0.18);
-  border: 4px solid #FFFFFF;
-  height: 420px;
-}
-
-.intro-img-frame img {
+.intro-territorio-section .wrap {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  max-width: 1280px;
+  margin-inline: auto;
 }
 
-.intro-floating-badge {
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  background: linear-gradient(135deg, #1E0F23 0%, #3B1E43 100%);
-  color: #FFFFFF;
-  padding: 1.4rem 1.6rem;
-  border-radius: 14px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  display: flex;
+.intro-territorio-section .intro {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+
+.intro-territorio-section .intro__sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: calc(80px + 2rem);
+  align-self: start;
+  z-index: 2;
+}
+
+.intro-territorio-section .section__title {
+  font-family: 'Geologica', 'Montserrat', -apple-system, sans-serif;
+  font-size: clamp(2rem, 3.8vw, 3.35rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--brand-purple-dark, #1E0F23);
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Animaciones de entrada al hacer scroll (Reveal on scroll) */
+.intro-territorio-section .section__title.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-territorio-section .section__title.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+.intro-territorio-section .intro__body {
+  display: grid;
+  gap: 2.25rem;
+}
+
+.intro-territorio-section .lead {
+  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: clamp(1.08rem, 1.35vw, 1.25rem);
+  color: #374151;
+  line-height: 1.65;
+}
+
+.intro-territorio-section .lead.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+
+.intro-territorio-section .lead.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+.intro-territorio-section .lead p {
+  margin: 0;
+}
+
+.intro-territorio-section .lead p + p {
+  margin-top: 1.15rem;
+}
+
+.intro-territorio-section .lead strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.intro-territorio-section .checks {
+  border-top: 1px solid #E5E7EB;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.intro-territorio-section .checks li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 1.25rem;
   align-items: center;
-  gap: 1.1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid #E5E7EB;
 }
 
-.intro-badge-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(212, 175, 55, 0.15);
+.intro-territorio-section .checks li.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-territorio-section .checks li.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+.intro-territorio-section .checks li:nth-child(1).reveal-on-scroll {
+  transition-delay: 0.12s;
+}
+
+.intro-territorio-section .checks li:nth-child(2).reveal-on-scroll {
+  transition-delay: 0.22s;
+}
+
+.intro-territorio-section .checks li:nth-child(3).reveal-on-scroll {
+  transition-delay: 0.32s;
+}
+
+.intro-territorio-section .checks li:nth-child(4).reveal-on-scroll {
+  transition-delay: 0.42s;
+}
+
+.intro-territorio-section .checks .ic {
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
+  background: #EFE8F4;
+  color: var(--brand-purple, #3B1E43);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-gold);
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
 }
 
-.intro-badge-text strong {
-  display: block;
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: var(--accent-gold);
-  line-height: 1.1;
+.intro-territorio-section .checks li:hover .ic {
+  transform: scale(1.08) translateY(-2px);
+  background: #E5D6EE;
 }
 
-.intro-badge-text span {
-  font-size: 0.8rem;
-  color: #D1D5DB;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.intro-territorio-section .checks .ic svg {
+  width: 22px;
+  height: 22px;
+}
+
+.intro-territorio-section .checks p {
+  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 1.04rem;
+  font-weight: 500;
+  color: #1F2937;
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .intro-territorio-section .intro {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .intro-territorio-section .intro__sticky {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-territorio-section .section__title.reveal-on-scroll,
+  .intro-territorio-section .lead.reveal-on-scroll,
+  .intro-territorio-section .checks li.reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Modo Oscuro & Alto Contraste */
+html.dark-mode .intro-territorio-section {
+  background: #0B0F19 !important;
+}
+html.dark-mode .intro-territorio-section .section__title {
+  color: #FFFFFF !important;
+}
+html.dark-mode .intro-territorio-section .lead {
+  color: #CBD5E1 !important;
+}
+html.dark-mode .intro-territorio-section .lead strong {
+  color: #F8FAFC !important;
+}
+html.dark-mode .intro-territorio-section .checks,
+html.dark-mode .intro-territorio-section .checks li {
+  border-color: #1F2937 !important;
+}
+html.dark-mode .intro-territorio-section .checks .ic {
+  background: rgba(212, 175, 55, 0.15) !important;
+  color: #F2C94C !important;
+}
+html.dark-mode .intro-territorio-section .checks p {
+  color: #E2E8F0 !important;
+}
+
+html.high-contrast .intro-territorio-section {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+html.high-contrast .intro-territorio-section .section__title,
+html.high-contrast .intro-territorio-section .lead,
+html.high-contrast .intro-territorio-section .checks p {
+  color: #FFFFFF !important;
+}
+html.high-contrast .intro-territorio-section .checks .ic {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
 }
 
 /* 3. CASOS DE ÉXITO / PROYECTOS DESTACADOS */
@@ -5990,20 +6031,17 @@ body:has(.dash-header) .btn-whatsapp-float,
 /* ==========================================================================
    ADAPTACIONES DE MODO OSCURO (DARK MODE) PARA LOS NUEVOS MÓDULOS
    ========================================================================== */
-html.dark-mode .intro-stratum-section,
 html.dark-mode .cases-section,
 html.dark-mode .testimonials-section,
 html.dark-mode .home-news-section {
   background: #0B0F19 !important;
 }
 
-html.dark-mode .intro-title,
 html.dark-mode .cases-header h2,
 html.dark-mode .home-news-title h2 {
   color: #FFFFFF !important;
 }
 
-html.dark-mode .intro-desc,
 html.dark-mode .cases-header p,
 html.dark-mode .home-news-title p {
   color: #94A3B8 !important;
@@ -6021,8 +6059,7 @@ html.dark-mode .author-details h5 {
 }
 
 html.dark-mode .case-card-body p,
-html.dark-mode .testimonial-quote,
-html.dark-mode .intro-highlight-item span {
+html.dark-mode .testimonial-quote {
   color: #D1D5DB !important;
 }
 
@@ -6038,7 +6075,6 @@ html.dark-mode .case-results-box strong {
    ADAPTACIONES DE ALTO CONTRASTE (HIGH CONTRAST WCAG AAA)
    ========================================================================== */
 html.high-contrast .trust-badges-section,
-html.high-contrast .intro-stratum-section,
 html.high-contrast .cases-section,
 html.high-contrast .testimonials-section,
 html.high-contrast .home-news-section,
@@ -6056,14 +6092,12 @@ html.high-contrast .testimonial-card {
 }
 
 html.high-contrast .trust-badge-icon,
-html.high-contrast .intro-badge-icon,
 html.high-contrast .author-avatar-initials {
   background: #000000 !important;
   border: 2px solid #FFFF00 !important;
   color: #FFFF00 !important;
 }
 
-html.high-contrast .intro-title,
 html.high-contrast .cases-header h2,
 html.high-contrast .home-news-title h2,
 html.high-contrast .cta-diagnosis-title,
@@ -6073,7 +6107,6 @@ html.high-contrast .trust-badge-info h4 {
   color: #FFFFFF !important;
 }
 
-html.high-contrast .intro-desc,
 html.high-contrast .cases-header p,
 html.high-contrast .home-news-title p,
 html.high-contrast .cta-diagnosis-desc,
@@ -6084,7 +6117,6 @@ html.high-contrast .author-details span {
   color: #FFFFFF !important;
 }
 
-html.high-contrast .intro-tag,
 html.high-contrast .cta-diagnosis-badge,
 html.high-contrast .case-badge {
   background: #000000 !important;
@@ -6109,7 +6141,6 @@ html.high-contrast .case-results-box strong {
   color: #FFFFFF !important;
 }
 
-html.high-contrast .btn-intro-primary,
 html.high-contrast .btn-cta-gold {
   background: #FFFF00 !important;
   color: #000000 !important;
@@ -6117,7 +6148,6 @@ html.high-contrast .btn-cta-gold {
   font-weight: 900 !important;
 }
 
-html.high-contrast .btn-intro-secondary,
 html.high-contrast .btn-cta-outline,
 html.high-contrast .home-news-all-btn {
   background: #000000 !important;
@@ -6125,7 +6155,6 @@ html.high-contrast .home-news-all-btn {
   border: 2px solid #FFFFFF !important;
 }
 
-html.high-contrast .btn-intro-secondary:hover,
 html.high-contrast .btn-cta-outline:hover,
 html.high-contrast .home-news-all-btn:hover {
   background: #FFFF00 !important;
@@ -6136,35 +6165,12 @@ html.high-contrast .home-news-all-btn:hover {
    ADAPTACIONES RESPONSIVAS (MÓVIL / TABLET) PARA LOS NUEVOS MÓDULOS
    ========================================================================== */
 @media (max-width: 992px) {
-  .intro-stratum-container {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-
-  .intro-visual-col {
-    order: -1;
-  }
-
-  .intro-floating-badge {
-    bottom: -15px;
-    left: 10px;
-    right: 10px;
-  }
-
   .cta-diagnosis-title {
     font-size: 2.1rem;
   }
 }
 
 @media (max-width: 640px) {
-  .intro-highlights-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .intro-title {
-    font-size: 1.85rem;
-  }
-
   .cta-diagnosis-title {
     font-size: 1.75rem;
   }
