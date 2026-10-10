@@ -227,28 +227,44 @@ export async function loadHomeNews() {
       const enlaceUrl = data.enlace && /^https?:\/\//i.test(data.enlace.trim()) ? escapeHTML(data.enlace.trim()) : 'noticias.html';
       const isExternal = enlaceUrl.startsWith('http');
 
-      const articleHTML = `
-        <article class="news-card-d6" style="margin: 0;">
-          <div class="news-card-img-wrap">
-            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img" loading="lazy">
-            <span class="news-card-badge">${categoria}</span>
-          </div>
-          <div class="news-card-body">
-            <span class="news-card-date">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              ${fechaTexto}
-            </span>
-            <h3 class="news-card-title">${titulo}</h3>
-            <p class="news-card-excerpt">${resumen}</p>
-            <div class="news-card-footer">
-              <a href="${enlaceUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="news-card-link">
-                ${isExternal ? 'Ver noticia completa &rarr;' : 'Leer en Noticias &rarr;'}
-              </a>
+      if (homeNewsContainer.classList.contains("news-rows")) {
+        const rowHTML = `
+          <a class="news-row" href="${enlaceUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+            <time>${fechaTexto}</time>
+            <div>
+              <h3>${titulo}</h3>
+              <span class="cat">${categoria}</span>
             </div>
-          </div>
-        </article>
-      `;
-      tarjetas.push(articleHTML);
+            <span class="go" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </span>
+          </a>
+        `;
+        tarjetas.push(rowHTML);
+      } else {
+        const articleHTML = `
+          <article class="news-card-d6" style="margin: 0;">
+            <div class="news-card-img-wrap">
+              <img src="${imagenUrl}" alt="${titulo}" class="news-card-img" loading="lazy">
+              <span class="news-card-badge">${categoria}</span>
+            </div>
+            <div class="news-card-body">
+              <span class="news-card-date">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${fechaTexto}
+              </span>
+              <h3 class="news-card-title">${titulo}</h3>
+              <p class="news-card-excerpt">${resumen}</p>
+              <div class="news-card-footer">
+                <a href="${enlaceUrl}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} class="news-card-link">
+                  ${isExternal ? 'Ver noticia completa &rarr;' : 'Leer en Noticias &rarr;'}
+                </a>
+              </div>
+            </div>
+          </article>
+        `;
+        tarjetas.push(articleHTML);
+      }
     });
 
     homeNewsContainer.innerHTML = tarjetas.join("");

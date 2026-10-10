@@ -611,6 +611,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 9. MEDICIÓN AUTOMÁTICA DE CONVERSIONES Y EVENTOS CLAVE EN GA4
   initConversionTracking();
+
+  // 10. MÓDULOS DE INTERACCIÓN EDITORIAL STRATUM (PESTAÑAS, CURVAS, ÍNDICE)
+  initStratumUI();
 });
 
 // Medición de eventos de conversión y contacto para Google Analytics 4 (GA4)
@@ -749,4 +752,96 @@ function initPrivacyModal() {
     }
   });
 }
+
+// Control de interactividad editorial Stratum (Pestañas metodología, curvas topográficas, espía de índice legal)
+function initStratumUI() {
+  const root = document.documentElement;
+  root.classList.add('js');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 1. Revelado por visibilidad: curvas de nivel (.contours) y franjas (.reveal)
+  const targets = Array.from(document.querySelectorAll('.contours, .reveal'));
+  const show = (el) => el.classList.add('is-in');
+
+  if ('IntersectionObserver' in window && !reduce) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          show(en.target);
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
+
+    targets.forEach((t) => io.observe(t));
+    setTimeout(() => { targets.forEach(show); }, 4000);
+  } else {
+    targets.forEach(show);
+  }
+
+  // 2. Pestañas interactivas de metodología (¿Cómo trabajamos?)
+  const tabs = Array.from(document.querySelectorAll('.step-btn'));
+  if (tabs.length) {
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')));
+    const select = (i) => {
+      tabs.forEach((t, k) => {
+        const on = k === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (panels[k]) {
+          panels[k].hidden = !on;
+          if (on) {
+            panels[k].classList.remove('is-swap');
+            void panels[k].offsetWidth;
+            panels[k].classList.add('is-swap');
+          }
+        }
+      });
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        let n = null;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') n = (i + 1) % tabs.length;
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') n = (i - 1 + tabs.length) % tabs.length;
+        if (n !== null) {
+          e.preventDefault();
+          select(n);
+          tabs[n].focus();
+        }
+      });
+    });
+
+    select(0);
+  }
+
+  // 3. Índice lateral para páginas legales
+  const links = Array.from(document.querySelectorAll('.index a[href^="#"]'));
+  if (links.length && 'IntersectionObserver' in window) {
+    const map = {};
+    links.forEach((a) => {
+      const targetId = a.getAttribute('href').slice(1);
+      if (targetId) map[targetId] = a;
+    });
+
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          links.forEach((a) => a.removeAttribute('aria-current'));
+          const a = map[en.target.id];
+          if (a) a.setAttribute('aria-current', 'true');
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+
+    Object.keys(map).forEach((id) => {
+      const s = document.getElementById(id);
+      if (s) spy.observe(s);
+    });
+
+    if (links[0]) links[0].setAttribute('aria-current', 'true');
+  }
+}
+
 
