@@ -25,8 +25,8 @@
   <meta name="twitter:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3.1">
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=3.3">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
   <!-- Google Analytics 4 (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV8K98LN1V"></script>
@@ -57,7 +57,7 @@
     }
   }
   </script>
-  <script src="js/app.js?v=3.1" defer></script>
+  <script src="js/app.js?v=3.2" defer></script>
 </head>
 
 <body>
@@ -105,16 +105,15 @@
     <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
   </header>
 
-  <!-- INTERIOR HERO -->
+  <!-- INTERIOR HERO (EXCEPCIÓN 1: MANTENIDO CON ESTILO ORIGINAL DE ALTO IMPACTO) -->
   <section class="hero-interior">
     <div class="hero-interior-content">
       <h1>Nosotros</h1>
-      <p>Conoce quiénes somos, nuestra visión y el compromiso que tenemos con el desarrollo del sector minero-energético
-        en Colombia.</p>
+      <p>Conoce quiénes somos, nuestra visión y el compromiso que tenemos con el desarrollo del sector minero-energético en Colombia.</p>
     </div>
   </section>
 
-  <!-- BREADCRUMB (MIGAS DE PAN - REQ. 4) -->
+  <!-- BREADCRUMB (MIGAS DE PAN) -->
   <nav class="breadcrumb-nav" aria-label="Migas de pan">
     <ol class="breadcrumb-list">
       <li class="breadcrumb-item"><a href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Inicio</a></li>
@@ -123,158 +122,117 @@
     </ol>
   </nav>
 
-  <!-- SECCIÓN ACERCA DE -->
-  <section class="about-section">
-    <div class="about-container">
-      <div class="about-text">
-        <h2>¿Quiénes Somos?</h2>
-        <p><strong>Stratum Group S.A.S.</strong> es una compañía especializada en la prestación de servicios
-          profesionales de ingeniería, consultoría e interventoría desde el año 2018, orientados a brindar soluciones
-          integrales y eficientes a nuestros clientes en los sectores de minería, hidrocarburos, energía y medio
-          ambiente.</p>
-        <p>Contamos con un equipo profesional interdisciplinario altamente calificado, con amplia experiencia, capacidad
-          técnica y compromiso, que trabaja bajo principios de calidad, seguridad, responsabilidad e innovación.</p>
-        <p>Nuestra compañía está enfocada en ofrecer soluciones eficaces, oportunas y sostenibles, respaldadas por el
-          uso de tecnología, equipos e insumos de vanguardia, así como por metodologías y herramientas que permiten
-          atender las necesidades específicas de cada proyecto.</p>
-        <p>En Stratum Group S.A.S. nos comprometemos con la excelencia en la prestación de nuestros servicios, generando
-          valor, confianza y resultados de alta calidad para nuestros clientes y contribuyendo al desarrollo responsable
-          de los sectores en los que participamos.</p>
-      </div>
-      <div class="about-image">
-        <div class="about-img-wrapper">
-          <img src="assets/drone_landscape.png" alt="Equipo Stratum Group" width="600" height="400" loading="lazy">
-          <div class="about-img-overlay"></div>
+  <main id="main">
+    <!-- SECCIÓN 1: ¿QUIÉNES SOMOS? -->
+    <section class="section" aria-labelledby="q-t">
+      <div class="wrap about">
+        <div class="about__img">
+          <img src="assets/coal_hand.png" alt="Manos con restos de carbón sosteniendo una pieza brillante dentro de una mina subterránea" loading="lazy">
+        </div>
+        <div class="about__text">
+          <h2 class="section__title" id="q-t">¿Quiénes somos?</h2>
+          <p class="lead">Somos una compañía de ingeniería, consultoría e interventoría con sede en Ubaté, Cundinamarca. Trabajamos con un equipo interdisciplinario en minería, hidrocarburos, energía y medio ambiente.</p>
+          <p>Cada proyecto se guía por cuatro valores fundamentales que organizan cómo decidimos y cómo entregamos cada solución en territorio.</p>
+          <ul class="values">
+            <li>Calidad</li>
+            <li>Seguridad</li>
+            <li>Responsabilidad</li>
+            <li>Innovación</li>
+          </ul>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SECCIÓN MISIÓN Y VISIÓN -->
-  <section class="mv-section">
-    <div class="mv-container">
-      <div class="mv-card">
-        <div class="mv-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-        </div>
-        <h3>Nuestra Misión</h3>
-        <p>Brindar soluciones integrales de ingeniería, consultoría e interventoría en los sectores de minería,
-          hidrocarburos, energía y ambiente, mediante un equipo de profesionales altamente calificados y comprometidos
-          con la excelencia, la innovación y la satisfacción de nuestros clientes.</p>
-        <p>Desarrollamos nuestros servicios bajo altos estándares de calidad, seguridad, responsabilidad ambiental y
-          cumplimiento normativo, generando soluciones eficientes y sostenibles que aporten valor a nuestros clientes y
-          al desarrollo del sector.</p>
+    <!-- SECCIÓN 2: MISIÓN Y VISIÓN -->
+    <section class="mv" aria-label="Misión y visión">
+      <div class="mv__a">
+        <div class="topo topo--light"></div>
+        <h2>Misión</h2>
+        <p>Brindar soluciones integrales de ingeniería, consultoría e interventoría en minería, hidrocarburos, energía y ambiente, con estándares de calidad, seguridad, responsabilidad ambiental y cumplimiento normativo.</p>
       </div>
-      <div class="mv-card">
-        <div class="mv-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </div>
-        <h3>Nuestra Visión</h3>
-        <p>Ser una compañía reconocida a nivel nacional por su innovación, excelencia y calidad en la prestación de
-          servicios de ingeniería, consultoría e interventoría en los sectores de minería, energía, hidrocarburos y
-          medio ambiente.</p>
-        <p>Consolidarnos como una organización reconocida por la calidad humana, experiencia y profesionalismo de
-          nuestro equipo de trabajo, así como por nuestra capacidad para desarrollar soluciones eficientes, sostenibles
-          y de alto valor para nuestros clientes.</p>
+      <div class="mv__b">
+        <h2>Visión</h2>
+        <p>Ser una compañía reconocida a nivel nacional por su innovación, excelencia y calidad, consolidada por la calidad humana, la experiencia y el profesionalismo de su equipo.</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SECCIÓN NUESTRO ENFOQUE & TECNOLOGÍA (DEL NUEVO PDF) -->
-  <section class="values-section">
-    <div class="values-header">
-      <h2>Nuestro Enfoque Diferencial</h2>
-      <p><strong>Tecnología + Ingeniería Minera + Inteligencia Artificial:</strong> Combinamos el conocimiento profundo del sector con herramientas de desarrollo digital avanzado para responder a las necesidades reales de cada operación.</p>
-    </div>
-    <div class="values-grid">
-      <div class="value-card">
-        <div class="value-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15l-3 3-1-4-4-1 3-3V7l4-1 4 1v4l3 3-4 1-1 4-3-3z"></path></svg>
+    <!-- SECCIÓN 3: ENFOQUE DIFERENCIAL & TECNOLOGÍA -->
+    <section class="section" aria-labelledby="d-t">
+      <div class="wrap diff">
+        <div>
+          <h2 class="section__title" id="d-t">Tecnología + ingeniería minera + inteligencia artificial</h2>
+          <ul class="diff__list">
+            <li>
+              <h3>Respaldo profesional</h3>
+              <p>Ingenieros de minas, geólogos, especialistas regulatorios y desarrolladores de software e IA trabajando en un mismo equipo.</p>
+            </li>
+            <li>
+              <h3>Cumplimiento riguroso</h3>
+              <p>Criterios alineados con el Código de Minas, la ANM, el Ministerio del Trabajo y las autoridades ambientales.</p>
+            </li>
+            <li>
+              <h3>Optimización económica</h3>
+              <p>Decisiones técnicas que cuidan el presupuesto y maximizan el rendimiento de la operación.</p>
+            </li>
+          </ul>
         </div>
-        <h4>Respaldo Profesional</h4>
-        <p>Equipo multidisciplinario integrado por Ingenieros de Minas, Geólogos, Especialistas Regulatorios y Desarrolladores de Software e IA.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div class="diff__img">
+          <img src="img/metodologia_paso3.jpg" alt="Dos profesionales revisan un mapa de la mina en una tableta junto a una excavadora" loading="lazy">
         </div>
-        <h4>Cumplimiento Riguroso</h4>
-        <p>Garantía de alineación técnica con las exigencias del Código de Minas, la ANM, Ministerio de Trabajo y autoridades ambientales.</p>
       </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-        </div>
-        <h4>Optimización Económica</h4>
-        <p>Proyectos diseñados para maximizar el rendimiento de la inversión y minimizar riesgos operativos con plataformas y software a la medida.</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FOOTER -->
-  <footer class="footer-new">
-    <div class="footer-logo">
-      <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group Logo" width="180" height="47" loading="lazy">
+    <!-- (EXCEPCIÓN 2: SECCIÓN DE TRÁMITES Y ENTIDADES EXCLUIDA SEGÚN SOLICITUD) -->
+
+    <!-- SECCIÓN 4: CTA FINAL -->
+    <section class="cta section" aria-labelledby="cta-t">
+      <div class="topo topo--light"></div>
+      <div class="contours" aria-hidden="true">
+        <svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet">
+          <path pathLength="1" style="--i:0" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(0 0) translate(400 400) scale(1.55) rotate(0) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:1" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(6 -4) translate(400 400) scale(1.35) rotate(3) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:2" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(12 -8) translate(400 400) scale(1.17) rotate(6) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:3" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(18 -10) translate(400 400) scale(1) rotate(9) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:4" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(24 -12) translate(400 400) scale(0.85) rotate(12) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:5" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(30 -12) translate(400 400) scale(0.71) rotate(15) translate(-400 -400)"/>
+        </svg>
+      </div>
+      <div class="wrap">
+        <h2 id="cta-t">Hablemos de tu próximo proyecto</h2>
+        <div class="cta__side">
+          <p>Escríbenos o visítanos en Ubaté, Cundinamarca. Estamos listos para aportar valor técnico a tu operación.</p>
+          <div class="cta__actions">
+            <a class="btn" href="https://wa.me/573124117482" target="_blank" rel="noopener">Contactar ahora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+            <a class="btn btn--line-light" href="contacto.html">Ver canales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PIE DE PÁGINA (SITE-FOOTER CORPORATIVO UNIFICADO) -->
+  <footer class="site-footer">
+    <div class="wrap footer__grid">
+      <div class="footer__brand">
+        <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group" width="190" height="50" loading="lazy">
+        <p>Ingeniería, consultoría e interventoría para minería, hidrocarburos, energía y medio ambiente.</p>
+        <div class="social">
+          <a href="https://wa.me/573124117482" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 0 1 8.413 3.488 11.82 11.82 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a>
+          <a href="https://www.instagram.com/stratumgroup/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></a>
+          <a href="https://www.facebook.com/stratumgroup/?locale=es_LA" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        </div>
+      </div>
+      <nav aria-label="Pie de página"><p class="fh">Sitio</p><ul><li><a href="index.html">Inicio</a></li><li><a href="nosotros.html">Nosotros</a></li><li><a href="servicios.html">Servicios</a></li><li><a href="noticias.html">Noticias</a></li><li><a href="contacto.html">Contacto</a></li></ul></nav>
+      <div><p class="fh">Teléfonos</p><address><span>312 411 7482</span><span>310 260 0619</span><a href="mailto:stratumgroupsas@gmail.com">stratumgroupsas@gmail.com</a></address></div>
+      <div><p class="fh">Oficina</p><address><span>Ubaté, Cundinamarca</span><span>Colombia</span></address></div>
     </div>
-    <div class="footer-grid-new">
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12.01" y2="18"></line>
-          </svg>
-        </div>
-        <h4>Teléfono</h4>
-        <p>Líneas de Atención:</p>
-        <p>312 411 7482<br>310 260 0619</p>
-      </div>
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-        <h4>Dirección</h4>
-        <p>Ubaté, Cundinamarca</p>
-        <p>Colombia</p>
-      </div>
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-            <polyline points="22,6 12,13 2,6"></polyline>
-          </svg>
-        </div>
-        <h4>Correo electrónico</h4>
-        <p><a href="mailto:stratumgroupsas@gmail.com"
-            style="color: inherit; text-decoration: none;">stratumgroupsas@gmail.com</a></p>
-      </div>
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-            </path>
-          </svg>
-        </div>
-        <a href="contacto.html" class="footer-btn">Contáctanos</a>
-      </div>
-    </div>
-    <div class="footer-bottom-new">
-      <p class="footer-legal-text">
-        <span>&copy; 2026 Stratum Group S.A.S.</span>
-        <span class="footer-sep">&bull;</span>
-        <a href="aviso-legal.html" class="btn-privacy-trigger" style="text-decoration: none;">Aviso Legal</a>
-        <span class="footer-sep">&bull;</span>
-        <a href="politica-privacidad.html" class="btn-privacy-trigger" style="text-decoration: none;">Política de Tratamiento de Datos Personales</a>
-        <span class="footer-sep">&bull;</span>
-        <span>Todos los derechos reservados.</span>
-      </p>
-    </div>
+    <div class="footer__bottom"><div class="wrap">
+      <span>© 2026 Stratum Group S.A.S. Todos los derechos reservados.</span>
+      <nav aria-label="Legal"><a href="aviso-legal.html">Aviso legal</a><a href="politica-privacidad.html">Política de privacidad</a></nav>
+    </div></div>
   </footer>
 
-  <!-- Botón Flotante de Accesibilidad (Hijo directo de body para evitar problemas de contexto en escala de grises) -->
+  <!-- Botón Flotante de Accesibilidad -->
   <button class="btn-accessibility" id="btnAccessibility" aria-label="Abrir panel de accesibilidad" title="Opciones de Accesibilidad" aria-expanded="false">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <circle cx="12" cy="4" r="2.2" />
