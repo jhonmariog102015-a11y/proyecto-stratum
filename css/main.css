@@ -7268,32 +7268,68 @@ html.high-contrast .home-news-all-btn:hover {
   line-height: 1.65;
   font-size: 1.05rem;
 }
-.values {
+/* Valores Corporativos en Cuadrícula Simétrica */
+.about-values {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--ink);
-  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.75rem;
   list-style: none;
   padding: 0;
   margin-left: 0;
 }
-.values li {
-  list-style: none;
-  padding: 1rem 0.75rem 0 0;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: -0.015em;
-  color: var(--ink);
+.about-value-card {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  padding: 1rem 1.15rem;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: transform var(--t-ui) var(--ease-out), border-color var(--t-ui), box-shadow var(--t-ui);
 }
-.values li small {
-  display: block;
-  margin-top: 0.15rem;
+.about-value-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--clay);
+  box-shadow: 0 6px 18px rgba(46, 18, 54, 0.08);
+}
+.about-value-card__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(107, 46, 124, 0.09);
+  color: var(--brand-purple);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background-color var(--t-ui), color var(--t-ui);
+}
+.about-value-card:hover .about-value-card__icon {
+  background: var(--brand-purple);
+  color: #FFFFFF;
+}
+.about-value-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.about-value-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.about-value-card__desc {
   font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--ink-3);
-  letter-spacing: 0;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 @media (max-width: 960px) {
   .about {
@@ -7302,9 +7338,14 @@ html.high-contrast .home-news-all-btn:hover {
   .about__img {
     aspect-ratio: 16 / 11;
   }
-  .values {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 1rem;
+}
+@media (max-width: 600px) {
+  .about-values {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .about-value-card__desc {
+    white-space: normal;
   }
 }
 
@@ -7432,14 +7473,27 @@ html.dark-mode .about__text p {
 html.dark-mode .about__text .lead {
   color: #FFFFFF;
 }
-html.dark-mode .values {
-  border-top-color: rgba(255, 255, 255, 0.3);
+html.dark-mode .about-value-card {
+  background: #1F2937;
+  border-color: rgba(255, 255, 255, 0.12);
 }
-html.dark-mode .values li {
+html.dark-mode .about-value-card:hover {
+  border-color: var(--clay);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+html.dark-mode .about-value-card__icon {
+  background: rgba(229, 169, 60, 0.15);
+  color: var(--clay);
+}
+html.dark-mode .about-value-card:hover .about-value-card__icon {
+  background: var(--clay);
+  color: #1E0F23;
+}
+html.dark-mode .about-value-card__name {
   color: #FFFFFF;
 }
-html.dark-mode .values li small {
-  color: #D6CAD9;
+html.dark-mode .about-value-card__desc {
+  color: #D1D5DB;
 }
 html.dark-mode .mv__b {
   background: #3B1C44;
