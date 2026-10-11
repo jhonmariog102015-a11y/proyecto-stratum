@@ -6935,7 +6935,8 @@ html.high-contrast .home-news-all-btn:hover {
   margin-top: 0.15rem;
 }
 .site-footer li a,
-.site-footer address a {
+.site-footer address a,
+.site-footer address span {
   display: inline-flex;
   min-height: 36px;
   align-items: center;
