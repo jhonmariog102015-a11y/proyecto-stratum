@@ -7608,6 +7608,170 @@ html.high-contrast .home-news-all-btn:hover {
   }
 }
 
+/* ====================================================
+   Componentes de Noticias Stratum (Featured, Posts, Post)
+   ==================================================== */
+.featured {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(1.5rem, 5vw, 5rem);
+  align-items: center;
+  text-decoration: none;
+}
+.featured__img {
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 16 / 11;
+  background: var(--paper-3, #FAF5FC);
+}
+.featured__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--ease-out);
+  display: block;
+}
+.featured__body {
+  display: grid;
+  gap: 1.1rem;
+}
+.featured__meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.92rem;
+  color: var(--ink-3);
+  align-items: center;
+}
+.featured__meta .cat {
+  color: var(--clay-deep, #9E5616);
+  font-weight: 600;
+}
+.featured h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  color: var(--ink);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  transition: color var(--t-ui) var(--ease-out);
+}
+.featured p {
+  color: var(--ink-2);
+  max-width: 44ch;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+@media (hover: hover) and (pointer: fine) {
+  .featured:hover .featured__img img {
+    transform: scale(1.03);
+  }
+  .featured:hover h2 {
+    color: var(--brand, var(--brand-purple));
+  }
+  .featured:hover .link svg {
+    transform: translateX(4px);
+  }
+}
+@media (max-width: 960px) {
+  .featured {
+    grid-template-columns: 1fr;
+  }
+}
+.posts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+.post {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 1.5rem;
+  text-decoration: none;
+  align-items: start;
+}
+.post__img {
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: var(--paper-3, #FAF5FC);
+}
+.post__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--ease-out);
+  display: block;
+}
+.post time {
+  font-size: 0.9rem;
+  color: var(--ink-3);
+}
+.post .cat {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  color: var(--clay-deep, #9E5616);
+  font-weight: 600;
+}
+.post h3 {
+  margin-top: 0.7rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+  letter-spacing: -0.015em;
+  transition: color var(--t-ui) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .post:hover .post__img img {
+    transform: scale(1.04);
+  }
+  .post:hover h3 {
+    color: var(--brand, var(--brand-purple));
+  }
+}
+@media (max-width: 860px) {
+  .posts {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .post {
+    grid-template-columns: 1fr;
+  }
+  .post__img {
+    aspect-ratio: 16 / 10;
+  }
+}
+.cat {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clay-deep, #9E5616);
+  font-weight: 600;
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--brand, var(--brand-purple));
+  text-decoration: none;
+}
+.link svg {
+  width: 18px;
+  height: 18px;
+  transition: transform var(--t-ui) var(--ease-out);
+}
+.news-dynamic-wrap {
+  display: grid;
+  gap: clamp(3rem, 6vw, 5rem);
+}
+
 /* Soporte de Modo Oscuro para componentes Stratum */
 html.dark-mode .about__img {
   background: var(--paper-2);
@@ -7782,6 +7946,32 @@ html.dark-mode .index a[aria-current="true"] {
   background: var(--accent-gold) !important;
   color: #000000 !important;
 }
+html.dark-mode .featured__img,
+html.dark-mode .post__img {
+  background: #1F2937 !important;
+}
+html.dark-mode .featured h2,
+html.dark-mode .post h3 {
+  color: #FFFFFF !important;
+}
+html.dark-mode .featured:hover h2,
+html.dark-mode .post:hover h3 {
+  color: var(--clay) !important;
+}
+html.dark-mode .featured p {
+  color: #D1D5DB !important;
+}
+html.dark-mode .featured__meta time,
+html.dark-mode .post time {
+  color: #9CA3AF !important;
+}
+html.dark-mode .featured__meta .cat,
+html.dark-mode .post .cat {
+  color: var(--clay) !important;
+}
+html.dark-mode .featured .link {
+  color: var(--clay) !important;
+}
 
 /* Soporte de Alto Contraste (WCAG AAA) */
 html.high-contrast .section--tint {
@@ -7835,6 +8025,26 @@ html.high-contrast .site-footer {
 }
 html.high-contrast .site-footer * {
   color: #FFFFFF !important;
+}
+html.high-contrast .featured,
+html.high-contrast .post {
+  border: 2px solid #FFFFFF !important;
+  background: #000000 !important;
+  padding: 1.5rem !important;
+}
+html.high-contrast .featured h2,
+html.high-contrast .post h3 {
+  color: #FFFF00 !important;
+}
+html.high-contrast .featured p,
+html.high-contrast .featured__meta time,
+html.high-contrast .post time {
+  color: #FFFFFF !important;
+}
+html.high-contrast .featured__meta .cat,
+html.high-contrast .post .cat,
+html.high-contrast .featured .link {
+  color: #FFFF00 !important;
 }
 
 

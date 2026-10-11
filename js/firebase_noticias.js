@@ -95,71 +95,69 @@ export async function loadPublicNews() {
 
     if (docsActivos.length === 0) {
       if (loadingMsg) {
-        loadingMsg.innerHTML = `
-          <div style="text-align: center; padding: 3rem 1rem; color: #64748B;">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" style="margin-bottom: 1rem;">
-              <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-            </svg>
-            <h3 style="color: #1E1B4B; margin-bottom: 0.5rem;">Aún no hay publicaciones recientes</h3>
-            <p>Las últimas novedades, comunicados y proyectos de Stratum Group aparecerán aquí muy pronto.</p>
-          </div>
-        `;
+        loadingMsg.remove();
       }
       return;
     }
 
-    // Limpiar mensaje de carga
+    // Limpiar contenedor (incluyendo mensaje de carga y fallback)
     newsContainer.innerHTML = "";
 
-    // Optimización de rendimiento: acumular en array e insertar de un solo golpe
-    const tarjetas = [];
+    // Primera noticia destacada (.featured)
+    const firstItem = docsActivos[0];
+    const firstData = firstItem.data;
+    const fFecha = escapeHTML(firstData.fecha || (firstData.fecha_creacion?.toDate ? firstData.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente'));
+    const fCategoria = escapeHTML(firstData.categoria || 'Ingeniería minera');
+    const fTitulo = escapeHTML(firstData.titulo || '');
+    const fResumen = escapeHTML(firstData.resumen || '');
+    const fRawImg = firstData.imagen && firstData.imagen.trim() !== "" ? firstData.imagen.trim() : 'img/metodologia_paso4.jpg';
+    const fImgSafe = /^(https:\/\/|assets\/|img\/)/i.test(fRawImg) ? fRawImg : 'img/metodologia_paso4.jpg';
+    const fImgUrl = escapeHTML(fImgSafe);
+    const fEnlace = firstData.enlace && /^https?:\/\//i.test(firstData.enlace.trim()) ? escapeHTML(firstData.enlace.trim()) : null;
 
-    docsActivos.forEach(({ id, data }) => {
+    const featuredHTML = `
+      <a class="featured" href="${fEnlace || '#'}" ${fEnlace ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+        <div class="featured__img"><img src="${fImgUrl}" alt="${fTitulo}"></div>
+        <div class="featured__body">
+          <div class="featured__meta"><span class="cat">${fCategoria}</span><time>${fFecha}</time></div>
+          <h2>${fTitulo}</h2>
+          <p>${fResumen}</p>
+          <span class="link">${fEnlace ? 'Leer artículo' : 'Ver comunicado'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+    `;
 
-      const rawFecha = data.fecha || (data.fecha_creacion?.toDate ? data.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente');
-      const fechaTexto = escapeHTML(rawFecha);
-      const categoria = escapeHTML(data.categoria || 'Corporativo');
-      const titulo = escapeHTML(data.titulo || '');
-      const resumen = escapeHTML(data.resumen || '');
-      const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : 'assets/drone_landscape.png';
-      // Seguridad: permitir URLs https:// o rutas locales seguras (assets/ o img/)
-      const imgSafe = /^(https:\/\/|assets\/|img\/)/i.test(rawImg) ? rawImg : 'assets/drone_landscape.png';
-      const imagenUrl = escapeHTML(imgSafe);
-      // Validar que el enlace sea estrictamente una URL web http o https para evitar javascript:
-      const enlaceUrl = data.enlace && /^https?:\/\//i.test(data.enlace.trim()) ? escapeHTML(data.enlace.trim()) : null;
+    // Siguientes noticias en cuadrícula editorial (.posts)
+    let postsHTML = "";
+    if (docsActivos.length > 1) {
+      const secondaryCards = docsActivos.slice(1).map(({ id, data }) => {
+        const pFecha = escapeHTML(data.fecha || (data.fecha_creacion?.toDate ? data.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente'));
+        const pCategoria = escapeHTML(data.categoria || 'Tecnología e IA');
+        const pTitulo = escapeHTML(data.titulo || '');
+        const pRawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : 'assets/drone_landscape.png';
+        const pImgSafe = /^(https:\/\/|assets\/|img\/)/i.test(pRawImg) ? pRawImg : 'assets/drone_landscape.png';
+        const pImgUrl = escapeHTML(pImgSafe);
+        const pEnlace = data.enlace && /^https?:\/\//i.test(data.enlace.trim()) ? escapeHTML(data.enlace.trim()) : null;
 
-      const articleHTML = `
-        <article class="news-card-d6">
-          <div class="news-card-img-wrap">
-            <img src="${imagenUrl}" alt="${titulo}" class="news-card-img">
-            <span class="news-card-badge">
-              ${categoria}
-            </span>
-          </div>
-          <div class="news-card-body">
-            <span class="news-card-date">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              ${fechaTexto}
-            </span>
-            <h3 class="news-card-title">${titulo}</h3>
-            <p class="news-card-excerpt">${resumen}</p>
-            ${enlaceUrl ? `
-              <div class="news-card-footer">
-                <a href="${enlaceUrl}" target="_blank" rel="noopener noreferrer" class="news-card-link">
-                  Ver noticia completa &rarr;
-                </a>
-              </div>
-            ` : ''}
-          </div>
-        </article>
-      `;
-      tarjetas.push(articleHTML);
-    });
+        return `
+          <a class="post" href="${pEnlace || '#'}" ${pEnlace ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+            <div class="post__img"><img src="${pImgUrl}" alt="${pTitulo}" loading="lazy"></div>
+            <div>
+              <time>${pFecha}</time>
+              <span class="cat">${pCategoria}</span>
+              <h3>${pTitulo}</h3>
+            </div>
+          </a>
+        `;
+      }).join("");
 
-    newsContainer.innerHTML = tarjetas.join("");
+      postsHTML = `<div class="posts">${secondaryCards}</div>`;
+    }
+
+    newsContainer.innerHTML = featuredHTML + postsHTML;
 
     // Manejo seguro de fallback para imágenes rotas sin inline handlers (CSP seguro)
-    newsContainer.querySelectorAll(".news-card-img").forEach((img) => {
+    newsContainer.querySelectorAll("img").forEach((img) => {
       img.addEventListener("error", () => {
         img.src = "assets/drone_landscape.png";
       }, { once: true });
@@ -168,12 +166,7 @@ export async function loadPublicNews() {
   } catch (error) {
     console.error("Error cargando noticias desde Firebase:", error);
     if (loadingMsg) {
-      loadingMsg.innerHTML = `
-        <div style="text-align: center; color: #EF4444; padding: 2rem;">
-          <p><strong>Hubo un problema al conectar con la base de datos.</strong></p>
-          <p style="font-size: 0.85rem; color: #64748B;">Revisa que las reglas de Cloud Firestore permitan lectura pública.</p>
-        </div>
-      `;
+      loadingMsg.remove();
     }
   }
 }

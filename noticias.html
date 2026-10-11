@@ -3,32 +3,31 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.firebaseio.com;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Noticias | Stratum Group</title>
-  <meta name="description"
-    content="Mantente al día con nuestras últimas novedades y actualizaciones del sector minero.">
+  <title>Noticias y Guías | Stratum Group</title>
+  <meta name="description" content="Noticias, guías y comunicados técnicos sobre normativa minera, tecnología e IA y gestión ambiental en Colombia.">
   <link rel="canonical" href="https://www.stratumgroup.com.co/noticias.html">
 
   <!-- Open Graph / Redes Sociales -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.stratumgroup.com.co/noticias.html">
-  <meta property="og:title" content="Noticias Corporativas | Stratum Group">
-  <meta property="og:description" content="Últimas novedades, comunicados y avances en ingeniería minera, tecnología y sostenibilidad de Stratum Group.">
+  <meta property="og:title" content="Noticias y Guías | Stratum Group">
+  <meta property="og:description" content="Normativa minera, tecnología e IA y gestión ambiental para quien opera en territorio.">
   <meta property="og:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Noticias Corporativas | Stratum Group">
-  <meta name="twitter:description" content="Últimas novedades, comunicados y avances en ingeniería minera, tecnología y sostenibilidad de Stratum Group.">
+  <meta name="twitter:title" content="Noticias y Guías | Stratum Group">
+  <meta name="twitter:description" content="Normativa minera, tecnología e IA y gestión ambiental para quien opera en territorio.">
   <meta name="twitter:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com">
   <link rel="preconnect" href="https://firestore.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3.1">
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css?v=3.5">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
   <!-- Google Analytics 4 (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV8K98LN1V"></script>
@@ -43,7 +42,7 @@
   {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Noticias y Novedades | Stratum Group S.A.S.",
+    "name": "Noticias y Guías | Stratum Group S.A.S.",
     "description": "Actualidad normativa, comunicados técnicos y avances del sector minero y ambiental en Colombia.",
     "publisher": {
       "@type": "Organization",
@@ -52,10 +51,11 @@
     }
   }
   </script>
-  <script src="js/app.js?v=3.1" defer></script>
+  <script src="js/app.js?v=3.5" defer></script>
 </head>
 
 <body>
+  <a class="skip" href="#main">Saltar al contenido</a>
 
   <!-- ENCABEZADO (HEADER) -->
   <header id="mainHeader" class="header-d6">
@@ -100,105 +100,162 @@
     <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
   </header>
 
-  <!-- INTERIOR HERO -->
-  <section class="hero-interior">
-    <div class="hero-interior-content">
-      <h1>Noticias Corporativas</h1>
-      <p>Descubre cómo nuestra experiencia en ingeniería, consultoría e interventoría está transformando la industria.
-      </p>
-    </div>
-  </section>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main id="main" style="padding-top: 80px;">
 
-  <!-- BREADCRUMB (MIGAS DE PAN - REQ. 4) -->
-  <nav class="breadcrumb-nav" aria-label="Migas de pan">
-    <ol class="breadcrumb-list">
-      <li class="breadcrumb-item"><a href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Inicio</a></li>
-      <li class="breadcrumb-separator">&gt;</li>
-      <li class="breadcrumb-item active" aria-current="page">Noticias</li>
-    </ol>
-  </nav>
+    <!-- CABECERA DE SECCIÓN (PAGE-HEAD STRATUM) -->
+    <section class="page-head">
+      <div class="topo"></div>
+      <div class="wrap">
+        <h1>Noticias y guías para quien opera en territorio</h1>
+        <p>Normativa minera, tecnología e IA y gestión ambiental.</p>
+      </div>
+    </section>
 
-  <!-- SECCIÓN NOTICIAS FIREBASE -->
-  <section class="news-public-section">
-    <div class="news-public-container">
-      <h2 class="news-public-title">Últimas Publicaciones</h2>
-      
-      <!-- Contenedor donde JS inyectará las noticias -->
-      <div id="firebase-news-container" class="news-grid-d6">
+    <!-- SECCIÓN EDITORIAL DE ARTÍCULOS -->
+    <section class="section" aria-label="Artículos">
+      <div class="wrap" style="display:grid;gap:clamp(3rem,6vw,5rem)">
         
-        <!-- Skeleton Loading (Se muestra mientras Firebase carga) -->
-        <p id="loading-msg" class="news-loading-state">Cargando noticias desde la base de datos...</p>
+        <!-- CONTENEDOR DINÁMICO FIREBASE (CON FALLBACK DE DISEÑO EDITORIAL) -->
+        <div id="firebase-news-container" class="news-dynamic-wrap">
+          <p id="loading-msg" class="news-loading-state" style="text-align: center; color: var(--ink-3); padding: 1rem 0; font-size: 0.95rem;">Cargando publicaciones...</p>
+
+          <!-- Tarjeta Destacada Inicial / Fallback -->
+          <a class="featured" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
+            <div class="featured__img">
+              <img src="img/metodologia_paso4.jpg" alt="Formatos FBM ante la ANM">
+            </div>
+            <div class="featured__body">
+              <div class="featured__meta">
+                <span class="cat">Ingeniería minera</span>
+                <time>24 sep 2026</time>
+              </div>
+              <h2>Nuevos lineamientos para la radicación de formatos FBM ante la ANM</h2>
+              <p>Revisamos qué cambia en la presentación de los formatos básicos mineros y cómo preparar la información técnica con anticipación.</p>
+              <span class="link">Leer artículo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+
+          <!-- Cuadrícula Secundaria Inicial / Fallback -->
+          <div class="posts">
+            <a class="post" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
+              <div class="post__img">
+                <img src="assets/drone_landscape.png" alt="Drones térmicos en monitoreo" loading="lazy">
+              </div>
+              <div>
+                <time>18 sep 2026</time>
+                <span class="cat">Tecnología e IA</span>
+                <h3>Implementación de drones térmicos en monitoreo de taludes y pilas</h3>
+              </div>
+            </a>
+            <a class="post" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
+              <div class="post__img">
+                <img src="img/metodologia_paso1.jpg" alt="Monitoreo hídrico ambiental" loading="lazy">
+              </div>
+              <div>
+                <time>10 sep 2026</time>
+                <span class="cat">Gestión ambiental</span>
+                <h3>Protocolos de monitoreo hídrico exigidos por las CAR en 2026</h3>
+              </div>
+            </a>
+          </div>
+
+        </div>
 
       </div>
+    </section>
+
+    <!-- SECCIÓN CTA DE CIERRE CON CONTORNOS TOPO -->
+    <section class="cta section" aria-labelledby="cta-t">
+      <div class="topo topo--light"></div>
+      <div class="contours" aria-hidden="true">
+        <svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet">
+          <path pathLength="1" style="--i:0" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(0 0) translate(400 400) scale(1.55) rotate(0) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:1" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(6 -4) translate(400 400) scale(1.35) rotate(3) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:2" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(12 -8) translate(400 400) scale(1.17) rotate(6) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:3" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(18 -10) translate(400 400) scale(1) rotate(9) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:4" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(24 -12) translate(400 400) scale(0.85) rotate(12) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:5" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(30 -12) translate(400 400) scale(0.71) rotate(15) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:6" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(34 -10) translate(400 400) scale(0.58) rotate(19) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:7" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(38 -6) translate(400 400) scale(0.46) rotate(23) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:8" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(40 0) translate(400 400) scale(0.35) rotate(27) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:9" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(42 8) translate(400 400) scale(0.25) rotate(31) translate(-400 -400)"/>
+          <path pathLength="1" style="--i:10" d="M400 120C520 110 650 190 690 320C730 450 660 600 530 665C400 730 230 700 150 580C70 460 100 290 200 200C260 150 330 125 400 120Z" transform="translate(42 16) translate(400 400) scale(0.16) rotate(36) translate(-400 -400)"/>
+        </svg>
+      </div>
+      <div class="wrap">
+        <h2 id="cta-t">Hablemos de tu próximo proyecto</h2>
+        <div class="cta__side">
+          <p>Escríbenos o visítanos en Ubaté, Cundinamarca. Estamos listos para aportar valor técnico a tus operaciones.</p>
+          <div class="cta__actions">
+            <a class="btn" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
+              Contactar ahora
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+            <a class="btn btn--line-light" href="contacto.html">Ver canales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PIE DE PÁGINA (FOOTER UNIFICADO) -->
+  <footer class="site-footer">
+    <div class="wrap footer__grid">
+      <div class="footer__brand">
+        <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group" width="190" height="50" loading="lazy">
+        <p>Ingeniería, consultoría e interventoría para minería, hidrocarburos, energía y medio ambiente.</p>
+        <div class="social">
+          <a href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 0 1 8.413 3.488 11.82 11.82 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/stratumgroup/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>
+          </a>
+          <a href="https://www.facebook.com/stratumgroup/?locale=es_LA" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+        </div>
+      </div>
+      <nav aria-label="Pie de página">
+        <p class="fh">Sitio</p>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="servicios.html">Servicios</a></li>
+          <li><a href="noticias.html">Noticias</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+      <div>
+        <p class="fh">Teléfonos</p>
+        <address>
+          <span>312 411 7482</span>
+          <span>310 260 0619</span>
+          <a href="mailto:stratumgroupsas@gmail.com">stratumgroupsas@gmail.com</a>
+        </address>
+      </div>
+      <div>
+        <p class="fh">Oficina</p>
+        <address>
+          <span>Ubaté, Cundinamarca</span>
+          <span>Colombia</span>
+        </address>
+      </div>
     </div>
-  </section>
-  
-  <!-- Firebase Scripts -->
-  <script type="module" src="js/firebase_noticias.js?v=9"></script>
-  <!-- FOOTER -->
-  <footer class="footer-new">
-    <div class="footer-logo">
-      <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group Logo" width="180" height="47" loading="lazy">
-    </div>
-    <div class="footer-grid-new">
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12.01" y2="18"></line>
-          </svg>
-        </div>
-        <h4>Teléfono</h4>
-        <p>Líneas de Atención:</p>
-        <p>312 411 7482<br>310 260 0619</p>
+    <div class="footer__bottom">
+      <div class="wrap">
+        <span>&copy; 2026 Stratum Group S.A.S. Todos los derechos reservados.</span>
+        <nav aria-label="Legal">
+          <a href="aviso-legal.html">Aviso legal</a>
+          <a href="politica-privacidad.html">Política de privacidad</a>
+        </nav>
       </div>
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-        <h4>Dirección</h4>
-        <p>Ubaté, Cundinamarca</p>
-        <p>Colombia</p>
-      </div>
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-            <polyline points="22,6 12,13 2,6"></polyline>
-          </svg>
-        </div>
-        <h4>Correo electrónico</h4>
-        <p><a href="mailto:stratumgroupsas@gmail.com"
-            style="color: inherit; text-decoration: none;">stratumgroupsas@gmail.com</a></p>
-      </div>
-      <div class="footer-col-new">
-        <div class="footer-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-            </path>
-          </svg>
-        </div>
-        <a href="contacto.html" class="footer-btn">Contáctanos</a>
-      </div>
-    </div>
-    <div class="footer-bottom-new">
-      <p class="footer-legal-text">
-        <span>&copy; 2026 Stratum Group S.A.S.</span>
-        <span class="footer-sep">&bull;</span>
-        <a href="aviso-legal.html" class="btn-privacy-trigger" style="text-decoration: none;">Aviso Legal</a>
-        <span class="footer-sep">&bull;</span>
-        <a href="politica-privacidad.html" class="btn-privacy-trigger" style="text-decoration: none;">Política de Tratamiento de Datos Personales</a>
-        <span class="footer-sep">&bull;</span>
-        <span>Todos los derechos reservados.</span>
-      </p>
     </div>
   </footer>
 
-  <!-- Botón Flotante de Accesibilidad (Hijo directo de body para evitar problemas de contexto en escala de grises) -->
+  <!-- Botón Flotante de Accesibilidad -->
   <button class="btn-accessibility" id="btnAccessibility" aria-label="Abrir panel de accesibilidad" title="Opciones de Accesibilidad" aria-expanded="false">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <circle cx="12" cy="4" r="2.2" />
@@ -206,6 +263,8 @@
     </svg>
   </button>
 
+  <!-- Scripts Firebase -->
+  <script type="module" src="js/firebase_noticias.js?v=10"></script>
 </body>
 
 </html>

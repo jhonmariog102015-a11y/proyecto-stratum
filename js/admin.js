@@ -30,7 +30,7 @@ import {
   browserSessionPersistence,
   browserLocalPersistence,
   escapeHTML
-} from "./firebase_noticias.js?v=9";
+} from "./firebase_noticias.js?v=10";
 
 // Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
