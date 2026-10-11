@@ -2989,13 +2989,14 @@ body:has(.dash-header) .btn-whatsapp-float,
 }
 
 .entity-card {
-  width: 250px;
-  min-width: 250px;
-  padding: 2.2rem 1.4rem;
+  width: 240px;
+  min-width: 240px;
+  padding: 1.5rem 1.2rem;
   border-right: 1px solid #F1F5F9;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
   background: #FFFFFF;
   transition: background-color 0.3s ease;
@@ -3006,17 +3007,17 @@ body:has(.dash-header) .btn-whatsapp-float,
 }
 
 .entity-logo-box {
-  height: 85px;
+  height: 75px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.8rem;
   width: 100%;
 }
 
 .entity-logo-box img {
-  max-height: 75px;
-  max-width: 170px;
+  max-height: 65px;
+  max-width: 165px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -3028,10 +3029,10 @@ body:has(.dash-header) .btn-whatsapp-float,
 }
 
 .entity-card-title {
-  font-size: 0.88rem;
-  font-weight: 800;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--brand-purple-dark, #1E1B4B);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   line-height: 1.3;
 }
 
