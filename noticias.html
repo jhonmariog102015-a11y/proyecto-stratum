@@ -123,50 +123,20 @@
     <section class="section" aria-label="Artículos">
       <div class="wrap" style="display:grid;gap:clamp(3rem,6vw,5rem)">
         
-        <!-- CONTENEDOR DINÁMICO FIREBASE (CON FALLBACK DE DISEÑO EDITORIAL) -->
+        <!-- CONTENEDOR DINÁMICO FIREBASE (SE LLENA EXCLUSIVAMENTE DESDE LA BASE DE DATOS) -->
         <div id="firebase-news-container" class="news-dynamic-wrap">
-          <p id="loading-msg" class="news-loading-state" style="text-align: center; color: var(--ink-3); padding: 1rem 0; font-size: 0.95rem;">Cargando publicaciones...</p>
-
-          <!-- Tarjeta Destacada Inicial / Fallback -->
-          <a class="featured" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
-            <div class="featured__img">
-              <img src="img/metodologia_paso4.jpg" alt="Formatos FBM ante la ANM">
+          <div id="loading-msg" class="news-skeleton-loader" aria-live="polite">
+            <div class="skeleton-featured">
+              <div class="skeleton-box skeleton-img"></div>
+              <div class="skeleton-body">
+                <div class="skeleton-box skeleton-meta"></div>
+                <div class="skeleton-box skeleton-title"></div>
+                <div class="skeleton-box skeleton-text"></div>
+                <div class="skeleton-box skeleton-text" style="width: 70%;"></div>
+                <div class="skeleton-box skeleton-btn"></div>
+              </div>
             </div>
-            <div class="featured__body">
-              <div class="featured__meta">
-                <span class="cat">Ingeniería minera</span>
-                <time>24 sep 2026</time>
-              </div>
-              <h2>Nuevos lineamientos para la radicación de formatos FBM ante la ANM</h2>
-              <p>Revisamos qué cambia en la presentación de los formatos básicos mineros y cómo preparar la información técnica con anticipación.</p>
-              <span class="link">Leer artículo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-            </div>
-          </a>
-
-          <!-- Cuadrícula Secundaria Inicial / Fallback -->
-          <div class="posts">
-            <a class="post" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
-              <div class="post__img">
-                <img src="assets/drone_landscape.png" alt="Drones térmicos en monitoreo" loading="lazy">
-              </div>
-              <div>
-                <time>18 sep 2026</time>
-                <span class="cat">Tecnología e IA</span>
-                <h3>Implementación de drones térmicos en monitoreo de taludes y pilas</h3>
-              </div>
-            </a>
-            <a class="post" href="https://wa.me/573124117482" target="_blank" rel="noopener noreferrer">
-              <div class="post__img">
-                <img src="img/metodologia_paso1.jpg" alt="Monitoreo hídrico ambiental" loading="lazy">
-              </div>
-              <div>
-                <time>10 sep 2026</time>
-                <span class="cat">Gestión ambiental</span>
-                <h3>Protocolos de monitoreo hídrico exigidos por las CAR en 2026</h3>
-              </div>
-            </a>
           </div>
-
         </div>
 
       </div>

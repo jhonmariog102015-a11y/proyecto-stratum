@@ -94,13 +94,17 @@ export async function loadPublicNews() {
     });
 
     if (docsActivos.length === 0) {
-      if (loadingMsg) {
-        loadingMsg.remove();
-      }
+      newsContainer.innerHTML = `
+        <div class="empty-news-state" style="text-align: center; padding: 4rem 1.5rem; color: var(--ink-3, #666);">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1.2rem; display: block; opacity: 0.6;"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--ink, #111); margin-bottom: 0.5rem; font-family: var(--font-display);">No hay publicaciones disponibles</h3>
+          <p style="max-width: 460px; margin: 0 auto; font-size: 0.95rem; line-height: 1.5;">Las novedades técnicas, normativas y comunicados de Stratum Group aparecerán aquí.</p>
+        </div>
+      `;
       return;
     }
 
-    // Limpiar contenedor (incluyendo mensaje de carga y fallback)
+    // Limpiar contenedor (incluyendo mensaje de carga y skeleton)
     newsContainer.innerHTML = "";
 
     // Primera noticia destacada (.featured)
@@ -165,8 +169,12 @@ export async function loadPublicNews() {
 
   } catch (error) {
     console.error("Error cargando noticias desde Firebase:", error);
-    if (loadingMsg) {
-      loadingMsg.remove();
+    if (newsContainer) {
+      newsContainer.innerHTML = `
+        <div class="error-news-state" style="text-align: center; padding: 3rem 1.5rem; color: var(--ink-3, #666);">
+          <p style="font-size: 0.95rem;">No fue posible cargar las noticias en este momento. Por favor recarga la página o intenta más tarde.</p>
+        </div>
+      `;
     }
   }
 }
@@ -201,8 +209,15 @@ export async function loadHomeNews() {
       }
     });
 
-    // Si no hay noticias en Firestore, mantenemos intactas las tarjetas de respaldo en el HTML (no rompe ni descuadra)
-    if (docsActivos.length === 0) return;
+    // Si no hay noticias en Firestore, mostramos aviso sutil en lugar de noticias no existentes
+    if (docsActivos.length === 0) {
+      homeNewsContainer.innerHTML = `
+        <div style="padding: 2rem 0; color: var(--ink-3); font-size: 0.95rem;">
+          No hay publicaciones recientes en este momento.
+        </div>
+      `;
+      return;
+    }
 
     // Mostrar máximo 3 noticias en el inicio
     const noticiasHome = docsActivos.slice(0, 3);
