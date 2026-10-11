@@ -7463,6 +7463,151 @@ html.high-contrast .home-news-all-btn:hover {
   }
 }
 
+/* ====================================================
+   Componentes de Catálogo de Servicios (Catalog, Pillar, Defs)
+   ==================================================== */
+.catalog {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.catalog .index {
+  position: sticky;
+  top: calc(var(--header-h) + 2rem);
+  display: grid;
+  gap: 0.35rem;
+}
+.catalog .index h2 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink-3);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.catalog .index a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  color: var(--ink-2);
+  transition: background-color var(--t-ui) var(--ease-out), color var(--t-ui) var(--ease-out);
+}
+.catalog .index a:hover {
+  background: var(--paper-3, #FAF5FC);
+  color: var(--ink);
+}
+.catalog .index a[aria-current="true"] {
+  background: var(--brand-purple);
+  color: #FFFFFF;
+}
+.pillar {
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+.pillar + .pillar {
+  padding-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--ink);
+}
+.pillar__head {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+.pillar__ic {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--fg, var(--ink));
+  flex-shrink: 0;
+}
+.pillar__ic svg {
+  width: 26px;
+  height: 26px;
+}
+.pillar h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.pillar__head p {
+  margin-top: 0.6rem;
+  color: var(--ink-2);
+  max-width: 52ch;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+.defs {
+  border-top: 1px solid var(--line);
+}
+.defs > div {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  gap: 1.5rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.defs dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.08rem;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.defs dd {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-family: var(--font-body);
+}
+@media (max-width: 960px) {
+  .catalog {
+    grid-template-columns: 1fr;
+  }
+  .catalog .index {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+  }
+  .catalog .index::-webkit-scrollbar {
+    display: none;
+  }
+  .catalog .index h2 {
+    display: none;
+  }
+  .catalog .index a {
+    flex: none;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .defs > div {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+}
+
 /* Soporte de Modo Oscuro para componentes Stratum */
 html.dark-mode .about__img {
   background: var(--paper-2);
@@ -7513,6 +7658,38 @@ html.dark-mode .diff__list h3 {
 }
 html.dark-mode .diff__list p {
   color: #D6CAD9;
+}
+html.dark-mode .catalog .index a {
+  color: #D1D5DB;
+}
+html.dark-mode .catalog .index a:hover {
+  background: #374151;
+  color: #FFFFFF;
+}
+html.dark-mode .catalog .index a[aria-current="true"] {
+  background: var(--clay);
+  color: #1E0F23;
+}
+html.dark-mode .pillar + .pillar {
+  border-top-color: rgba(255, 255, 255, 0.2);
+}
+html.dark-mode .pillar h2 {
+  color: #FFFFFF;
+}
+html.dark-mode .pillar__head p {
+  color: #D1D5DB;
+}
+html.dark-mode .defs {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+html.dark-mode .defs > div {
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+html.dark-mode .defs dt {
+  color: #FFFFFF;
+}
+html.dark-mode .defs dd {
+  color: #D1D5DB;
 }
 html.dark-mode .section--tint {
   background: #111827 !important;
