@@ -209,6 +209,7 @@ body {
 }
 
 .hero-title-d6 {
+  font-family: var(--font-display);
   font-size: 3.5rem;
   font-weight: 700;
   line-height: 1.2;
@@ -218,6 +219,7 @@ body {
 }
 
 .hero-desc-d6 {
+  font-family: var(--font-body);
   font-size: 1.2rem;
   color: #E2E8F0;
   max-width: 740px;
@@ -6685,8 +6687,12 @@ html.high-contrast .home-news-all-btn:hover {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.2rem 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 .panel__list li {
+  list-style: none;
   position: relative;
   padding: 0.55rem 0 0.55rem 1.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
@@ -6916,6 +6922,14 @@ html.high-contrast .home-news-all-btn:hover {
   color: var(--ink);
   margin-bottom: 1rem;
   letter-spacing: -0.01em;
+}
+.site-footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.site-footer li {
+  list-style: none;
 }
 .site-footer li + li {
   margin-top: 0.15rem;
@@ -7161,8 +7175,12 @@ html.high-contrast .home-news-all-btn:hover {
 .prose ul {
   display: grid;
   gap: 0.6rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 .prose ul li {
+  list-style: none;
   position: relative;
   padding-left: 1.4rem;
 }
