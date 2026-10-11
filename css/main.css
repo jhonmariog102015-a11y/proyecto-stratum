@@ -18,7 +18,11 @@
   --bg-white: #FFFFFF;
   --border-color: #E2E8F0;
   --border-glass: rgba(255, 255, 255, 0.2);
-  --font-main: 'Montserrat', sans-serif;
+
+  /* TIPOGRAFÍAS OFICIALES UNIFICADAS (STRATUM GROUP) */
+  --font-display: "Geologica", "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk", "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-main: var(--font-body);
 }
 
 * {
@@ -35,10 +39,18 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
-  font-family: var(--font-main);
+  font-family: var(--font-body);
   background-color: var(--bg-light);
   color: var(--text-body);
   line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+button, input, optgroup, select, textarea {
+  font-family: var(--font-body);
 }
 
 /* ==========================================
@@ -1551,105 +1563,169 @@ body:has(.dash-header) .btn-whatsapp-float,
 /* ==========================================
    7. CONTACT PAGE REDESIGN
    ========================================== */
+/* ==========================================
+   7. CONTACT PAGE REDESIGN (EDITORIAL CHANNELS & LIGHT FORM)
+   ========================================== */
 .contact-page-section {
-  padding: 4rem 2rem;
-  background-color: #F9FAFB;
+  padding: clamp(3.5rem, 6vw, 5.5rem) 1.5rem;
+  background-color: var(--paper, #FAF8FB);
 }
 
 .contact-page-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
 }
 
-.contact-info-panel {
-  background-color: #F3F4F6;
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+/* Lado Izquierdo: Canales Directos */
+.contact-channels-panel {
+  width: 100%;
 }
 
-.contact-item {
-  display: flex;
+.channels {
+  border-top: 1px solid var(--ink, #1B0F20);
+  width: 100%;
+}
+
+.channel {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 44px;
+  gap: 1.25rem;
   align-items: center;
-  gap: 1.5rem;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--line, #E0D4E4);
+  text-decoration: none;
+  color: var(--ink, #1B0F20);
+  transition: background-color var(--t-ui, 0.2s) ease, padding-left 0.2s ease;
 }
 
-.c-icon {
-  width: 50px;
-  height: 50px;
-  background-color: var(--brand-purple-dark);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.channel .ic {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm, 10px);
+  background: var(--paper-3, #E9DEEC);
+  color: var(--brand, #5D256C);
+  transition: background-color var(--t-ui, 0.2s) ease, color var(--t-ui, 0.2s) ease, transform 0.2s ease;
 }
 
-.c-icon svg {
+.channel .ic svg {
   width: 24px;
   height: 24px;
 }
 
-.c-text h4 {
-  font-size: 1.1rem;
+.channel small {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-3, #75637C);
+  margin-bottom: 0.2rem;
+}
+
+.channel strong {
+  display: block;
+  font-family: var(--font-display);
   font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 0.3rem;
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--ink, #1B0F20);
+  overflow-wrap: anywhere;
+  transition: color 0.2s ease;
 }
 
-.c-text p {
-  font-size: 0.95rem;
-  color: #6B7280;
+.channel .go {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line, #E0D4E4);
+  color: var(--ink, #1B0F20);
+  transition: background-color var(--t-ui, 0.2s) ease, border-color var(--t-ui, 0.2s) ease, color 0.2s ease, transform var(--t-ui, 0.2s) ease;
 }
 
+.channel .go svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .channel:hover .go {
+    background: var(--clay, #E39922);
+    border-color: var(--clay, #E39922);
+    color: #FFFFFF;
+    transform: translate(2px, -2px);
+  }
+  .channel:hover .ic {
+    background: var(--brand, #5D256C);
+    color: #FFFFFF;
+    transform: scale(1.05);
+  }
+  .channel:hover strong {
+    color: var(--brand, #5D256C);
+  }
+}
+
+.channel:active .go {
+  transform: scale(0.95);
+}
+
+/* Lado Derecho: Formulario Claro */
 .contact-form-panel {
-  background-color: var(--brand-purple-dark);
-  padding: 3rem;
-  color: #fff;
+  background-color: #FFFFFF;
+  border: 1px solid var(--line, #E0D4E4);
+  border-radius: var(--radius, 14px);
+  padding: clamp(2rem, 3.5vw, 3rem);
+  box-shadow: 0 4px 24px rgba(27, 15, 32, 0.04);
+  color: var(--ink, #1B0F20);
 }
 
 .contact-form-panel h2 {
-  font-size: 2rem;
-  margin-bottom: 2rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
   font-weight: 700;
+  color: var(--ink, #1B0F20);
+  margin-bottom: 1.8rem;
+  letter-spacing: -0.02em;
 }
 
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.25rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
+  gap: 1.25rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
   text-align: left;
   width: 100%;
 }
 
 .form-group label {
-  font-size: 0.86rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
   font-weight: 600;
-  color: #E2E8F0;
+  color: var(--ink-2, #4E3E54);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .req-star {
-  color: #EF4444 !important;
+  color: #DC2626 !important;
   font-weight: 900 !important;
   font-size: 0.95rem !important;
 }
@@ -1658,30 +1734,31 @@ body:has(.dash-header) .btn-whatsapp-float,
 .contact-form select,
 .contact-form textarea {
   width: 100%;
-  padding: 0.9rem 1rem;
-  background-color: #E5E7EB;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  font-family: inherit;
+  padding: 0.85rem 1rem;
+  background-color: var(--paper-2, #F3EEF5);
+  border: 1px solid var(--line, #E0D4E4);
+  border-radius: var(--radius-sm, 8px);
+  font-family: var(--font-body);
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: var(--ink, #1B0F20);
   box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
 .contact-form input:focus,
 .contact-form select:focus,
 .contact-form textarea:focus {
   outline: none;
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.4);
+  background-color: #FFFFFF;
+  border-color: var(--brand, #5D256C);
+  box-shadow: 0 0 0 3px rgba(93, 37, 108, 0.15);
 }
 
-/* Caja de Verificación CAPTCHA (Req. 45) */
+/* Caja de Verificación CAPTCHA */
 .captcha-container {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 8px;
+  background: var(--paper-2, #F3EEF5);
+  border: 1px solid var(--line, #E0D4E4);
+  border-radius: var(--radius-sm, 8px);
   padding: 0.9rem 1.1rem;
   display: flex;
   flex-direction: column;
@@ -1693,14 +1770,16 @@ body:has(.dash-header) .btn-whatsapp-float,
   display: flex;
   align-items: center;
   gap: 10px;
+  font-family: var(--font-body);
   font-size: 0.92rem;
-  color: #FFFFFF;
+  color: var(--ink, #1B0F20);
 }
 
 .captcha-badge {
-  background: var(--accent-gold);
-  color: #1E0F23;
-  font-weight: 800;
+  background: var(--brand, #5D256C);
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: 0.95rem;
   padding: 4px 10px;
   border-radius: 6px;
@@ -1711,7 +1790,7 @@ body:has(.dash-header) .btn-whatsapp-float,
 .btn-captcha-refresh {
   background: transparent;
   border: none;
-  color: #CBD5E1;
+  color: var(--ink-3, #75637C);
   cursor: pointer;
   padding: 4px;
   display: inline-flex;
@@ -1726,29 +1805,62 @@ body:has(.dash-header) .btn-whatsapp-float,
 }
 
 .btn-captcha-refresh:hover {
-  color: var(--accent-gold);
+  color: var(--brand, #5D256C);
 }
 
 .btn-captcha-refresh.spin svg {
   transform: rotate(360deg);
 }
 
+.consent-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--ink-2, #4E3E54);
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.btn-privacy-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--brand, #5D256C);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+}
+
 .btn-submit {
   align-self: flex-start;
-  background-color: transparent;
-  color: #fff;
-  border: 2px solid #fff;
-  padding: 0.8rem 2rem;
+  background-color: var(--brand, #5D256C);
+  color: #FFFFFF;
+  border: 1px solid var(--brand, #5D256C);
+  padding: 0.85rem 2.5rem;
+  font-family: var(--font-display);
   font-weight: 700;
-  border-radius: 4px;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm, 8px);
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.25s, color 0.25s, transform 0.2s, box-shadow 0.2s;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .btn-submit:hover {
-  background-color: #fff;
-  color: var(--brand-purple-dark);
+  background-color: var(--clay, #E39922);
+  border-color: var(--clay, #E39922);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(227, 153, 34, 0.3);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
 }
 
 .map-section {
@@ -8105,6 +8217,103 @@ html.high-contrast .post time {
 html.high-contrast .featured__meta .cat,
 html.high-contrast .post .cat,
 html.high-contrast .featured .link {
+  color: #FFFF00 !important;
+}
+
+/* Modo Oscuro para Canales y Formulario de Contacto */
+html.dark-mode .contact-page-section {
+  background-color: #111827;
+}
+
+html.dark-mode .channels {
+  border-top-color: #374151;
+}
+
+html.dark-mode .channel {
+  border-bottom-color: #1F2937;
+  color: #F9FAFB;
+}
+
+html.dark-mode .channel .ic {
+  background: #1F2937;
+  color: var(--clay, #E39922);
+}
+
+html.dark-mode .channel small {
+  color: #9CA3AF;
+}
+
+html.dark-mode .channel strong {
+  color: #F9FAFB;
+}
+
+html.dark-mode .channel .go {
+  border-color: #374151;
+  color: #F9FAFB;
+}
+
+html.dark-mode .contact-form-panel {
+  background-color: #1F2937;
+  border-color: #374151;
+  color: #F9FAFB;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .contact-form-panel h2 {
+  color: #FFFFFF;
+}
+
+html.dark-mode .form-group label {
+  color: #D1D5DB;
+}
+
+html.dark-mode .contact-form input,
+html.dark-mode .contact-form select,
+html.dark-mode .contact-form textarea {
+  background-color: #111827;
+  border-color: #374151;
+  color: #F9FAFB;
+}
+
+html.dark-mode .contact-form input:focus,
+html.dark-mode .contact-form select:focus,
+html.dark-mode .contact-form textarea:focus {
+  background-color: #111827;
+  border-color: var(--clay, #E39922);
+  box-shadow: 0 0 0 3px rgba(227, 153, 34, 0.2);
+}
+
+html.dark-mode .captcha-container {
+  background: #111827;
+  border-color: #374151;
+}
+
+html.dark-mode .captcha-challenge {
+  color: #F9FAFB;
+}
+
+/* Alto Contraste para Canales y Formulario */
+html.high-contrast .contact-form-panel {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+}
+
+html.high-contrast .contact-form-panel h2 {
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .channel strong {
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .channel .ic {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .channel .go {
+  border-color: #FFFFFF !important;
   color: #FFFF00 !important;
 }
 
