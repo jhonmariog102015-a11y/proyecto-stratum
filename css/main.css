@@ -3957,6 +3957,7 @@ body:has(.dash-header) .btn-whatsapp-float,
 
 .form-input, .form-select, .form-textarea {
   width: 100%;
+  box-sizing: border-box;
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
   border: 1.5px solid #E2E8F0;
@@ -4103,12 +4104,14 @@ body:has(.dash-header) .btn-whatsapp-float,
 
 .dash-container {
   max-width: 1300px;
-  margin: 2.5rem auto;
+  margin: 2rem auto;
   padding: 0 1.5rem;
   width: 100%;
+  box-sizing: border-box;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 2.5rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 2.2rem;
+  align-items: start;
 }
 
 .dash-card {
@@ -4117,6 +4120,9 @@ body:has(.dash-header) .btn-whatsapp-float,
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
   border: 1px solid #E2E8F0;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dash-card-title {
@@ -4127,6 +4133,11 @@ body:has(.dash-header) .btn-whatsapp-float,
   display: flex;
   align-items: center;
   gap: 10px;
+  line-height: 1.3;
+}
+
+.dash-card-title svg {
+  flex-shrink: 0;
 }
 
 .news-list {
@@ -4136,6 +4147,9 @@ body:has(.dash-header) .btn-whatsapp-float,
   max-height: 600px;
   overflow-y: auto;
   padding-right: 0.5rem;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .news-item-card {
@@ -4147,6 +4161,8 @@ body:has(.dash-header) .btn-whatsapp-float,
   border: 1px solid #E2E8F0;
   border-radius: 12px;
   transition: transform 0.2s;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .news-item-card:hover {
@@ -4163,18 +4179,23 @@ body:has(.dash-header) .btn-whatsapp-float,
 }
 
 .news-item-info {
-  flex: 1;
+  flex: 1 1 0%;
   min-width: 0;
+  overflow: hidden;
 }
 
 .news-item-info h4 {
   font-size: 0.95rem;
   font-weight: 700;
   color: #0F172A;
-  white-space: nowrap;
+  margin-bottom: 0.25rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 0.25rem;
+  word-break: break-word;
 }
 
 .news-item-info p {
@@ -4386,9 +4407,55 @@ body:has(.dash-header) .btn-whatsapp-float,
   text-decoration: underline;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .dash-container {
     grid-template-columns: 1fr;
+    gap: 1.75rem;
+    padding: 0 1.25rem;
+  }
+
+  .dash-card {
+    padding: 1.75rem 1.4rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-container {
+    padding: 0 0.85rem;
+    gap: 1.25rem;
+    margin: 1.25rem auto;
+  }
+
+  .dash-card {
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+  }
+
+  .dash-card-title {
+    font-size: 1.15rem;
+  }
+
+  .news-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .news-item-thumb {
+    width: 100%;
+    height: 140px;
+  }
+
+  .news-item-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .dash-inline-form {
+    flex-direction: column;
+  }
+
+  .dash-btn-compact {
+    width: 100%;
   }
 }
 
