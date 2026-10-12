@@ -7848,12 +7848,46 @@ html.high-contrast .home-news-all-btn:hover {
   letter-spacing: -0.015em;
   transition: color var(--t-ui) var(--ease-out);
 }
+.post__desc {
+  margin-top: 0.65rem;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--ink-2, #475569);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.post__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--clay-deep, #9E5616);
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+.news-row-desc {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-3, #64748B);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 @media (hover: hover) and (pointer: fine) {
   .post:hover .post__img img {
     transform: scale(1.04);
   }
   .post:hover h3 {
     color: var(--brand, var(--brand-purple));
+  }
+  .post:hover .post__link {
+    color: var(--brand, var(--brand-purple));
+    transform: translateX(4px);
   }
 }
 @media (max-width: 860px) {
@@ -8140,7 +8174,8 @@ html.dark-mode .featured:hover h2,
 html.dark-mode .post:hover h3 {
   color: var(--clay) !important;
 }
-html.dark-mode .featured p {
+html.dark-mode .featured p,
+html.dark-mode .post__desc {
   color: #D1D5DB !important;
 }
 html.dark-mode .featured__meta time,
@@ -8151,8 +8186,12 @@ html.dark-mode .featured__meta .cat,
 html.dark-mode .post .cat {
   color: var(--clay) !important;
 }
-html.dark-mode .featured .link {
+html.dark-mode .featured .link,
+html.dark-mode .post__link {
   color: var(--clay) !important;
+}
+html.dark-mode .news-row-desc {
+  color: #94A3B8 !important;
 }
 
 /* Soporte de Alto Contraste (WCAG AAA) */
@@ -8194,6 +8233,9 @@ html.high-contrast .news-row {
 html.high-contrast .news-row h3 {
   color: #FFFF00 !important;
 }
+html.high-contrast .news-row-desc {
+  color: #FFFFFF !important;
+}
 html.high-contrast .cta.section {
   background: #000000 !important;
   border-top: 2px solid #FFFFFF;
@@ -8219,13 +8261,15 @@ html.high-contrast .post h3 {
   color: #FFFF00 !important;
 }
 html.high-contrast .featured p,
+html.high-contrast .post__desc,
 html.high-contrast .featured__meta time,
 html.high-contrast .post time {
   color: #FFFFFF !important;
 }
 html.high-contrast .featured__meta .cat,
 html.high-contrast .post .cat,
-html.high-contrast .featured .link {
+html.high-contrast .featured .link,
+html.high-contrast .post__link {
   color: #FFFF00 !important;
 }
 

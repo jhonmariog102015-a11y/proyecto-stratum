@@ -126,7 +126,7 @@ export async function loadPublicNews() {
           <div class="featured__meta"><span class="cat">${fCategoria}</span><time>${fFecha}</time></div>
           <h2>${fTitulo}</h2>
           <p>${fResumen}</p>
-          <span class="link">${fEnlace ? 'Leer artículo' : 'Ver comunicado'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="link">${fEnlace ? 'Leer artículo completo en el medio' : 'Ver comunicado'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </div>
       </a>
     `;
@@ -136,8 +136,9 @@ export async function loadPublicNews() {
     if (docsActivos.length > 1) {
       const secondaryCards = docsActivos.slice(1).map(({ id, data }) => {
         const pFecha = escapeHTML(data.fecha || (data.fecha_creacion?.toDate ? data.fecha_creacion.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente'));
-        const pCategoria = escapeHTML(data.categoria || 'Tecnología e IA');
+        const pCategoria = escapeHTML(data.categoria || 'Minería Estratégica');
         const pTitulo = escapeHTML(data.titulo || '');
+        const pResumen = escapeHTML(data.resumen || '');
         const pRawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : 'assets/drone_landscape.png';
         const pImgSafe = /^(https:\/\/|assets\/|img\/)/i.test(pRawImg) ? pRawImg : 'assets/drone_landscape.png';
         const pImgUrl = escapeHTML(pImgSafe);
@@ -146,10 +147,11 @@ export async function loadPublicNews() {
         return `
           <a class="post" href="${pEnlace || '#'}" ${pEnlace ? 'target="_blank" rel="noopener noreferrer"' : ''}>
             <div class="post__img"><img src="${pImgUrl}" alt="${pTitulo}" loading="lazy"></div>
-            <div>
-              <time>${pFecha}</time>
-              <span class="cat">${pCategoria}</span>
+            <div class="post__body">
+              <div class="post__meta"><time>${pFecha}</time> &bull; <span class="cat">${pCategoria}</span></div>
               <h3>${pTitulo}</h3>
+              <p class="post__desc">${pResumen}</p>
+              <span class="post__link">${pEnlace ? 'Leer artículo completo &rarr;' : 'Ver detalle &rarr;'}</span>
             </div>
           </a>
         `;
@@ -241,6 +243,7 @@ export async function loadHomeNews() {
             <time>${fechaTexto}</time>
             <div>
               <h3>${titulo}</h3>
+              <p class="news-row-desc">${resumen}</p>
               <span class="cat">${categoria}</span>
             </div>
             <span class="go" aria-hidden="true">
