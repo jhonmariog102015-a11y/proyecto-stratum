@@ -1,14 +1,24 @@
 rules_version = '2';
 
-// Reglas de Seguridad de Cloud Firestore para Stratum Group — v9
-// Protección de Noticias, Autenticación y Autorización para Administradores
+// Reglas de Seguridad de Cloud Firestore para Stratum Group — v10
+// Protección de Noticias, Autenticación y Autorización Estricta de Administradores por Lista Blanca
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Función auxiliar: verifica si el usuario está autenticado en Firebase Auth
+    // Función auxiliar: verifica que el usuario esté autenticado en Firebase Auth
+    // Y que su correo pertenezca a la lista blanca oficial de administradores en Firestore
     function esAdminAutorizado() {
-      return request.auth != null;
+      return request.auth != null 
+        && request.auth.token.email != null
+        && (
+          exists(/databases/$(database)/documents/configuracion/seguridad)
+            ? (
+                (request.auth.token.email.lower() in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados)
+                || (request.auth.token.email in get(/databases/$(database)/documents/configuracion/seguridad).data.correos_autorizados)
+              )
+            : true
+        );
     }
 
     // Validación de estructura y tipos de campos para la colección Noticias
@@ -42,8 +52,8 @@ service cloud.firestore {
 
     // 1. Colección de NOTICIAS
     // - Lectura pública: visitantes y clientes pueden leer las noticias en index.html y noticias.html
-    // - Creación y Edición: administradores autenticados con datos válidos
-    // - Eliminación: administradores autenticados
+    // - Creación y Edición: administradores autenticados y autorizados con datos válidos
+    // - Eliminación: administradores autenticados y autorizados
     match /noticias/{noticiaId} {
       allow read: if true;
       allow create, update: if esAdminAutorizado() && esNoticiaValida();
@@ -52,18 +62,18 @@ service cloud.firestore {
 
     // 2. Documento de REGISTRO PÚBLICO (solo hash de clave maestra)
     // - Lectura pública: requerida para verificar el hash de la clave durante el registro
-    // - Escritura: administradores autenticados
+    // - Escritura: solo administradores autenticados y autorizados (o configuración inicial)
     match /configuracion/registro {
       allow read: if true;
-      allow write: if esAdminAutorizado() && esRegistroValido();
+      allow write: if (esAdminAutorizado() || !exists(/databases/$(database)/documents/configuracion/registro)) && esRegistroValido();
     }
 
     // 3. Documento de SEGURIDAD PRIVADO (lista blanca + hash)
-    // - Lectura: administradores autenticados
-    // - Escritura: administradores autenticados con formato válido
+    // - Lectura: solo administradores autenticados y autorizados en lista blanca (o setup inicial)
+    // - Escritura: solo administradores autenticados y autorizados (o setup inicial) con formato válido
     match /configuracion/seguridad {
-      allow read: if esAdminAutorizado();
-      allow write: if esAdminAutorizado() && esSeguridadValida();
+      allow read: if esAdminAutorizado() || !exists(/databases/$(database)/documents/configuracion/seguridad);
+      allow write: if (esAdminAutorizado() || !exists(/databases/$(database)/documents/configuracion/seguridad)) && esSeguridadValida();
     }
 
     // 4. Bloqueo estricto por defecto para cualquier otra ruta

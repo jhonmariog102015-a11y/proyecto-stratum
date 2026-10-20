@@ -290,7 +290,7 @@ if (loginForm) {
         } else if (error.code === "auth/too-many-requests") {
           loginAlert.textContent = "Demasiados intentos fallidos detectados por Firebase. Por favor espera unos minutos.";
         } else if (error.code === "auth/configuration-not-found") {
-          loginAlert.innerHTML = "<strong>Falta activar Autenticación en Firebase:</strong><br>Abre la <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Firebase</a> y activa Correo/Contraseña.";
+          loginAlert.innerHTML = "<strong>Falta activar Autenticación en Firebase:</strong><br>Abre la <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' rel='noopener noreferrer' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Firebase</a> y activa Correo/Contraseña.";
         } else {
           loginAlert.textContent = "No se pudo iniciar sesión. Verifica tus datos o intenta nuevamente.";
         }
@@ -435,7 +435,7 @@ if (registerForm) {
         } else if (error.code === "auth/invalid-email") {
           loginAlert.textContent = "El formato de correo no es válido.";
         } else if (error.code === "auth/operation-not-allowed" || error.code === "auth/configuration-not-found") {
-          loginAlert.innerHTML = "<strong>Falta activar la Autenticación en Firebase:</strong><br>Abre este enlace: <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Stratum Group</a>, haz clic en <strong>Comenzar</strong> (o <em>Get Started</em>) y activa <strong>Correo electrónico/Contraseña</strong>.";
+          loginAlert.innerHTML = "<strong>Falta activar la Autenticación en Firebase:</strong><br>Abre este enlace: <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' rel='noopener noreferrer' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Stratum Group</a>, haz clic en <strong>Comenzar</strong> (o <em>Get Started</em>) y activa <strong>Correo electrónico/Contraseña</strong>.";
         } else {
           loginAlert.textContent = "No se pudo crear la cuenta. Verifica tus datos o intenta nuevamente.";
         }
@@ -678,6 +678,33 @@ if (publishNewsForm) {
     const imagen = document.getElementById("newsImage").value.trim();
     const enlace = document.getElementById("newsLink").value.trim();
 
+    // Validación de seguridad para URLs externas
+    if (enlace && !/^https?:\/\//i.test(enlace)) {
+      if (publishAlert) {
+        publishAlert.style.display = "block";
+        publishAlert.className = "alert-box alert-error";
+        publishAlert.textContent = "El enlace externo debe comenzar con https:// o http:// (ejemplo: https://ejemplo.com).";
+      }
+      if (btnPublish) {
+        btnPublish.disabled = false;
+        btnPublish.textContent = isEditing ? "Guardar Cambios" : "Publicar Noticia en la Web";
+      }
+      return;
+    }
+
+    if (imagen && !/^(https:\/\/|assets\/|img\/)/i.test(imagen)) {
+      if (publishAlert) {
+        publishAlert.style.display = "block";
+        publishAlert.className = "alert-box alert-error";
+        publishAlert.textContent = "La URL de la imagen debe comenzar con https:// o ser una ruta interna válida (assets/... o img/...).";
+      }
+      if (btnPublish) {
+        btnPublish.disabled = false;
+        btnPublish.textContent = isEditing ? "Guardar Cambios" : "Publicar Noticia en la Web";
+      }
+      return;
+    }
+
     try {
       if (isEditing) {
         // ACTUALIZACIÓN DE NOTICIA EXISTENTE (EDITAR)
@@ -865,35 +892,6 @@ async function loadAdminNews() {
   }
 }
 
-// 9. CIERRE DE SESIÓN AUTOMÁTICO POR INACTIVIDAD (20 MINUTOS)
-const INACTIVITY_LIMIT_MS = 20 * 60 * 1000;
-let idleTimer = null;
-
-function resetIdleTimer() {
-  if (idleTimer) clearTimeout(idleTimer);
-  if (!auth.currentUser) return;
-
-  idleTimer = setTimeout(async () => {
-    if (auth.currentUser) {
-      console.warn("Cerrando sesión de administrador por 20 minutos de inactividad.");
-      try {
-        await signOut(auth);
-        if (loginAlert) {
-          loginAlert.style.display = "block";
-          loginAlert.className = "alert-box alert-error";
-          loginAlert.textContent = "Tu sesión ha sido cerrada automáticamente por inactividad (20 minutos) para proteger el panel.";
-        }
-      } catch (logoutErr) {
-        console.error("Error en cierre automático:", logoutErr);
-      }
-    }
-  }, INACTIVITY_LIMIT_MS);
-}
-
-// Escuchar interacciones para reiniciar el temporizador
-['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(event => {
-  window.addEventListener(event, resetIdleTimer, { passive: true });
-});
 
 // ==========================================
 // 12. MÓDULO DE COPIAS DE SEGURIDAD (BACKUP & RESTORE - REQ. 21)
