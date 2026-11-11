@@ -3395,15 +3395,126 @@ body:has(.dash-header) .btn-whatsapp-float,
   color: #FFFFFF;
   font-size: 1.8rem;
   cursor: pointer;
-  z-index: 1001;
-  padding: 6px;
+  z-index: 1002;
+  padding: 6px 10px;
   line-height: 1;
+  border-radius: 8px;
+  transition: color 0.25s ease, background-color 0.25s ease;
+}
+
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 10, 20, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-nav-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* PANTALLAS INTERMEDIAS Y LAPTOPS COMPACTAS (<= 1200px) */
+@media (max-width: 1200px) {
+  .header-d6 {
+    padding: 16px 4%;
+  }
+
+  .slogan-tag-d6 {
+    display: none !important;
+  }
+
+  .nav-menu-d6 {
+    gap: 1.4rem;
+  }
+
+  .nav-menu-d6 a {
+    font-size: 0.84rem;
+  }
 }
 
 /* TABLETS Y PANTALLAS MEDIANAS (<= 992px) */
 @media (max-width: 992px) {
   .header-d6 {
-    padding: 14px 4%;
+    padding: 12px 4%;
+    background: rgba(15, 10, 20, 0.96);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-d6.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 15px rgba(30, 15, 35, 0.08);
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Cuando el menú lateral está abierto sobre fondo oscuro, el icono de cerrar siempre es blanco */
+  .header-d6.scrolled .mobile-menu-btn.active,
+  .mobile-menu-btn.active {
+    color: #FFFFFF !important;
+  }
+
+  .nav-menu-d6 {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: min(82vw, 300px);
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--brand-purple-dark);
+    flex-direction: column;
+    padding: 85px 26px 32px 26px;
+    gap: 1.5rem;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -8px 0 25px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+    z-index: 1001;
+  }
+
+  .nav-menu-d6.active {
+    right: 0;
+  }
+
+  /* Garantizar contraste blanco y dorado dentro del cajón móvil sin importar si .header-d6 tiene .scrolled */
+  .header-d6 .nav-menu-d6 a,
+  .header-d6.scrolled .nav-menu-d6 a {
+    color: #FFFFFF !important;
+    font-size: 0.95rem;
+    display: block;
+    padding: 6px 0;
+  }
+
+  .header-d6 .nav-menu-d6 a:hover,
+  .header-d6 .nav-menu-d6 a.active,
+  .header-d6.scrolled .nav-menu-d6 a:hover,
+  .header-d6.scrolled .nav-menu-d6 a.active {
+    color: var(--accent-gold) !important;
+  }
+
+  .header-d6.scrolled .nav-menu-d6 a::after {
+    background-color: var(--accent-gold) !important;
+  }
+
+  .social-icons-d6 {
+    display: none;
+  }
+
+  .hero-interior {
+    padding: 135px 1.5rem 65px 1.5rem;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 30px), 0 100%);
+  }
+
+  .hero-interior-content h1 {
+    font-size: clamp(2.1rem, 5vw, 2.8rem);
   }
 
   .stats-grid-d6 {
@@ -3417,6 +3528,11 @@ body:has(.dash-header) .btn-whatsapp-float,
   .services-grid-d6 {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+  }
+
+  .contact-page-container {
+    grid-template-columns: 1fr;
+    gap: 2.2rem;
   }
 
   .footer-grid-new {
@@ -3435,7 +3551,7 @@ body:has(.dash-header) .btn-whatsapp-float,
   /* Header & Navegación móvil */
   .header-d6 {
     padding: 12px 4%;
-    background: transparent;
+    background: rgba(15, 10, 20, 0.96);
   }
   .header-d6.header-solid-dark {
     background: rgba(15, 10, 20, 0.96) !important;
@@ -3460,26 +3576,7 @@ body:has(.dash-header) .btn-whatsapp-float,
   }
 
   .mobile-menu-btn {
-    display: block;
-  }
-
-  .nav-menu-d6 {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: min(80vw, 290px);
-    height: 100vh;
-    background-color: var(--brand-purple-dark);
-    flex-direction: column;
-    padding: 85px 24px 30px 24px;
-    gap: 1.6rem;
-    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: -8px 0 25px rgba(0, 0, 0, 0.6);
-    overflow-y: auto;
-  }
-
-  .nav-menu-d6.active {
-    right: 0;
+    display: inline-flex;
   }
 
   .social-icons-d6 {
@@ -4419,6 +4516,32 @@ body:has(.dash-header) .btn-whatsapp-float,
   }
 }
 
+@media (max-width: 768px) {
+  .dashboard-nav {
+    padding: 0.85rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .dash-brand {
+    gap: 0.65rem;
+  }
+
+  .dash-brand img {
+    height: 28px;
+  }
+
+  .dash-user-controls {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .dash-sec-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 640px) {
   .dash-container {
     padding: 0 0.85rem;
@@ -4603,23 +4726,24 @@ body:has(.dash-header) .btn-whatsapp-float,
 /* ==========================================
    ANIMACIONES DE SCROLL (REVEAL ON SCROLL)
    ========================================== */
-.reveal-on-scroll {
+html.js .reveal-on-scroll {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(24px);
   transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
-.reveal-on-scroll.is-revealed {
+html.js .reveal-on-scroll.is-revealed {
   opacity: 1;
   transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html.js .reveal-on-scroll,
   .reveal-on-scroll {
-    opacity: 1;
-    transform: none;
-    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 
@@ -4714,40 +4838,52 @@ body:has(.dash-header) .btn-whatsapp-float,
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  font-size: 0.82rem;
-  color: #D1D5DB;
+  font-size: 0.86rem;
+  color: var(--ink-2, #4E3E54);
   line-height: 1.45;
   cursor: pointer;
   user-select: none;
+}
+
+html.dark-mode .consent-checkbox-label {
+  color: #D1D5DB;
+}
+
+html.high-contrast .consent-checkbox-label {
+  color: #FFFFFF !important;
 }
 
 .consent-checkbox-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
   margin-top: 2px;
-  accent-color: var(--accent-gold);
+  accent-color: var(--brand-purple, #3B1E43);
   cursor: pointer;
   flex-shrink: 0;
+}
+
+html.dark-mode .consent-checkbox-label input[type="checkbox"] {
+  accent-color: var(--accent-gold);
 }
 
 .btn-privacy-trigger {
   background: none;
   border: none;
-  color: var(--accent-gold);
+  color: var(--brand-purple, #3B1E43);
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
   padding: 0;
   display: inline;
-  font-weight: 600;
+  font-weight: 700;
   transition: color 0.2s ease;
   vertical-align: baseline;
 }
 
 .btn-privacy-trigger:hover,
 .btn-privacy-trigger:focus {
-  color: #FACC15;
+  color: var(--clay-deep, #9E5616);
   outline: none;
 }
 
@@ -5005,9 +5141,9 @@ body:has(.dash-header) .btn-whatsapp-float,
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  color: var(--accent-gold) !important;
+  color: var(--brand-purple, #3B1E43) !important;
   text-decoration: underline !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   cursor: pointer !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -5020,7 +5156,20 @@ body:has(.dash-header) .btn-whatsapp-float,
 
 .btn-privacy-trigger:hover,
 .btn-privacy-trigger:focus {
+  color: var(--clay-deep, #9E5616) !important;
+}
+
+html.dark-mode .btn-privacy-trigger {
+  color: var(--accent-gold) !important;
+}
+
+html.dark-mode .btn-privacy-trigger:hover,
+html.dark-mode .btn-privacy-trigger:focus {
   color: #FACC15 !important;
+}
+
+html.high-contrast .btn-privacy-trigger {
+  color: #FFFF00 !important;
 }
 
 /* RESPONSIVE MÓVIL PRINCIPAL (<= 768px: SmartPhones y Tablets Verticales) */
@@ -5709,13 +5858,13 @@ body:has(.dash-header) .btn-whatsapp-float,
 }
 
 /* Animaciones de entrada al hacer scroll (Reveal on scroll) */
-.intro-territorio-section .section__title.reveal-on-scroll {
+html.js .intro-territorio-section .section__title.reveal-on-scroll {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.intro-territorio-section .section__title.reveal-on-scroll.is-revealed {
+html.js .intro-territorio-section .section__title.reveal-on-scroll.is-revealed {
   opacity: 1;
   transform: none;
 }
@@ -5732,13 +5881,13 @@ body:has(.dash-header) .btn-whatsapp-float,
   line-height: 1.65;
 }
 
-.intro-territorio-section .lead.reveal-on-scroll {
+html.js .intro-territorio-section .lead.reveal-on-scroll {
   opacity: 0;
   transform: translateY(22px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
 }
 
-.intro-territorio-section .lead.reveal-on-scroll.is-revealed {
+html.js .intro-territorio-section .lead.reveal-on-scroll.is-revealed {
   opacity: 1;
   transform: none;
 }
@@ -5772,13 +5921,13 @@ body:has(.dash-header) .btn-whatsapp-float,
   border-bottom: 1px solid #E5E7EB;
 }
 
-.intro-territorio-section .checks li.reveal-on-scroll {
+html.js .intro-territorio-section .checks li.reveal-on-scroll {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.intro-territorio-section .checks li.reveal-on-scroll.is-revealed {
+html.js .intro-territorio-section .checks li.reveal-on-scroll.is-revealed {
   opacity: 1;
   transform: none;
 }
@@ -7213,10 +7362,39 @@ html.high-contrast .home-news-all-btn:hover {
   .footer__brand {
     grid-column: 1 / -1;
   }
+  .footer__bottom {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
 }
 @media (max-width: 560px) {
   .footer__grid {
     grid-template-columns: 1fr;
+  }
+  .footer__bottom .wrap {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
+  }
+  .footer__bottom nav {
+    justify-content: center;
+  }
+  .channel {
+    grid-template-columns: 44px minmax(0, 1fr) 38px;
+    gap: 0.9rem;
+    padding: 1.15rem 0;
+  }
+  .channel .ic {
+    width: 44px;
+    height: 44px;
+  }
+  .channel .go {
+    width: 38px;
+    height: 38px;
+  }
+  .btn-submit {
+    width: 100%;
+    text-align: center;
   }
 }
 

@@ -28,23 +28,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. MENÚ MÓVIL (HAMBURGUESA)
+  // 2. MENÚ MÓVIL Y TABLET (HAMBURGUESA CON BACKDROP Y ACCESIBILIDAD)
   const menuToggle = document.getElementById('mobileMenuToggle');
   const navMenu = document.querySelector('.nav-menu-d6');
 
   if (menuToggle && navMenu) {
-    menuToggle.addEventListener('click', () => {
-      navMenu.classList.toggle('active');
-      menuToggle.classList.toggle('active'); // Para animar el botón si es necesario
+    let navBackdrop = document.getElementById('mobileNavBackdrop');
+    if (!navBackdrop) {
+      navBackdrop = document.createElement('div');
+      navBackdrop.id = 'mobileNavBackdrop';
+      navBackdrop.className = 'mobile-nav-backdrop';
+      document.body.appendChild(navBackdrop);
+    }
+
+    const setMenuOpen = (open) => {
+      navMenu.classList.toggle('active', open);
+      menuToggle.classList.toggle('active', open);
+      navBackdrop.classList.toggle('active', open);
+      menuToggle.setAttribute('aria-expanded', String(open));
+      menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      menuToggle.textContent = open ? '✕' : '☰';
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    menuToggle.setAttribute('aria-expanded', 'false');
+
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = navMenu.classList.contains('active');
+      setMenuOpen(!isOpen);
     });
-    
+
+    navBackdrop.addEventListener('click', () => setMenuOpen(false));
+
     // Cerrar el menú al hacer clic en un enlace
     const navLinks = navMenu.querySelectorAll('a');
     navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        menuToggle.classList.remove('active');
-      });
+      link.addEventListener('click', () => setMenuOpen(false));
+    });
+
+    // Cerrar con tecla Escape o al redimensionar a escritorio
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+        setMenuOpen(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 992 && navMenu.classList.contains('active')) {
+        setMenuOpen(false);
+      }
     });
   }
 
@@ -429,28 +462,39 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(saved.theme || 'stratum-light');
   }
 
-  // 6. ANIMACIONES AL HACER SCROLL (INTERSECTION OBSERVER)
+  // 6. ANIMACIONES AL HACER SCROLL (INTERSECTION OBSERVER CON FALLBACK SEGURO)
   const revealTargets = document.querySelectorAll('.reveal-on-scroll, .service-card-d6, .why-card, .value-card, .pillar-card, .method-card, .news-card-d6');
-  if ('IntersectionObserver' in window && revealTargets.length > 0) {
-    const scrollObserver = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-revealed');
-          obs.unobserve(entry.target);
-        }
-      });
-    }, {
-      root: null,
-      threshold: 0.12,
-      rootMargin: '0px 0px -40px 0px'
-    });
+  if (revealTargets.length > 0) {
+    const revealAll = () => {
+      revealTargets.forEach(el => el.classList.add('is-revealed'));
+    };
 
-    revealTargets.forEach(el => {
-      if (!el.classList.contains('reveal-on-scroll')) {
-        el.classList.add('reveal-on-scroll');
-      }
-      scrollObserver.observe(el);
-    });
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const scrollObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, {
+        root: null,
+        threshold: 0.05,
+        rootMargin: '0px 0px 40px 0px'
+      });
+
+      revealTargets.forEach(el => {
+        if (!el.classList.contains('reveal-on-scroll')) {
+          el.classList.add('reveal-on-scroll');
+        }
+        scrollObserver.observe(el);
+      });
+
+      // Fallback de seguridad para garantizar que ninguna sección quede invisible en móviles/tablets
+      setTimeout(revealAll, 1200);
+    } else {
+      revealAll();
+    }
   }
 
   // 7. ENVÍO ASÍNCRONO DEL FORMULARIO DE CONTACTO (AJAX / FORMSUBMIT) Y CAPTCHA (REQ. 45)
@@ -771,10 +815,10 @@ function initStratumUI() {
           io.unobserve(en.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
+    }, { threshold: 0.05, rootMargin: '0px 0px 40px 0px' });
 
     targets.forEach((t) => io.observe(t));
-    setTimeout(() => { targets.forEach(show); }, 4000);
+    setTimeout(() => { targets.forEach(show); }, 1200);
   } else {
     targets.forEach(show);
   }
@@ -791,6 +835,8 @@ function initStratumUI() {
         if (panels[k]) {
           panels[k].hidden = !on;
           if (on) {
+            const img = panels[k].querySelector('img[loading="lazy"]');
+            if (img) img.setAttribute('loading', 'eager');
             panels[k].classList.remove('is-swap');
             void panels[k].offsetWidth;
             panels[k].classList.add('is-swap');

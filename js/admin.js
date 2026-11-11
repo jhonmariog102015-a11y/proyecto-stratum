@@ -988,17 +988,28 @@ if (backupFileInput) {
 
           let restoredCount = 0;
           for (const item of items) {
-            if (!item.titulo || !item.resumen) continue;
-            const docId = item.id || undefined;
+            if (!item || typeof item !== "object") continue;
+            const titulo = String(item.titulo || "").trim();
+            const resumen = String(item.resumen || "").trim();
+            if (!titulo || !resumen) continue;
+
+            const rawImagen = String(item.imagen || "").trim();
+            const rawEnlace = String(item.enlace || "").trim();
+            const safeImagen = (rawImagen && /^(https:\/\/|assets\/|img\/)/i.test(rawImagen)) ? rawImagen : "";
+            const safeEnlace = (rawEnlace && /^https?:\/\//i.test(rawEnlace)) ? rawEnlace : "";
+
+            const docId = (typeof item.id === "string" && /^[a-zA-Z0-9_-]{1,128}$/.test(item.id)) ? item.id : undefined;
             const dataToSave = {
-              titulo: item.titulo,
-              categoria: item.categoria || "Corporativo",
-              resumen: item.resumen,
-              imagen: item.imagen || "",
-              enlace: item.enlace || "",
+              titulo: titulo.slice(0, 300),
+              categoria: String(item.categoria || "Corporativo").trim().slice(0, 100),
+              resumen: resumen.slice(0, 5000),
+              imagen: safeImagen,
+              enlace: safeEnlace,
               activo: item.activo !== false,
-              fecha: item.fecha || new Date().toISOString().split("T")[0],
-              autor: item.autor || auth.currentUser?.email || "Admin",
+              fecha: (typeof item.fecha === "string" && /^\d{4}-\d{2}-\d{2}/.test(item.fecha))
+                ? item.fecha
+                : new Date().toISOString().split("T")[0],
+              autor: String(item.autor || auth.currentUser?.email || "Admin").trim().slice(0, 120),
               fecha_actualizacion: serverTimestamp()
             };
 
