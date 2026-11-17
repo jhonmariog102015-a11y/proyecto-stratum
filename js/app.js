@@ -1,12 +1,3 @@
-// PROTECCIÓN UNIVERSAL ANTI-CLICKJACKING (Aplica a todas las páginas públicas del sitio)
-if (window.top !== window.self) {
-  try {
-    window.top.location = window.self.location;
-  } catch (e) {
-    document.documentElement.style.display = 'none';
-  }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   // 1. ANIMACIÓN DEL HEADER AL HACER SCROLL (Optimized with requestAnimationFrame)
   const header = document.getElementById('mainHeader');
@@ -38,10 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
       navBackdrop = document.createElement('div');
       navBackdrop.id = 'mobileNavBackdrop';
       navBackdrop.className = 'mobile-nav-backdrop';
+      navBackdrop.setAttribute('aria-hidden', 'true');
       document.body.appendChild(navBackdrop);
     }
 
-    const setMenuOpen = (open) => {
+    const setMenuOpen = (open, restoreFocus = false) => {
       navMenu.classList.toggle('active', open);
       menuToggle.classList.toggle('active', open);
       navBackdrop.classList.toggle('active', open);
@@ -49,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
       menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
       menuToggle.textContent = open ? '✕' : '☰';
       document.body.style.overflow = open ? 'hidden' : '';
+      if (open) navMenu.querySelector('a')?.focus();
+      else if (restoreFocus) menuToggle.focus();
     };
 
     menuToggle.setAttribute('aria-expanded', 'false');
@@ -59,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setMenuOpen(!isOpen);
     });
 
-    navBackdrop.addEventListener('click', () => setMenuOpen(false));
+    navBackdrop.addEventListener('click', () => setMenuOpen(false, true));
 
     // Cerrar el menú al hacer clic en un enlace
     const navLinks = navMenu.querySelectorAll('a');
@@ -70,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cerrar con tecla Escape o al redimensionar a escritorio
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+        setMenuOpen(false, true);
+      }
+    });
+
+    document.addEventListener('focusin', event => {
+      if (navMenu.classList.contains('active') && event.target !== menuToggle && !navMenu.contains(event.target)) {
         setMenuOpen(false);
       }
     });
@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 3. CONTADOR ANIMADO (COUNT-UP) CON INTERSECTION OBSERVER
   const statElements = document.querySelectorAll('.stat-number-d6');
-  let animated = false;
 
   function animateStats() {
     statElements.forEach(el => {
@@ -108,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let displayVal = current;
         if (isDecimal) {
-          displayVal = current.toFixed(1);
+          displayVal = current.toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         } else if (isFormat === 'comma') {
           displayVal = Math.floor(current).toLocaleString('es-CO');
         } else {
@@ -120,20 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !animated) {
-        animated = true;
+  const statsBanner = document.getElementById('statsBanner');
+  if (statsBanner && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        observer.disconnect();
         animateStats();
       }
-    });
-  }, { threshold: 0.4 });
-
-  const statsBanner = document.getElementById('statsBanner');
-  if (statsBanner) {
+    }, { threshold: 0.4 });
     observer.observe(statsBanner);
   }
-
 
   // 4b. TARJETAS DESPLEGABLES DE SECTORES (index.html)
   const sectorCards = document.querySelectorAll('.sector-card-interactive');
@@ -157,13 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 1b. DETECCIÓN AUTOMÁTICA DE PÁGINA ACTIVA EN EL MENÚ
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-  const menuLinks = document.querySelectorAll('.nav-menu-d6 a');
-  menuLinks.forEach(link => {
-    const href = link.getAttribute('href');
-    if (href === currentPath || (currentPath === '' && href === 'index.html')) {
-      link.classList.add('active');
-    }
+  const pageName = path => path.split('/').filter(Boolean).at(-1)?.replace(/\.html$/, '') || 'index';
+  const currentPath = pageName(window.location.pathname);
+  navMenu?.querySelectorAll('a').forEach(link => {
+    const current = pageName(new URL(link.href).pathname) === currentPath;
+    link.classList.toggle('active', current);
+    if (current) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
   });
 
   // 5. MÓDULO DE ACCESIBILIDAD Y PANEL LATERAL (DRAWER)
@@ -498,161 +493,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 7. ENVÍO ASÍNCRONO DEL FORMULARIO DE CONTACTO (AJAX / FORMSUBMIT) Y CAPTCHA (REQ. 45)
-  const contactForm = document.getElementById('contactForm');
-  
-  // Generador de CAPTCHA matemático interactivo con garantía de cambio y animación (Req. 45)
-  let lastCaptchaEquation = '';
-  function initCaptcha(animate = false) {
-    const textEl = document.getElementById('captchaText');
-    const expectedEl = document.getElementById('captchaExpected');
-    const answerEl = document.getElementById('formCaptchaAnswer');
-    const refreshBtn = document.getElementById('btnRefreshCaptcha');
-    if (!textEl || !expectedEl) return;
-
-    let num1, num2, equation, sum;
-    do {
-      num1 = Math.floor(Math.random() * 8) + 2;
-      num2 = Math.floor(Math.random() * 8) + 1;
-      equation = `${num1} + ${num2} = ?`;
-      sum = num1 + num2;
-    } while (equation === lastCaptchaEquation);
-
-    lastCaptchaEquation = equation;
-    textEl.textContent = equation;
-    expectedEl.value = sum.toString();
-    if (answerEl) answerEl.value = '';
-
-    if (animate && refreshBtn) {
-      refreshBtn.classList.remove('spin');
-      void refreshBtn.offsetWidth; // Forzar reflow para reiniciar giro
-      refreshBtn.classList.add('spin');
-      setTimeout(() => refreshBtn.classList.remove('spin'), 500);
-    }
-  }
-
-  const btnRefreshCaptcha = document.getElementById('btnRefreshCaptcha');
-  if (btnRefreshCaptcha) {
-    btnRefreshCaptcha.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      initCaptcha(true);
-      const answerEl = document.getElementById('formCaptchaAnswer');
-      if (answerEl) answerEl.focus();
-    });
-  }
-  initCaptcha();
-
-  if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('btnSubmitContact');
-      const alertBox = document.getElementById('contactAlert');
-      if (alertBox) alertBox.style.display = 'none';
-
-      // Detección de honeypot para neutralizar bots
-      const honey = document.getElementById('formHoney')?.value;
-      if (honey) return;
-
-      // Validación de CAPTCHA (Req. 45)
-      const answerVal = document.getElementById('formCaptchaAnswer')?.value.trim();
-      const expectedVal = document.getElementById('captchaExpected')?.value;
-      if (!answerVal || answerVal !== expectedVal) {
-        if (alertBox) {
-          alertBox.style.display = 'block';
-          alertBox.className = 'alert-box alert-error';
-          alertBox.textContent = 'La respuesta de seguridad anti-spam es incorrecta. Por favor resuélvela de nuevo.';
-        }
-        initCaptcha();
-        document.getElementById('formCaptchaAnswer')?.focus();
-        return;
-      }
-
-      // Rate limit antispam: mínimo 30 segundos entre envíos sucesivos
-      const lastSubmit = parseInt(localStorage.getItem('stratum_last_contact_ts') || '0', 10);
-      const now = Date.now();
-      if (now - lastSubmit < 30000) {
-        const waitSec = Math.ceil((30000 - (now - lastSubmit)) / 1000);
-        if (alertBox) {
-          alertBox.style.display = 'block';
-          alertBox.className = 'alert-box alert-error';
-          alertBox.textContent = `Por seguridad, espera ${waitSec} segundos antes de enviar otro mensaje.`;
-        }
-        return;
-      }
-
-      // Validación obligatoria de Habeas Data (Ley 1581 de 2012)
-      const consent = document.getElementById('formConsent');
-      if (consent && !consent.checked) {
-        if (alertBox) {
-          alertBox.style.display = 'block';
-          alertBox.className = 'alert-box alert-error';
-          alertBox.textContent = 'Debes autorizar el tratamiento de datos personales para poder enviar el formulario.';
-        }
-        return;
-      }
-
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Enviando mensaje...';
-        btn.style.opacity = '0.75';
-      }
-
-      const payload = {
-        nombre: document.getElementById('formNombre')?.value.trim(),
-        empresa: document.getElementById('formEmpresa')?.value.trim() || 'No especificada',
-        telefono: document.getElementById('formTelefono')?.value.trim(),
-        email: document.getElementById('formEmail')?.value.trim(),
-        motivo: document.getElementById('formMotivo')?.value.trim(),
-        mensaje: document.getElementById('formMensaje')?.value.trim(),
-        _subject: 'Nuevo contacto desde la página web de Stratum Group',
-        _captcha: 'false'
-      };
-
-      try {
-        const target = atob('amhvbm1hcmlvZzEwMjAxNUBnbWFpbC5jb20=');
-        const response = await fetch(`https://formsubmit.co/ajax/${target}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (response.ok || data.success === 'true' || data.success === true) {
-          if (typeof gtag === 'function') {
-            gtag('event', 'generate_lead', {
-              event_category: 'contacto',
-              event_label: 'formulario_web'
-            });
-          }
-          localStorage.setItem('stratum_last_contact_ts', Date.now().toString());
-          initCaptcha();
-          window.location.href = 'gracias.html';
-        } else {
-          throw new Error(data.message || 'Error al procesar el mensaje');
-        }
-      } catch (err) {
-        console.error('Error enviando formulario:', err);
-        if (alertBox) {
-          alertBox.style.display = 'block';
-          alertBox.className = 'alert-box alert-error';
-          alertBox.textContent = 'Hubo un inconveniente al enviar tu mensaje. Por favor intenta nuevamente o escríbenos directamente a WhatsApp (+57 312 411 7482).';
-        }
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = 'ENVIAR';
-          btn.style.opacity = '1';
-        }
-      }
-    });
-  }
-
-  // 8. MODAL UNIVERSAL DE POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (LEY 1581 DE 2012)
-  initPrivacyModal();
-
   // 9. MEDICIÓN AUTOMÁTICA DE CONVERSIONES Y EVENTOS CLAVE EN GA4
   initConversionTracking();
 
@@ -691,108 +531,6 @@ function initConversionTracking() {
           event_label: href.replace('mailto:', '')
         });
       }
-    }
-  });
-}
-
-// Función creadora y controladora del Modal Legal
-function initPrivacyModal() {
-  // Solo inyectar si aún no existe en el DOM
-  if (!document.getElementById('legalPrivacyModal')) {
-    const modalHTML = `
-      <div id="legalPrivacyModal" class="legal-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle">
-        <div class="legal-modal-window">
-          <div class="legal-modal-header">
-            <h3 id="privacyModalTitle">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              Política de Tratamiento de Datos Personales
-            </h3>
-            <button type="button" class="legal-modal-close" id="btnClosePrivacyModal" aria-label="Cerrar política">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-          <div class="legal-modal-body">
-            <h4>1. Responsable del Tratamiento</h4>
-            <p><strong>Stratum Group S.A.S.</strong>, sociedad comercial legalmente constituida en la República de Colombia, con domicilio principal en Ubaté, Cundinamarca, y correo de atención y notificaciones: <a href="mailto:stratumgroupsas@gmail.com" style="color:var(--accent-gold);">stratumgroupsas@gmail.com</a>.</p>
-
-            <h4>2. Marco Legal y Cumplimiento</h4>
-            <p>Dando estricto cumplimiento a lo preceptuado en la <strong>Ley Estatutaria 1581 de 2012</strong>, el <strong>Decreto 1377 de 2013</strong> y la Circular Externa de la Superintendencia de Industria y Comercio (SIC), se adopta la presente Política para garantizar la debida recolección, almacenamiento, uso y protección de los datos suministrados por visitantes y clientes.</p>
-
-            <h4>3. Finalidad de la Recolección de Datos</h4>
-            <p>Los datos solicitados a través del formulario de contacto (Nombre, Correo, Teléfono, Empresa y Motivo de Consulta) serán tratados exclusivamente con los siguientes fines:</p>
-            <ul>
-              <li>Atender, tramitar y responder formalmente a solicitudes de contacto, cotizaciones e inquietudes sobre servicios de consultoría e ingeniería.</li>
-              <li>Presentar propuestas técnico-económicas para proyectos mineros, geológicos, ambientales o de software e inteligencia artificial solicitados expresamente por el titular.</li>
-              <li>Establecer canales directos de comunicación comercial e institucional entre el solicitante y nuestro equipo de ingenieros y especialistas.</li>
-            </ul>
-            <p><strong>Garantía de Confidencialidad:</strong> Stratum Group S.A.S. <u>no vende, cede ni transfiere</u> datos personales a terceros comerciales bajo ninguna circunstancia.</p>
-
-            <h4>4. Derechos del Titular (Habeas Data)</h4>
-            <p>En concordancia con el artículo 8 de la Ley 1581 de 2012, usted como titular de la información tiene derecho en cualquier momento a:</p>
-            <ul>
-              <li><strong>Conocer, actualizar y rectificar</strong> sus datos personales frente al Responsable.</li>
-              <li><strong>Solicitar prueba</strong> de la autorización otorgada para su tratamiento.</li>
-              <li><strong>Ser informado</strong> respecto del uso que se le ha dado a sus datos personales.</li>
-              <li><strong>Revocar la autorización</strong> o solicitar la supresión de sus datos mediante comunicación formal dirigida al correo <em>stratumgroupsas@gmail.com</em>.</li>
-            </ul>
-
-            <h4>5. Seguridad de la Información</h4>
-            <p>Contamos con protocolos técnicos, criptográficos y de seguridad informática (cabeceras seguras HSTS, sanitización de datos y canales cifrados HTTPS) para salvaguardar la integridad de la información contra pérdida, consulta o acceso no autorizado.</p>
-            <p style="margin-top: 1rem;"><a href="politica-privacidad.html" style="color:var(--accent-gold); text-decoration: underline; font-weight: 600;">Consultar documento completo de Política de Tratamiento &rarr;</a></p>
-          </div>
-          <div class="legal-modal-footer">
-            <span>Stratum Group S.A.S. • Ubaté, Colombia</span>
-            <button type="button" class="legal-modal-btn-accept" id="btnAcceptPrivacyModal">Entendido y Aceptar</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-  }
-
-  const modal = document.getElementById('legalPrivacyModal');
-  const btnClose = document.getElementById('btnClosePrivacyModal');
-  const btnAccept = document.getElementById('btnAcceptPrivacyModal');
-
-  function openModal(e) {
-    if (e) e.preventDefault();
-    if (modal) {
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-  }
-
-  function closeModal() {
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  // Vincular a todos los botones o enlaces con la clase .js-open-privacy
-  document.querySelectorAll('.js-open-privacy').forEach(trigger => {
-    trigger.addEventListener('click', openModal);
-  });
-
-  if (btnClose) btnClose.addEventListener('click', closeModal);
-  if (btnAccept) btnAccept.addEventListener('click', closeModal);
-
-  // Cerrar al hacer clic en el fondo oscuro
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-  }
-
-  // Cerrar con la tecla Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
-      closeModal();
     }
   });
 }

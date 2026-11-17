@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.firebaseio.com;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Mensaje Enviado con Éxito | Stratum Group</title>
   <meta name="description" content="Gracias por comunicarte con Stratum Group. Nos pondremos en contacto contigo a la brevedad.">
@@ -12,26 +11,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3.6">
+  <link rel="stylesheet" href="/css/main.css?v=3.7">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
 
   <!-- Google Analytics 4 (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV8K98LN1V"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XV8K98LN1V');
-    gtag('event', 'generate_lead', {
-      'event_category': 'contacto',
-      'event_label': 'pagina_gracias_visita'
-    });
-  </script>
+  <script src="/js/analytics.js?v=1" defer></script>
 
-  <script src="js/app.js?v=3.6" defer></script>
+  <script src="/js/app.js?v=3.7" defer></script>
 </head>
 
 <body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
 
   <!-- ENCABEZADO (HEADER) -->
   <header id="mainHeader" class="header-d6 header-solid-dark">
@@ -42,7 +32,7 @@
       <span class="slogan-tag-d6">Asesores profesionales</span>
     </div>
 
-    <ul class="nav-menu-d6">
+    <ul class="nav-menu-d6" id="primary-navigation">
       <li><a href="index.html">INICIO</a></li>
       <li><a href="nosotros.html">NOSOTROS</a></li>
       <li><a href="servicios.html">SERVICIOS</a></li>
@@ -70,11 +60,11 @@
       </a>
     </div>
 
-    <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
+    <button id="mobileMenuToggle" aria-controls="primary-navigation" aria-expanded="false" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
   </header>
 
   <!-- CONTENIDO DE CONFIRMACIÓN -->
-  <main style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: clamp(100px, 14vw, 140px) 1.25rem clamp(3.5rem, 6vw, 5rem) 1.25rem; background: linear-gradient(135deg, #F8FAFC 0%, #F3EDF7 50%, #E8DFEE 100%);">
+  <main id="main" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: clamp(100px, 14vw, 140px) 1.25rem clamp(3.5rem, 6vw, 5rem) 1.25rem; background: linear-gradient(135deg, #F8FAFC 0%, #F3EDF7 50%, #E8DFEE 100%);">
     <div style="max-width: 600px; width: 100%; background: #FFFFFF; border-radius: 16px; padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 4vw, 2.5rem); text-align: center; box-shadow: 0 20px 45px rgba(59, 30, 67, 0.12); border: 1px solid rgba(212, 175, 55, 0.3); position: relative; overflow: hidden;">
       
       <div style="position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #3B1E43, #D4AF37, #3B1E43);"></div>

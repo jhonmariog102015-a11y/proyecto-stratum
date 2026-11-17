@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.firebaseio.com;">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Stratum Group | Liderando con Ingeniería Minera</title>
   <meta name="description" content="Stratum Group - Ingeniería de Minas Sostenible y Eficiente en Colombia. Soluciones integrales de consultoría, geología, ambiente y software e IA.">
@@ -32,18 +31,12 @@
   <link rel="preconnect" href="https://www.gstatic.com">
   <link rel="preconnect" href="https://firestore.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3.6">
+  <link rel="stylesheet" href="/css/main.css?v=3.7">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
   <!-- Google Analytics 4 (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XV8K98LN1V"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XV8K98LN1V');
-  </script>
-  <script src="js/app.js?v=3.6" defer></script>
-  <script type="module" src="js/firebase_noticias.js?v=10"></script>
+  <script src="/js/analytics.js?v=1" defer></script>
+  <script src="/js/app.js?v=3.7" defer></script>
+  <script type="module" src="/js/firebase_noticias.js?v=12"></script>
   <!-- Datos Estructurados Schema.org para Google y Motores de IA (JSON-LD) -->
   <script type="application/ld+json">
   {
@@ -119,6 +112,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
 
   <!-- ENCABEZADO (HEADER) -->
   <header id="mainHeader" class="header-d6">
@@ -129,7 +123,7 @@
       <span class="slogan-tag-d6">Asesores profesionales</span>
     </div>
 
-    <ul class="nav-menu-d6">
+    <ul class="nav-menu-d6" id="primary-navigation">
       <li><a href="index.html" class="active">INICIO</a></li>
       <li><a href="nosotros.html">NOSOTROS</a></li>
       <li><a href="servicios.html">SERVICIOS</a></li>
@@ -160,10 +154,11 @@
     </div>
 
     <!-- Botón Menú Móvil -->
-    <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
+    <button id="mobileMenuToggle" aria-controls="primary-navigation" aria-expanded="false" class="mobile-menu-btn" aria-label="Abrir menú">☰</button>
   </header>
 
   <!-- SECCIÓN HERO (PANORÁMICA DE IMPACTO) -->
+  <main id="main">
   <section id="inicio" class="hero-d6">
     <div class="hero-content-d6">
       <h1 class="hero-title-d6">Ingeniería de Minas<br>Sostenible y Eficiente</h1>
@@ -177,19 +172,19 @@
   <section class="stats-banner-d6" id="statsBanner">
     <div class="stats-grid-d6">
       <div class="stat-item-d6">
-        <div class="stat-number-d6" data-target="34">+0</div>
+        <div class="stat-number-d6" data-target="34">34</div>
         <div class="stat-label-d6">Años de Experiencia</div>
       </div>
       <div class="stat-item-d6">
-        <div class="stat-number-d6" data-target="2000" data-prefix="+" data-format="comma">+0</div>
+        <div class="stat-number-d6" data-target="2000" data-prefix="+" data-format="comma">+2.000</div>
         <div class="stat-label-d6">Estudios y Proyectos</div>
       </div>
       <div class="stat-item-d6">
-        <div class="stat-number-d6" data-target="3.2" data-prefix="+" data-decimal="1">+0</div>
+        <div class="stat-number-d6" data-target="3.2" data-prefix="+" data-decimal="1">+3,2</div>
         <div class="stat-label-d6">Millones Horas Trabajadas</div>
       </div>
       <div class="stat-item-d6">
-        <div class="stat-number-d6" data-target="2018" data-prefix="">0</div>
+        <div class="stat-number-d6" data-target="2018" data-prefix="">2018</div>
         <div class="stat-label-d6">Desde 2018</div>
       </div>
     </div>
@@ -448,6 +443,8 @@
   <!-- =========================================================================
        PIE DE PÁGINA CORPORATIVO STRATUM
        ========================================================================= -->
+  </main>
+
   <footer class="site-footer">
     <div class="wrap footer__grid">
       <div class="footer__brand">

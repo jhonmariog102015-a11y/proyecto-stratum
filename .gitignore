@@ -33,3 +33,7 @@ ESPECIFICACION_TECNICA.txt
 # Entornos y pruebas locales
 prueba/
 skills-lock.json
+
+# Artefactos generados
+.hosting-public/
+node_modules/

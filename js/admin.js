@@ -1,58 +1,18 @@
-// Panel de Administración de Noticias y Seguridad - Stratum Group
-// Protección Anti-Clickjacking: evita que el panel sea incrustado en iframes de terceros
-if (window.top !== window.self) {
-  try {
-    window.top.location = window.self.location;
-  } catch (e) {
-    document.documentElement.style.display = "none";
-  }
-}
+// Panel de administración de noticias de Stratum Group.
+import {
+  db, auth, collection, getDocs, getDocFromServer, addDoc, updateDoc, doc,
+  serverTimestamp, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  writeBatch, escapeHTML,
+  safeImageUrl, safeNewsLink
+} from "./firebase_noticias.js?v=12";
 
-import { 
-  db, 
-  auth, 
-  collection, 
-  getDocs, 
-  getDoc,
-  setDoc,
-  addDoc, 
-  updateDoc,
-  deleteDoc, 
-  doc, 
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  signOut, 
-  onAuthStateChanged,
-  setPersistence,
-  browserSessionPersistence,
-  browserLocalPersistence,
-  escapeHTML
-} from "./firebase_noticias.js?v=10";
-
-// Elementos de la interfaz
 const loginSection = document.getElementById("loginSection");
 const dashboardSection = document.getElementById("dashboardSection");
-const authSubtitle = document.getElementById("authSubtitle");
-const tabLogin = document.getElementById("tabLogin");
-const tabRegister = document.getElementById("tabRegister");
-
 const loginForm = document.getElementById("loginForm");
 const loginEmail = document.getElementById("loginEmail");
 const loginPassword = document.getElementById("loginPassword");
 const btnLogin = document.getElementById("btnLogin");
-
-const registerForm = document.getElementById("registerForm");
-const regEmail = document.getElementById("regEmail");
-const regSecretCode = document.getElementById("regSecretCode");
-const regPassword = document.getElementById("regPassword");
-const regPasswordConfirm = document.getElementById("regPasswordConfirm");
-const btnRegister = document.getElementById("btnRegister");
-
 const loginAlert = document.getElementById("loginAlert");
-
 const currentUserEmail = document.getElementById("currentUserEmail");
 const btnLogout = document.getElementById("btnLogout");
 const publishNewsForm = document.getElementById("publishNewsForm");
@@ -63,584 +23,100 @@ const formTitleText = document.getElementById("formTitleText");
 const publishAlert = document.getElementById("publishAlert");
 const adminNewsList = document.getElementById("adminNewsList");
 
-const addEmailForm = document.getElementById("addEmailForm");
-const newAuthEmail = document.getElementById("newAuthEmail");
-const authorizedEmailsList = document.getElementById("authorizedEmailsList");
-const updateMasterKeyForm = document.getElementById("updateMasterKeyForm");
-const newMasterKey = document.getElementById("newMasterKey");
-const securityAlert = document.getElementById("securityAlert");
-
-// 0. FUNCIÓN CRIPTOGRÁFICA SHA-256 CON SALT (Inmune a ataques de diccionario y rainbow tables)
-const MASTER_KEY_SALT = "Stratum_SG2026_KeyProtection$#";
-
-export async function sha256(message, useSalt = true) {
-  const text = useSalt ? (message.trim() + MASTER_KEY_SALT) : message.trim();
-  const msgBuffer = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+function showLoginError(message) {
+  loginAlert.textContent = message;
+  loginAlert.style.display = "block";
 }
 
-// 1. ALTERNAR PESTAÑAS (INICIAR SESIÓN / REGISTRAR ADMINISTRADOR)
-export function switchAuthTab(tab) {
-  if (!tabLogin || !tabRegister || !loginForm || !registerForm) return;
-
-  if (tab === 'login') {
-    tabLogin.classList.add("active");
-    tabRegister.classList.remove("active");
-    loginForm.style.display = "block";
-    registerForm.style.display = "none";
-    if (authSubtitle) authSubtitle.textContent = "Ingresa con tus credenciales de Stratum Group";
-    if (loginAlert) loginAlert.style.display = "none";
-  } else {
-    tabRegister.classList.add("active");
-    tabLogin.classList.remove("active");
-    loginForm.style.display = "none";
-    registerForm.style.display = "block";
-    if (authSubtitle) authSubtitle.textContent = "Crea tu cuenta administradora para gestionar noticias";
-    if (loginAlert) loginAlert.style.display = "none";
-  }
-}
-
-// Exponer globalmente para onclicks si existen y vincular listeners
-window.switchAuthTab = switchAuthTab;
-if (tabLogin) tabLogin.addEventListener("click", () => switchAuthTab("login"));
-if (tabRegister) tabRegister.addEventListener("click", () => switchAuthTab("register"));
-
-// 2. ESTADO DE AUTENTICACIÓN CON VALIDACIÓN ACTIVA DE LISTA BLANCA
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    // Validar si el usuario sigue en la lista blanca de Firebase antes de mostrar el panel
-    try {
-      const secDocRef = doc(db, "configuracion", "seguridad");
-      const secSnap = await getDoc(secDocRef);
-      if (secSnap.exists()) {
-        const autorizados = (secSnap.data().correos_autorizados || []).map(e => e.trim().toLowerCase());
-        if (autorizados.length > 0 && !autorizados.includes((user.email || "").toLowerCase())) {
-          console.warn("Acceso denegado: El usuario no figura en la lista blanca.");
-          await signOut(auth);
-          if (loginSection) loginSection.style.display = "flex";
-          if (dashboardSection) dashboardSection.style.display = "none";
-          if (loginAlert) {
-            loginAlert.style.display = "block";
-            loginAlert.className = "alert-box alert-error";
-            loginAlert.textContent = "Acceso revocado: Tu correo '" + user.email + "' no tiene permisos en este panel.";
-          }
-          return;
-        }
-      }
-    } catch (verifErr) {
-      console.warn("Acceso denegado o error de permisos en Firebase:", verifErr);
-      await signOut(auth);
-      if (loginSection) loginSection.style.display = "flex";
-      if (dashboardSection) dashboardSection.style.display = "none";
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-error";
-        loginAlert.textContent = "Acceso denegado: Tu correo '" + user.email + "' no tiene permisos de administrador en este panel.";
-      }
-      return;
-    }
-
-    // Usuario autorizado -> Mostrar Dashboard
-    if (loginSection) loginSection.style.display = "none";
-    if (dashboardSection) dashboardSection.style.display = "flex";
-    if (currentUserEmail) currentUserEmail.textContent = user.email;
-    loadAdminNews();
-    loadSecurityConfig(user.email);
-    startInactivityWatcher();
-  } else {
-    // Usuario desconectado -> Mostrar Login
-    stopInactivityWatcher();
-    if (loginSection) loginSection.style.display = "flex";
-    if (dashboardSection) dashboardSection.style.display = "none";
-  }
-});
-
-// Control de cierre automático por inactividad (15 minutos de inactividad)
-let inactivityTimer = null;
-const inactivityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+let inactivityTimer;
+const inactivityEvents = ["pointerdown", "keydown", "scroll", "touchstart"];
 
 function resetInactivity() {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
+  clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(async () => {
     try {
-      console.warn("Cierre de sesión automático por inactividad (15 min).");
       await signOut(auth);
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-error";
-        loginAlert.textContent = "Tu sesión se ha cerrado automáticamente tras 15 minutos de inactividad por seguridad.";
-      }
-    } catch (err) {
-      console.error("Error en auto-logout por inactividad:", err);
+      showLoginError("La sesión se cerró por inactividad.");
+    } catch {
+      showLoginError("No se pudo cerrar la sesión automáticamente. Intenta cerrarla manualmente.");
     }
   }, 15 * 60 * 1000);
 }
 
-function startInactivityWatcher() {
-  resetInactivity();
-  inactivityEvents.forEach(evt => window.addEventListener(evt, resetInactivity, { passive: true }));
-}
-
 function stopInactivityWatcher() {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityEvents.forEach(evt => window.removeEventListener(evt, resetInactivity));
+  clearTimeout(inactivityTimer);
+  inactivityEvents.forEach(event => document.removeEventListener(event, resetInactivity));
 }
 
-// 3. INICIAR SESIÓN CON PROTECCIÓN CONTRA FUERZA BRUTA
-let failedAttempts = parseInt(localStorage.getItem("login_failed_attempts") || "0", 10);
-let lockoutUntil = parseInt(localStorage.getItem("login_lockout_until") || "0", 10);
-
-function checkLockout() {
-  const now = Date.now();
-  if (now < lockoutUntil) {
-    const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
-    if (btnLogin) {
-      btnLogin.disabled = true;
-      btnLogin.textContent = `Bloqueado temporalmente (${remainingSec}s)`;
-    }
-    if (loginAlert) {
-      loginAlert.style.display = "block";
-      loginAlert.className = "alert-box alert-error";
-      loginAlert.textContent = `Demasiados intentos fallidos. Por seguridad, espera ${remainingSec} segundos.`;
-    }
-    return true;
-  }
-  if (btnLogin && btnLogin.textContent.includes("Bloqueado")) {
-    btnLogin.disabled = false;
-    btnLogin.textContent = "Iniciar Sesión";
-  }
-  return false;
-}
-
-// Verificar bloqueo al cargar
-checkLockout();
-setInterval(checkLockout, 1000);
-
-// 3b. PROTECCIÓN CONTRA FUERZA BRUTA EN REGISTRO
-let regFailedAttempts = parseInt(localStorage.getItem("reg_failed_attempts") || "0", 10);
-let regLockoutUntil = parseInt(localStorage.getItem("reg_lockout_until") || "0", 10);
-
-function checkRegLockout() {
-  const now = Date.now();
-  if (now < regLockoutUntil) {
-    const remainingSec = Math.ceil((regLockoutUntil - now) / 1000);
-    if (btnRegister) {
-      btnRegister.disabled = true;
-      btnRegister.textContent = `Bloqueado (${remainingSec}s)`;
-    }
-    if (loginAlert) {
-      loginAlert.style.display = "block";
-      loginAlert.className = "alert-box alert-error";
-      loginAlert.textContent = `Demasiados intentos de registro fallidos. Espera ${remainingSec} segundos.`;
-    }
-    return true;
-  }
-  if (btnRegister && btnRegister.textContent.includes("Bloqueado")) {
-    btnRegister.disabled = false;
-    btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-  }
-  return false;
-}
-
-checkRegLockout();
-setInterval(checkRegLockout, 1000);
-
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (checkLockout()) return;
-    if (loginAlert) loginAlert.style.display = "none";
-
-    if (btnLogin) {
-      btnLogin.disabled = true;
-      btnLogin.textContent = "Verificando...";
-    }
-
-    try {
-      // Configurar persistencia según si el usuario marcó "Recordar sesión en este equipo"
-      const rememberMe = document.getElementById("rememberMe")?.checked;
-      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-
-      await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
-      loginForm.reset();
-      failedAttempts = 0;
-      localStorage.removeItem("login_failed_attempts");
-      localStorage.removeItem("login_lockout_until");
-    } catch (error) {
-      console.warn("Error de autenticación:", error.code);
-      failedAttempts++;
-      localStorage.setItem("login_failed_attempts", failedAttempts.toString());
-
-      if (failedAttempts >= 5) {
-        lockoutUntil = Date.now() + 60000; // 60 segundos de bloqueo
-        localStorage.setItem("login_lockout_until", lockoutUntil.toString());
-        checkLockout();
-        return;
-      }
-
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-error";
-        
-        if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
-          const restantes = 5 - failedAttempts;
-          loginAlert.textContent = `Correo o contraseña incorrectos. (${restantes} intento${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} antes de bloqueo).`;
-        } else if (error.code === "auth/too-many-requests") {
-          loginAlert.textContent = "Demasiados intentos fallidos detectados por Firebase. Por favor espera unos minutos.";
-        } else if (error.code === "auth/configuration-not-found") {
-          loginAlert.innerHTML = "<strong>Falta activar Autenticación en Firebase:</strong><br>Abre la <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' rel='noopener noreferrer' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Firebase</a> y activa Correo/Contraseña.";
-        } else {
-          loginAlert.textContent = "No se pudo iniciar sesión. Verifica tus datos o intenta nuevamente.";
-        }
-      }
-    } finally {
-      if (btnLogin && !checkLockout()) {
-        btnLogin.disabled = false;
-        btnLogin.textContent = "Iniciar Sesión";
-      }
-    }
-  });
-}
-
-// 4. REGISTRAR NUEVO ADMINISTRADOR CON VALIDACIÓN SEGURA
-// Flujo: valida clave maestra desde doc público → crea cuenta → onAuthStateChanged verifica lista blanca
-if (registerForm) {
-  registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (checkRegLockout()) return;
-    if (loginAlert) loginAlert.style.display = "none";
-
-    const email = regEmail.value.trim().toLowerCase();
-    const inputCode = regSecretCode.value.trim();
-    const password = regPassword.value;
-    const confirmPassword = regPasswordConfirm.value;
-
-    if (password.length < 8) {
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-error";
-        loginAlert.textContent = "La contraseña debe tener al menos 8 caracteres por seguridad.";
-      }
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-error";
-        loginAlert.textContent = "Las contraseñas no coinciden. Asegúrate de escribirlas iguales.";
-      }
-      return;
-    }
-
-    if (btnRegister) {
-      btnRegister.disabled = true;
-      btnRegister.textContent = "Consultando autorización en Firebase...";
-    }
-
-    try {
-      // Consultar hash de clave maestra desde documento PÚBLICO (no expone correos admin)
-      const regDocRef = doc(db, "configuracion", "registro");
-      const regSnap = await getDoc(regDocRef);
-
-      if (!regSnap.exists()) {
-        if (loginAlert) {
-          loginAlert.style.display = "block";
-          loginAlert.className = "alert-box alert-error";
-          loginAlert.textContent = "El sistema de registro no está configurado. Contacta al administrador principal.";
-        }
-        if (btnRegister) {
-          btnRegister.disabled = false;
-          btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-        }
-        return;
-      }
-
-      const regData = regSnap.data();
-
-      // Verificación obligatoria de Clave Maestra
-      if (!regData.codigo_hash || regData.codigo_hash.trim().length === 0) {
-        if (loginAlert) {
-          loginAlert.style.display = "block";
-          loginAlert.className = "alert-box alert-error";
-          loginAlert.textContent = "El registro de nuevos administradores está desactivado temporalmente. Se requiere configurar la Clave Maestra previamente.";
-        }
-        if (btnRegister) {
-          btnRegister.disabled = false;
-          btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-        }
-        return;
-      }
-
-      const inputHashSalted = await sha256(inputCode, true);
-      const inputHashLegacy = await sha256(inputCode, false);
-
-      if (inputHashSalted !== regData.codigo_hash && inputHashLegacy !== regData.codigo_hash) {
-        // Incrementar intentos fallidos de registro
-        regFailedAttempts++;
-        localStorage.setItem("reg_failed_attempts", regFailedAttempts.toString());
-
-        if (regFailedAttempts >= 5) {
-          regLockoutUntil = Date.now() + 120000; // 2 minutos de bloqueo (más estricto que login)
-          localStorage.setItem("reg_lockout_until", regLockoutUntil.toString());
-          checkRegLockout();
-          if (btnRegister) {
-            btnRegister.disabled = false;
-            btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-          }
-          return;
-        }
-
-        const restantes = 5 - regFailedAttempts;
-        if (loginAlert) {
-          loginAlert.style.display = "block";
-          loginAlert.className = "alert-box alert-error";
-          loginAlert.textContent = `Clave Maestra incorrecta. (${restantes} intento${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} antes de bloqueo).`;
-        }
-        if (btnRegister) {
-          btnRegister.disabled = false;
-          btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-        }
-        return;
-      }
-
-      // Clave maestra válida → crear cuenta en Firebase Auth con persistencia de sesión por defecto
-      if (btnRegister) btnRegister.textContent = "Creando cuenta en Firebase...";
-      await setPersistence(auth, browserSessionPersistence);
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      // Registro exitoso: resetear contadores
-      regFailedAttempts = 0;
-      localStorage.removeItem("reg_failed_attempts");
-      localStorage.removeItem("reg_lockout_until");
-
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-success";
-        loginAlert.textContent = "¡Cuenta creada! Verificando autorización...";
-      }
-      registerForm.reset();
-    } catch (error) {
-      console.error("Error creando administrador:", error);
-      if (loginAlert) {
-        loginAlert.style.display = "block";
-        loginAlert.className = "alert-box alert-error";
-
-        if (error.code === "auth/email-already-in-use") {
-          loginAlert.textContent = "Este correo ya está registrado. Por favor ingresa desde la pestaña 'Iniciar Sesión'.";
-        } else if (error.code === "auth/weak-password") {
-          loginAlert.textContent = "La contraseña debe tener un mínimo de 6 caracteres.";
-        } else if (error.code === "auth/invalid-email") {
-          loginAlert.textContent = "El formato de correo no es válido.";
-        } else if (error.code === "auth/operation-not-allowed" || error.code === "auth/configuration-not-found") {
-          loginAlert.innerHTML = "<strong>Falta activar la Autenticación en Firebase:</strong><br>Abre este enlace: <a href='https://console.firebase.google.com/project/stratum-group/authentication' target='_blank' rel='noopener noreferrer' style='color:#991B1B; text-decoration:underline; font-weight:700;'>Consola de Stratum Group</a>, haz clic en <strong>Comenzar</strong> (o <em>Get Started</em>) y activa <strong>Correo electrónico/Contraseña</strong>.";
-        } else {
-          loginAlert.textContent = "No se pudo crear la cuenta. Verifica tus datos o intenta nuevamente.";
-        }
-      }
-    } finally {
-      if (btnRegister && !checkRegLockout()) {
-        btnRegister.disabled = false;
-        btnRegister.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; margin-right:6px;"><path d="M12 5v14M5 12h14"/></svg> Registrar y Acceder`;
-      }
-    }
-  });
-}
-
-// 5. CERRAR SESIÓN
-if (btnLogout) {
-  btnLogout.addEventListener("click", async () => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      console.error("Error cerrando sesión:", err);
-    }
-  });
-}
-
-// 6. GESTIÓN DE SEGURIDAD EN EL DASHBOARD (LISTA BLANCA Y CLAVE MAESTRA EN FIREBASE)
-let currentSecurityData = { correos_autorizados: [], codigo_hash: "" };
-
-async function loadSecurityConfig(userEmail) {
-  if (!authorizedEmailsList) return;
-  authorizedEmailsList.innerHTML = "<p style='font-size:0.8rem; color:var(--text-muted);'>Cargando lista desde Firebase...</p>";
-
-  try {
-    const secDocRef = doc(db, "configuracion", "seguridad");
-    const secSnap = await getDoc(secDocRef);
-
-    if (secSnap.exists()) {
-      currentSecurityData = secSnap.data();
-      if (!currentSecurityData.correos_autorizados) currentSecurityData.correos_autorizados = [];
-    } else {
-      // Inicializar documento por primera vez en Firestore con el correo del administrador activo
-      currentSecurityData = {
-        correos_autorizados: [userEmail.toLowerCase()],
-        codigo_hash: ""
-      };
-      await setDoc(secDocRef, currentSecurityData);
-
-      // También crear el documento público de registro si no existe
-      try {
-        const regDocRef = doc(db, "configuracion", "registro");
-        const regSnap = await getDoc(regDocRef);
-        if (!regSnap.exists()) {
-          await setDoc(regDocRef, { codigo_hash: "" });
-        }
-      } catch (regErr) {
-        console.warn("No se pudo crear el documento de registro público:", regErr);
-      }
-    }
-
-    renderAuthorizedEmails(userEmail);
-  } catch (err) {
-    console.error("Error al cargar configuración de seguridad:", err);
-    authorizedEmailsList.innerHTML = "<p style='font-size:0.8rem; color:#EF4444;'>No se pudo cargar la configuración de seguridad desde Firebase.</p>";
-  }
-}
-
-function renderAuthorizedEmails(currentUserEmailStr) {
-  if (!authorizedEmailsList) return;
-  const list = currentSecurityData.correos_autorizados || [];
-
-  if (list.length === 0) {
-    authorizedEmailsList.innerHTML = "<p style='font-size:0.8rem; color:var(--text-muted);'>No hay correos en la lista blanca.</p>";
+async function showDashboard(user) {
+  const permission = await getDocFromServer(doc(db, "administradores", user.uid));
+  if (!permission.exists()) {
+    await signOut(auth);
+    showLoginError("Esta cuenta no tiene acceso al panel. Solicita autorización a la persona que administra Firebase.");
     return;
   }
-
-  authorizedEmailsList.innerHTML = "";
-  list.forEach((email) => {
-    const isSelf = email.toLowerCase() === (currentUserEmailStr || "").toLowerCase();
-    const row = document.createElement("div");
-    row.className = "dash-email-item";
-    const emailSeguro = escapeHTML(email);
-    row.innerHTML = `
-      <span class="dash-email-name">${emailSeguro} ${isSelf ? '<span class="dash-email-tag">(Tú)</span>' : ''}</span>
-      ${isSelf ? '' : `<button type="button" class="btn-remove-email dash-email-del" data-email="${emailSeguro}" title="Eliminar de la lista blanca">&times;</button>`}
-    `;
-
-    if (!isSelf) {
-      const delBtn = row.querySelector(".btn-remove-email");
-      delBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        delBtn.disabled = true;
-        delBtn.textContent = "...";
-
-        currentSecurityData.correos_autorizados = (currentSecurityData.correos_autorizados || []).filter(
-          item => item.toLowerCase().trim() !== email.toLowerCase().trim()
-        );
-
-        try {
-          // Eliminación atómica en Firestore (evita condiciones de carrera)
-          await updateDoc(doc(db, "configuracion", "seguridad"), {
-            correos_autorizados: arrayRemove(email)
-          });
-          currentSecurityData.correos_autorizados = (currentSecurityData.correos_autorizados || []).filter(
-            item => item.toLowerCase().trim() !== email.toLowerCase().trim()
-          );
-          renderAuthorizedEmails(currentUserEmailStr);
-        } catch (err) {
-          console.error("Error al revocar correo:", err);
-          if (securityAlert) {
-            securityAlert.style.display = "block";
-            securityAlert.className = "alert-box alert-error";
-            securityAlert.textContent = "Error al actualizar la lista en Firebase.";
-            setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
-          }
-          delBtn.disabled = false;
-          delBtn.innerHTML = "&times;";
-        }
-      });
-    }
-
-    authorizedEmailsList.appendChild(row);
-  });
+  if (auth.currentUser?.uid !== user.uid) return;
+  loginAlert.style.display = "none";
+  loginSection.style.display = "none";
+  dashboardSection.style.display = "flex";
+  currentUserEmail.textContent = user.email || "";
+  btnLogout.focus();
+  loadAdminNews();
+  inactivityEvents.forEach(event => document.addEventListener(event, resetInactivity, { passive: true }));
+  resetInactivity();
 }
 
-// Agregar correo a la lista blanca en Firestore (Operación atómica con arrayUnion)
-if (addEmailForm) {
-  addEmailForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const emailToAdd = newAuthEmail.value.trim().toLowerCase();
-    if (!emailToAdd) return;
+onAuthStateChanged(auth, async user => {
+  stopInactivityWatcher();
+  loginSection.style.display = "flex";
+  dashboardSection.style.display = "none";
+  currentUserEmail.textContent = "";
+  adminNewsList.replaceChildren();
+  resetNewsForm();
+  publishAlert.style.display = "none";
+  backupStatusMsg.textContent = "";
+  if (!user) return;
 
-    if (currentSecurityData.correos_autorizados.map(c => c.toLowerCase()).includes(emailToAdd)) {
-      if (securityAlert) {
-        securityAlert.style.display = "block";
-        securityAlert.className = "alert-box alert-error";
-        securityAlert.textContent = "El correo '" + emailToAdd + "' ya se encuentra en la lista blanca.";
-        setTimeout(() => { securityAlert.style.display = "none"; }, 5000);
-      }
-      return;
-    }
+  try {
+    await showDashboard(user);
+  } catch (error) {
+    console.error("No se pudo verificar el acceso:", error.code);
+    if (auth.currentUser?.uid !== user.uid) return;
+    await signOut(auth).catch(() => {});
+    showLoginError("No se pudo verificar el acceso. Revisa tu conexión e intenta de nuevo.");
+  }
+});
 
-    try {
-      // Inserción atómica en Firestore (evita sobreescritura accidental)
-      await updateDoc(doc(db, "configuracion", "seguridad"), {
-        correos_autorizados: arrayUnion(emailToAdd)
-      });
-      currentSecurityData.correos_autorizados.push(emailToAdd);
-      newAuthEmail.value = "";
-      renderAuthorizedEmails(currentUserEmail.textContent);
-    } catch (err) {
-      if (securityAlert) {
-        securityAlert.style.display = "block";
-        securityAlert.className = "alert-box alert-error";
-        securityAlert.textContent = "Error guardando correo en Firebase. Verifica tus permisos de administrador.";
-        setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
-      }
-    }
-  });
-}
+loginForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (btnLogin.disabled) return;
+  loginAlert.style.display = "none";
+  btnLogin.disabled = true;
+  btnLogin.textContent = "Verificando…";
+  try {
+    await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
+    loginForm.reset();
+  } catch (error) {
+    showLoginError(error.code === "auth/too-many-requests"
+      ? "Demasiados intentos. Espera unos minutos antes de volver a intentar."
+      : "No se pudo iniciar sesión. Revisa tus credenciales y conexión.");
+  } finally {
+    btnLogin.disabled = false;
+    btnLogin.textContent = "Iniciar sesión";
+  }
+});
 
-// Actualizar clave maestra en Firestore con Salt Criptográfico (escribe a AMBOS documentos)
-if (updateMasterKeyForm) {
-  updateMasterKeyForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const rawKey = newMasterKey.value.trim();
-    if (rawKey.length < 8) {
-      alert("La clave maestra debe tener al menos 8 caracteres para mayor seguridad.");
-      return;
-    }
+btnLogout.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    loginEmail.focus();
+  } catch {
+    publishAlert.textContent = "No se pudo cerrar la sesión. Intenta de nuevo.";
+    publishAlert.className = "alert-box alert-error";
+    publishAlert.style.display = "block";
+  }
+});
 
-    try {
-      const hashed = await sha256(rawKey, true); // Guardar con salting criptográfico
-
-      // Escribir a documento PRIVADO (configuracion/seguridad)
-      await updateDoc(doc(db, "configuracion", "seguridad"), {
-        codigo_hash: hashed
-      });
-
-      // Escribir a documento PÚBLICO (configuracion/registro — solo contiene el hash)
-      try {
-        await setDoc(doc(db, "configuracion", "registro"), { codigo_hash: hashed });
-      } catch (regErr) {
-        console.warn("No se pudo sincronizar el documento de registro público:", regErr);
-      }
-
-      currentSecurityData.codigo_hash = hashed;
-      newMasterKey.value = "";
-      if (securityAlert) {
-        securityAlert.style.display = "block";
-        securityAlert.className = "alert-box alert-success";
-        securityAlert.innerHTML = "<strong>¡Clave Maestra actualizada y sincronizada!</strong><br>Protegida con Salt criptográfico. Mínimo 8 caracteres.";
-        setTimeout(() => { securityAlert.style.display = "none"; }, 6000);
-      }
-    } catch (err) {
-      if (securityAlert) {
-        securityAlert.style.display = "block";
-        securityAlert.className = "alert-box alert-error";
-        securityAlert.textContent = "Error al actualizar clave en Firebase. Verifica tus permisos de administrador.";
-      }
-    }
-  });
-}
-
-// 7. GESTIÓN DE EDICIÓN Y PUBLICACIÓN DE NOTICIAS
 function resetNewsForm() {
   if (publishNewsForm) publishNewsForm.reset();
   if (editingNewsId) editingNewsId.value = "";
@@ -662,6 +138,7 @@ if (btnCancelEdit) {
 if (publishNewsForm) {
   publishNewsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (btnPublish.disabled) return;
     if (publishAlert) publishAlert.style.display = "none";
 
     const isEditing = editingNewsId && editingNewsId.value.trim() !== "";
@@ -679,11 +156,11 @@ if (publishNewsForm) {
     const enlace = document.getElementById("newsLink").value.trim();
 
     // Validación de seguridad para URLs externas
-    if (enlace && !/^https?:\/\//i.test(enlace)) {
+    if (enlace && (!safeNewsLink(enlace) || safeNewsLink(enlace).length > 2000)) {
       if (publishAlert) {
         publishAlert.style.display = "block";
         publishAlert.className = "alert-box alert-error";
-        publishAlert.textContent = "El enlace externo debe comenzar con https:// o http:// (ejemplo: https://ejemplo.com).";
+        publishAlert.textContent = "El enlace externo debe ser una URL HTTPS válida.";
       }
       if (btnPublish) {
         btnPublish.disabled = false;
@@ -692,7 +169,7 @@ if (publishNewsForm) {
       return;
     }
 
-    if (imagen && !/^(https:\/\/|assets\/|img\/)/i.test(imagen)) {
+    if (imagen && !safeImageUrl(imagen)) {
       if (publishAlert) {
         publishAlert.style.display = "block";
         publishAlert.className = "alert-box alert-error";
@@ -712,8 +189,8 @@ if (publishNewsForm) {
           titulo: titulo,
           categoria: categoria,
           resumen: resumen,
-          imagen: imagen || "assets/drone_landscape.png",
-          enlace: enlace || "",
+          imagen: safeImageUrl(imagen),
+          enlace: safeNewsLink(enlace),
           fecha_actualizacion: serverTimestamp()
         });
 
@@ -728,10 +205,10 @@ if (publishNewsForm) {
           titulo: titulo,
           categoria: categoria,
           resumen: resumen,
-          imagen: imagen || "assets/drone_landscape.png",
-          enlace: enlace || "",
+          imagen: safeImageUrl(imagen),
+          enlace: safeNewsLink(enlace),
           activo: true,
-          fecha: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+          fecha: new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'America/Bogota' }),
           fecha_creacion: serverTimestamp()
         });
 
@@ -758,7 +235,7 @@ if (publishNewsForm) {
     } finally {
       if (btnPublish) {
         btnPublish.disabled = false;
-        btnPublish.textContent = isEditing ? "Guardar Cambios" : "Publicar Noticia en la Web";
+        btnPublish.textContent = editingNewsId.value ? "Guardar Cambios" : "Publicar Noticia en la Web";
       }
     }
   });
@@ -779,15 +256,10 @@ async function loadAdminNews() {
 
     adminNewsList.innerHTML = "";
 
-    querySnapshot.forEach((docSnap) => {
+    activeDocs.forEach((docSnap) => {
       const data = docSnap.data();
-      // Omitir noticias que hayan sido eliminadas lógicamente
-      if (data.activo === false) return;
       const docId = docSnap.id;
-      const rawImg = data.imagen && data.imagen.trim() !== "" ? data.imagen.trim() : "assets/drone_landscape.png";
-      // Seguridad: permitir URLs https:// o rutas relativas seguras (assets/ o img/)
-      const imgSafe = /^(https:\/\/|assets\/|img\/)/i.test(rawImg) ? rawImg : "assets/drone_landscape.png";
-      const imgUrl = escapeHTML(imgSafe);
+      const imgUrl = escapeHTML(safeImageUrl(data.imagen) || "assets/drone_landscape.png");
       const tituloSeguro = escapeHTML(data.titulo || '');
       const fechaSegura = escapeHTML(data.fecha || 'Reciente');
       const catSegura = escapeHTML(data.categoria || 'General');
@@ -801,10 +273,10 @@ async function loadAdminNews() {
           <p>${fechaSegura} &bull; <strong style="color: var(--brand-purple);">${catSegura}</strong></p>
         </div>
         <div class="news-item-actions">
-          <button class="btn-edit" title="Editar noticia" data-id="${docId}">
+          <button class="btn-edit" title="Editar noticia">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
-          <button class="btn-delete" title="Eliminar noticia" data-id="${docId}">
+          <button class="btn-delete" title="Eliminar noticia">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
           </button>
         </div>
@@ -823,8 +295,8 @@ async function loadAdminNews() {
         document.getElementById("newsTitle").value = data.titulo || "";
         document.getElementById("newsCategory").value = data.categoria || "Corporativo";
         document.getElementById("newsSummary").value = data.resumen || "";
-        document.getElementById("newsImage").value = data.imagen && data.imagen !== "assets/drone_landscape.png" ? data.imagen : "";
-        document.getElementById("newsLink").value = data.enlace || "";
+        document.getElementById("newsImage").value = safeImageUrl(data.imagen);
+        document.getElementById("newsLink").value = safeNewsLink(data.enlace);
 
         if (editingNewsId) editingNewsId.value = docId;
         if (formTitleText) formTitleText.textContent = "Editar Noticia";
@@ -919,7 +391,7 @@ if (btnExportBackup) {
           resumen: d.resumen || "",
           imagen: d.imagen || "",
           enlace: d.enlace || "",
-          activo: d.activo !== false,
+          activo: d.activo === true,
           fecha: d.fecha || "",
           autor: d.autor || "",
           fecha_creacion: d.fecha_creacion ? (d.fecha_creacion.toDate ? d.fecha_creacion.toDate().toISOString() : d.fecha_creacion) : (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toISOString() : d.createdAt) : new Date().toISOString())
@@ -961,89 +433,96 @@ if (btnExportBackup) {
   });
 }
 
-if (backupFileInput) {
-  backupFileInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+function parseBackup(raw) {
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error("El archivo no contiene JSON válido.");
+  }
+  const items = Array.isArray(parsed) ? parsed : parsed?.datos;
+  if (!Array.isArray(items) || items.length === 0 || items.length > 400) {
+    throw new Error("El respaldo debe contener entre 1 y 400 noticias.");
+  }
 
-    if (!confirm(`¿Estás seguro de que deseas restaurar los datos desde '${file.name}'? Los registros existentes se sincronizarán.`)) {
-      backupFileInput.value = "";
-      return;
-    }
-
-    try {
-      if (backupStatusMsg) {
-        backupStatusMsg.style.color = "#7B61FF";
-        backupStatusMsg.textContent = "Leyendo archivo y restaurando...";
+  const ids = new Set();
+  return items.map((item, index) => {
+    const invalid = field => new Error("Noticia " + (index + 1) + ": revisa " + field + ".");
+    if (!item || typeof item !== "object" || Array.isArray(item)) throw invalid("el formato");
+    const readText = (key, max, fallback = "") => {
+      const value = item[key] ?? fallback;
+      if (typeof value !== "string" || value.length > max) throw invalid(key);
+      return value.trim();
+    };
+    const id = item.id;
+    if (id !== undefined) {
+      if (typeof id !== "string" || !id || id === "." || id === ".." || /[\/\\]/.test(id)
+          || /^__.*__$/.test(id) || new TextEncoder().encode(id).length > 1500 || ids.has(id)) {
+        throw invalid("el identificador (inválido o repetido)");
       }
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const parsed = JSON.parse(event.target.result);
-          const items = Array.isArray(parsed) ? parsed : (parsed.datos || []);
-          if (!Array.isArray(items) || items.length === 0) {
-            throw new Error("El archivo no contiene un arreglo válido de noticias.");
-          }
-
-          let restoredCount = 0;
-          for (const item of items) {
-            if (!item || typeof item !== "object") continue;
-            const titulo = String(item.titulo || "").trim();
-            const resumen = String(item.resumen || "").trim();
-            if (!titulo || !resumen) continue;
-
-            const rawImagen = String(item.imagen || "").trim();
-            const rawEnlace = String(item.enlace || "").trim();
-            const safeImagen = (rawImagen && /^(https:\/\/|assets\/|img\/)/i.test(rawImagen)) ? rawImagen : "";
-            const safeEnlace = (rawEnlace && /^https?:\/\//i.test(rawEnlace)) ? rawEnlace : "";
-
-            const docId = (typeof item.id === "string" && /^[a-zA-Z0-9_-]{1,128}$/.test(item.id)) ? item.id : undefined;
-            const dataToSave = {
-              titulo: titulo.slice(0, 300),
-              categoria: String(item.categoria || "Corporativo").trim().slice(0, 100),
-              resumen: resumen.slice(0, 5000),
-              imagen: safeImagen,
-              enlace: safeEnlace,
-              activo: item.activo !== false,
-              fecha: (typeof item.fecha === "string" && /^\d{4}-\d{2}-\d{2}/.test(item.fecha))
-                ? item.fecha
-                : new Date().toISOString().split("T")[0],
-              autor: String(item.autor || auth.currentUser?.email || "Admin").trim().slice(0, 120),
-              fecha_actualizacion: serverTimestamp()
-            };
-
-            if (docId) {
-              await setDoc(doc(db, "noticias", docId), dataToSave, { merge: true });
-            } else {
-              await addDoc(collection(db, "noticias"), { ...dataToSave, fecha_creacion: serverTimestamp() });
-            }
-            restoredCount++;
-          }
-
-          if (backupStatusMsg) {
-            backupStatusMsg.style.color = "#10B981";
-            backupStatusMsg.textContent = `Restauración completada: ${restoredCount} noticias sincronizadas.`;
-          }
-          loadAdminNews();
-        } catch (parseErr) {
-          console.error("Error al procesar archivo:", parseErr);
-          if (backupStatusMsg) {
-            backupStatusMsg.style.color = "#EF4444";
-            backupStatusMsg.textContent = "Error: Formato de archivo JSON inválido.";
-          }
-        }
-      };
-      reader.readAsText(file);
-    } catch (err) {
-      console.error("Error al restaurar respaldo:", err);
-      if (backupStatusMsg) {
-        backupStatusMsg.style.color = "#EF4444";
-        backupStatusMsg.textContent = "Error en la restauración: " + err.message;
-      }
-    } finally {
-      backupFileInput.value = "";
+      ids.add(id);
     }
+    const titulo = readText("titulo", 300);
+    if (titulo.length < 2) throw invalid("titulo");
+    const imagen = readText("imagen", 3000);
+    const enlace = readText("enlace", 2000);
+    const safeLink = safeNewsLink(enlace);
+    if (imagen && !safeImageUrl(imagen)) throw invalid("imagen");
+    if (enlace && (!safeLink || safeLink.length > 2000)) throw invalid("enlace");
+    if (typeof item.activo !== "boolean") throw invalid("activo");
+    const fechaCreacion = item.fecha_creacion ? new Date(item.fecha_creacion) : null;
+    if (fechaCreacion && (typeof item.fecha_creacion !== "string"
+        || !/^\d{4}-\d{2}-\d{2}T/.test(item.fecha_creacion)
+        || !Number.isFinite(fechaCreacion.getTime()))) {
+      throw invalid("fecha_creacion");
+    }
+    return {
+      id,
+      data: {
+        titulo,
+        resumen: readText("resumen", 20000),
+        categoria: readText("categoria", 100, "Corporativo"),
+        imagen: safeImageUrl(imagen),
+        enlace: safeLink,
+        activo: item.activo,
+        fecha: readText("fecha", 100),
+        autor: readText("autor", 100),
+        fecha_creacion: fechaCreacion || serverTimestamp(),
+        fecha_actualizacion: serverTimestamp()
+      }
+    };
   });
 }
 
+backupFileInput.addEventListener("change", async () => {
+  const file = backupFileInput.files[0];
+  if (!file || backupFileInput.disabled) return;
+  backupFileInput.disabled = true;
+  backupStatusMsg.textContent = "Validando respaldo…";
+  try {
+    if (file.size > 5 * 1024 * 1024) throw new Error("El archivo supera 5 MB.");
+    const records = parseBackup(await file.text());
+    if (!confirm("¿Restaurar " + records.length + " noticias del archivo «" + file.name
+        + "»? Se actualizarán las noticias con el mismo identificador.")) {
+      backupStatusMsg.textContent = "Restauración cancelada.";
+      return;
+    }
+    backupStatusMsg.textContent = "Restaurando noticias…";
+    const batch = writeBatch(db);
+    const news = collection(db, "noticias");
+    for (const { id, data } of records) {
+      batch.set(id ? doc(news, id) : doc(news), data, { merge: true });
+    }
+    await batch.commit();
+    backupStatusMsg.textContent = "Restauración completada: " + records.length + " noticias sincronizadas.";
+    loadAdminNews();
+  } catch (error) {
+    console.error("Error al restaurar respaldo:", error);
+    backupStatusMsg.textContent = error.code
+      ? "No se restauró ninguna noticia. Revisa los permisos y vuelve a intentarlo."
+      : error.message;
+  } finally {
+    backupFileInput.value = "";
+    backupFileInput.disabled = false;
+  }
+});

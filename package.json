@@ -4,11 +4,12 @@
   "description": "Portal corporativo y sistema administrativo de noticias para Stratum Group S.A.S. - Ingeniería Minera y Consultoría",
   "main": "index.html",
   "scripts": {
-    "dev": "python -m http.server 5500",
-    "serve": "npx serve -l 5500 .",
+    "build": "node scripts/build-hosting.mjs",
+    "dev": "npm run build && firebase emulators:start --project demo-stratum --only hosting",
     "deploy": "firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
-    "deploy:firestore": "firebase deploy --only firestore:rules"
+    "deploy:firestore": "firebase deploy --only firestore",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-stratum \"node --test tests/firestore-rules.test.mjs\""
   },
   "keywords": [
     "stratum-group",
@@ -22,6 +23,9 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "firebase-tools": "^13.0.0"
+    "firebase-tools": "15.36.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

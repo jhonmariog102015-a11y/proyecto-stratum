@@ -1,60 +1,82 @@
 {
   "firestore": {
-    "rules": "firestore.rules"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": ".",
+    "public": ".hosting-public",
     "cleanUrls": true,
     "trailingSlash": false,
     "ignore": [
-      "firebase.json",
-      "firestore.rules",
-      "README.md",
-      "ESPECIFICACION_TECNICA.txt",
-      "**/.*",
-      "**/.git/**",
-      ".gitignore",
-      "**/node_modules/**",
-      "files/**",
-      "prueba/**"
+      "**/.*"
     ],
     "headers": [
       {
-        "source": "**",
         "headers": [
-          { "key": "X-Content-Type-Options", "value": "nosniff" },
-          { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-          { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" },
-          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-          { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
-          { "key": "X-XSS-Protection", "value": "0" },
-          { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.firebaseio.com https://formsubmit.co; frame-src 'self' https://www.google.com;" }
-        ]
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "geolocation=(), microphone=(), camera=()"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "Strict-Transport-Security",
+            "value": "max-age=31536000; includeSubDomains"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "0"
+          },
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com; frame-src https://www.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://formsubmit.co;"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ],
+        "regex": "^.*$"
       },
       {
-        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|ico|woff|woff2)",
         "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-        ]
-      },
-      {
-        "source": "**/*.@(css|js)",
-        "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=604800, must-revalidate" }
-        ]
-      },
-      {
-        "source": "**/*.html",
-        "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-        ]
-      },
-      {
-        "source": "admin_noticias.html",
-        "headers": [
-          { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
-        ]
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          },
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          }
+        ],
+        "regex": "^[/\\\\]admin_noticias(\\.html)?$"
       }
+    ],
+    "predeploy": [
+      "node scripts/build-hosting.mjs"
     ]
+  },
+  "emulators": {
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 18080
+    },
+    "hosting": {
+      "host": "127.0.0.1",
+      "port": 5500
+    },
+    "ui": {
+      "enabled": false
+    }
   }
 }
