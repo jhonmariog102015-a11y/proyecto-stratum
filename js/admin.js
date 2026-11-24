@@ -3,9 +3,10 @@ import {
   db, auth, collection, getDocs, getDoc, addDoc, updateDoc, doc,
   query, where, orderBy,
   serverTimestamp, signInWithEmailAndPassword, signOut, onAuthStateChanged,
-  writeBatch, escapeHTML,
-  safeImageUrl, safeNewsLink
+  writeBatch
 } from "./firebase_noticias.js?v=13";
+
+const { escapeHTML, safeImageUrl, safeNewsLink } = formatoNoticias;
 
 const loginSection = document.getElementById("loginSection");
 const dashboardSection = document.getElementById("dashboardSection");

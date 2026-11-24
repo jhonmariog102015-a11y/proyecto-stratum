@@ -141,15 +141,17 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   assert.equal(await list.locator(".news-item-card").count(), 0);
 });
 
-test("la portada y el panel explican un fallo al descargar el módulo", async () => {
+test("las noticias y el panel explican los fallos de conexión", async () => {
+  await page.route("**/documents:runQuery", route => route.abort());
   await page.route("**/js/firebase_noticias.js*", route => route.abort());
   try {
     for (const path of ["/", "/noticias", "/admin_noticias"]) {
       await page.goto(base + path);
-      await page.getByText(/Recarga la página para volver a intentarlo/).waitFor();
+      await page.getByText(/recarga (la|esta) página/i).waitFor();
     }
     assert.ok(await page.locator("#btnLogin").isDisabled());
   } finally {
+    await page.unroute("**/documents:runQuery");
     await page.unroute("**/js/firebase_noticias.js*");
   }
 });

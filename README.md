@@ -3,7 +3,8 @@
 Portal corporativo estático con un panel de noticias. Las páginas públicas usan HTML, CSS y JavaScript; Firebase Hosting sirve el sitio, Firebase Authentication identifica a los editores y Cloud Firestore almacena las noticias.
 
 - `css/main.css` y `js/app.js`: estilos, navegación y componentes del sitio público.
-- `js/firebase_noticias.js`: consulta pública de noticias activas y conexión con Firebase.
+- `js/noticias-publicas.js`: lectura de las noticias activas mediante la API REST de Firestore. La copia local consulta el emulador.
+- `js/firebase_noticias.js`: conexión del panel de administración con Firebase.
 - `admin_noticias.html` y `js/admin.js`: publicación, edición, retiro y respaldos.
 - `firestore.rules` y `firestore.indexes.json`: permisos y el índice de la consulta pública.
 - `scripts/build-hosting.mjs`: lista de archivos que se pueden publicar. Agregar aquí los recursos públicos nuevos y ejecutar `npm run build`.

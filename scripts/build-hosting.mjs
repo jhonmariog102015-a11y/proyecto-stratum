@@ -19,7 +19,7 @@ const files = [
   "aviso-legal.html", "politica-privacidad.html", "gracias.html", "404.html",
   "admin_noticias.html", "robots.txt", ...(siteOrigin ? ["sitemap.xml"] : []),
   "css/main.css", "js/app.js", "js/analytics.js", "js/admin.js", "js/entorno.js",
-  "js/cargar-noticias.js", "js/contacto.js",
+  "js/noticias-publicas.js", "js/formato-noticias.js", "js/cargar-noticias.js", "js/contacto.js",
   "assets/Portafolio_Stratum_Group.pdf", "assets/drone_landscape.png", "assets/coal_hand.png",
   "img/favicon-stratum.png", "img/logo_complet_sin_fondo.png",
   "img/metodologia_paso1.jpg", "img/metodologia_paso2.jpg", "img/metodologia_paso3.jpg",

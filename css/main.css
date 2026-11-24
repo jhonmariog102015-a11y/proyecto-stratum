@@ -8660,10 +8660,10 @@ html.high-contrast .channel .go {
   transform: translateY(0);
 }
 
-.header-left-d6 img {
-  background-color: #faf7fc;
-  border-radius: 4px;
-  padding: 3px 5px;
+.header-d6:not(.scrolled) .header-left-d6 img,
+.header-solid-dark .header-left-d6 img,
+html.dark-mode .header-left-d6 img {
+  filter: brightness(0) invert(1);
 }
 
 .visually-hidden {
