@@ -28,11 +28,15 @@ try {
     policy.value = policy.value
       .replace(/connect-src [^;]+/, `connect-src 'self' http://${auth.host}:${auth.port} http://${firestore.host}:${firestore.port}`)
       .replace(/form-action [^;]+/, "form-action 'none'");
-    args = ["emulators:start", "--only", "hosting,auth,firestore"];
     if (process.argv[2] === "--test-ui") {
       const suite = new URL("../tests/flujos-locales.test.mjs", import.meta.url);
       await writeFile(join(dir, "ui.test.mjs"), "import " + JSON.stringify(suite.href) + ";");
       args = ["emulators:exec", "--only", "hosting,auth,firestore", "node --test ui.test.mjs"];
+    } else {
+      for (const file of ["iniciar-vista.mjs", "noticias-de-muestra.json"]) {
+        await copyFile(join(root, "scripts", file), join(dir, file));
+      }
+      args = ["emulators:exec", "--only", "hosting,auth,firestore", "node iniciar-vista.mjs --servir"];
     }
   }
   await writeFile(join(dir, "firebase.json"), JSON.stringify(config));

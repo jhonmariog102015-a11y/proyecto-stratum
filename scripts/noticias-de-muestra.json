@@ -1,0 +1,89 @@
+[
+  {
+    "id": "hPZykdK4mLoGbEdh6NY0",
+    "fields": {
+      "fecha": {
+        "stringValue": "11 oct 2026"
+      },
+      "categoria": {
+        "stringValue": "Ingeniería Minera"
+      },
+      "titulo": {
+        "stringValue": "Gobierno Nacional firma nueve contratos mineros que impulsarán inversiones en exploración por $54.000 millones"
+      },
+      "imagen": {
+        "stringValue": "https://imagenes2.eltiempo.com/files/og_thumbnail/files/fp/uploads/2024/10/02/66fdcde03c5ea.r_d.1061-677-0.jpeg"
+      },
+      "resumen": {
+        "stringValue": "La Agencia Nacional de Minería (ANM) formalizó la adjudicación de nueve contratos especiales bajo el modelo de Rondas Mineras, con compromisos de inversión de $54.000 millones de pesos en más de 20.800 hectáreas distribuidas en Cesar, La Guajira, Antioquia, Tolima y Huila. Ocho proyectos se enfocarán en la prospección geológica de cobre, oro y polimetálicos para la transición industrial, mientras que uno impulsará yacimientos de fosfatos esenciales para la soberanía de fertilizantes en el agro colombiano. El presidente de la ANM destacó que el proceso garantiza selección objetiva, estricto cumplimiento ambiental y una sólida proyección de actividad técnica para los próximos periodos."
+      },
+      "enlace": {
+        "stringValue": "https://www.eltiempo.com/economia/sectores/gobierno-nacional-firma-nueve-contratos-mineros-que-impulsaran-inversiones-en-exploracion-por-54-000-millones-3592606"
+      },
+      "fecha_creacion": {
+        "timestampValue": "2026-10-11T20:00:00Z"
+      },
+      "activo": {
+        "booleanValue": true
+      }
+    }
+  },
+  {
+    "id": "EjKT4gyaiTips2flxqs9",
+    "fields": {
+      "fecha": {
+        "stringValue": "10 oct 2026"
+      },
+      "categoria": {
+        "stringValue": "Gestión Ambiental"
+      },
+      "titulo": {
+        "stringValue": "Borrador de decreto unificará el trámite simultáneo de licencias ambientales y consultas previas"
+      },
+      "imagen": {
+        "stringValue": "https://imagenes2.eltiempo.com/files/og_thumbnail/files/fp/uploads/2023/12/06/65711641e70f1.r_d.1476-898-0.jpeg"
+      },
+      "resumen": {
+        "stringValue": "El Ministerio del Interior y el Ministerio de Ambiente publicaron el borrador de decreto que reglamenta la radicación concurrente de los Estudios de Impacto Ambiental (EIA) ante la ANLA y las mesas de consulta previa con comunidades étnicas. La medida tiene como objetivo destrabar inversiones estratégicas en minería, hidrocarburos e infraestructura, reduciendo significativamente los plazos administrativos de licenciamiento sin desproteger los derechos territoriales ni los ecosistemas estratégicos."
+      },
+      "enlace": {
+        "stringValue": "https://www.eltiempo.com/economia/sectores/ministerio-del-interior-publica-borrador-de-decreto-para-que-licencias-ambientales-y-consultas-previas-se-tramiten-al-tiempo-3592742"
+      },
+      "fecha_creacion": {
+        "timestampValue": "2026-10-10T11:00:00Z"
+      },
+      "activo": {
+        "booleanValue": true
+      }
+    }
+  },
+  {
+    "id": "60wxw7Y0Fm215sCpDtx1",
+    "fields": {
+      "fecha": {
+        "stringValue": "06 oct 2026"
+      },
+      "categoria": {
+        "stringValue": "Seguridad y SST"
+      },
+      "titulo": {
+        "stringValue": "Gobierno respalda proyecto de ley que busca formalizar y tecnificar a pequeños mineros en Colombia"
+      },
+      "imagen": {
+        "stringValue": "https://imagenes2.eltiempo.com/files/og_thumbnail/uploads/2023/03/18/641625656a462.jpeg"
+      },
+      "resumen": {
+        "stringValue": "El Congreso de la República y el Gobierno Nacional avanzan en la concertación del proyecto de ley enfocado en la regularización, titulación diferencial y tecnificación de las unidades de producción minera tradicional y artesanal. La iniciativa legislativa promueve la bancarización obligatoria, el cumplimiento estricto de protocolos de seguridad minera y rescate, la sustitución tecnológica del uso de mercurio y el acompañamiento geológico especializado para transformar a pequeños productores en empresas formales y sostenibles."
+      },
+      "enlace": {
+        "stringValue": "https://www.eltiempo.com/politica/congreso/gobierno-respalda-proyecto-de-ley-que-busca-formalizar-a-pequenos-mineros-para-combatir-la-mineria-ilegal-complementa-el-estatuto-antiterrorista-3591663"
+      },
+      "fecha_creacion": {
+        "timestampValue": "2026-10-06T15:00:00Z"
+      },
+      "activo": {
+        "booleanValue": true
+      }
+    }
+  }
+]
