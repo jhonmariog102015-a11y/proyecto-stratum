@@ -1,10 +1,10 @@
 // Configuración oficial y servicios de Firebase para Stratum Group
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp } from "firebase/app";
+import { esVistaLocal } from "./entorno.js";
 import { 
   getFirestore, 
   collection, 
-  getDocs, 
-  getDocFromServer,
+  getDoc, getDocs, connectFirestoreEmulator,
   writeBatch,
   addDoc, 
   updateDoc, 
@@ -14,14 +14,14 @@ import {
   orderBy, 
   limit,
   serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+} from "firebase/firestore/lite";
 import { 
-  initializeAuth,
+  initializeAuth, connectAuthEmulator,
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
   browserSessionPersistence
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+} from "firebase/auth";
 
 // Configuración pública del SDK web; las reglas controlan el acceso.
 const firebaseConfig = {
@@ -35,9 +35,15 @@ const firebaseConfig = {
 };
 
 // Inicializar Firebase
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(esVistaLocal ? {
+  apiKey: "demo-stratum", projectId: "demo-stratum", appId: "demo-stratum"
+} : firebaseConfig);
 const db = getFirestore(app);
 const auth = initializeAuth(app, { persistence: browserSessionPersistence });
+if (esVistaLocal) {
+  connectAuthEmulator(auth, "http://127.0.0.1:19099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "127.0.0.1", 18080);
+}
 
 // SEGURIDAD: escapa cualquier texto que venga de Firestore antes de insertarlo en el DOM.
 // Evita ataques de Cross-Site Scripting (XSS almacenado).
@@ -253,7 +259,8 @@ export async function loadHomeNews() {
     });
 
   } catch (error) {
-    console.warn("Aviso: No se pudo conectar con Firestore para noticias en el inicio, usando contenido local:", error);
+    console.warn("No se pudieron cargar las noticias del inicio.", error.code);
+    homeNewsContainer.textContent = "No se pudieron cargar las noticias. Recarga la página para volver a intentarlo.";
   }
 }
 
@@ -280,7 +287,7 @@ export {
   auth, 
   collection, 
   getDocs, 
-  getDocFromServer,
+  getDoc,
   writeBatch,
   addDoc, 
   updateDoc, 

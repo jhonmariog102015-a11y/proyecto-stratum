@@ -4,4 +4,4 @@ Disallow: /admin_noticias
 Disallow: /gracias
 Disallow: /404.html
 
-Sitemap: https://www.stratumgroup.com.co/sitemap.xml
+Sitemap: {{SITE_ORIGIN}}/sitemap.xml

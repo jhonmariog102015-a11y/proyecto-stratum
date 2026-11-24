@@ -9,10 +9,8 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://www.gstatic.com">
-  <link rel="preconnect" href="https://firestore.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/main.css?v=3.7">
+  <link rel="stylesheet" href="css/main.css?v=3.7">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
 </head>
 <body>
@@ -37,7 +35,7 @@
           <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
         </div>
 
-        <button type="submit" id="btnLogin" class="btn-primary">
+        <button type="submit" id="btnLogin" class="btn-primary" disabled>
           Iniciar Sesión
         </button>
       </form>
@@ -109,7 +107,7 @@
 
           <div class="form-group">
             <label class="form-label" for="newsSummary">Resumen / Contenido de la Noticia <span class="req-star">*</span></label>
-            <textarea id="newsSummary" class="form-textarea" rows="4" placeholder="Describe brevemente el avance, proyecto o noticia que deseas comunicar a los clientes..." required></textarea>
+            <textarea id="newsSummary" class="form-textarea" rows="4" maxlength="20000" placeholder="Describe brevemente el avance, proyecto o noticia que deseas comunicar a los clientes..." required></textarea>
           </div>
 
           <div class="form-group">
@@ -178,6 +176,6 @@
   </div>
 
   <!-- CONTROL Y GESTIÓN CON FIREBASE -->
-  <script type="module" src="js/admin.js?v=12"></script>
+  <script type="module" src="js/cargar-noticias.js"></script>
 </body>
 </html>

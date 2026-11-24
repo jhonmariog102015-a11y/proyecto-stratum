@@ -1,10 +1,11 @@
 // Panel de administración de noticias de Stratum Group.
 import {
-  db, auth, collection, getDocs, getDocFromServer, addDoc, updateDoc, doc,
+  db, auth, collection, getDocs, getDoc, addDoc, updateDoc, doc,
+  query, where, orderBy,
   serverTimestamp, signInWithEmailAndPassword, signOut, onAuthStateChanged,
   writeBatch, escapeHTML,
   safeImageUrl, safeNewsLink
-} from "./firebase_noticias.js?v=12";
+} from "./firebase_noticias.js?v=13";
 
 const loginSection = document.getElementById("loginSection");
 const dashboardSection = document.getElementById("dashboardSection");
@@ -49,13 +50,13 @@ function stopInactivityWatcher() {
 }
 
 async function showDashboard(user) {
-  const permission = await getDocFromServer(doc(db, "administradores", user.uid));
+  const permission = await getDoc(doc(db, "administradores", user.uid));
+  if (auth.currentUser?.uid !== user.uid) return;
   if (!permission.exists()) {
     await signOut(auth);
     showLoginError("Esta cuenta no tiene acceso al panel. Solicita autorización a la persona que administra Firebase.");
     return;
   }
-  if (auth.currentUser?.uid !== user.uid) return;
   loginAlert.style.display = "none";
   loginSection.style.display = "none";
   dashboardSection.style.display = "flex";
@@ -155,30 +156,18 @@ if (publishNewsForm) {
     const imagen = document.getElementById("newsImage").value.trim();
     const enlace = document.getElementById("newsLink").value.trim();
 
-    // Validación de seguridad para URLs externas
-    if (enlace && (!safeNewsLink(enlace) || safeNewsLink(enlace).length > 2000)) {
-      if (publishAlert) {
-        publishAlert.style.display = "block";
-        publishAlert.className = "alert-box alert-error";
-        publishAlert.textContent = "El enlace externo debe ser una URL HTTPS válida.";
-      }
-      if (btnPublish) {
-        btnPublish.disabled = false;
-        btnPublish.textContent = isEditing ? "Guardar Cambios" : "Publicar Noticia en la Web";
-      }
-      return;
-    }
-
-    if (imagen && !safeImageUrl(imagen)) {
-      if (publishAlert) {
-        publishAlert.style.display = "block";
-        publishAlert.className = "alert-box alert-error";
-        publishAlert.textContent = "La URL de la imagen debe comenzar con https:// o ser una ruta interna válida (assets/... o img/...).";
-      }
-      if (btnPublish) {
-        btnPublish.disabled = false;
-        btnPublish.textContent = isEditing ? "Guardar Cambios" : "Publicar Noticia en la Web";
-      }
+    const link = safeNewsLink(enlace);
+    const image = safeImageUrl(imagen);
+    let aviso;
+    if (titulo.length < 2 || !resumen) aviso = "Escribe un título de al menos dos caracteres y un resumen.";
+    else if (enlace && (!link || link.length > 2000)) aviso = "Revisa el enlace HTTPS de la noticia (máximo 2000 caracteres).";
+    else if (imagen && (!image || image.length > 3000)) aviso = "Usa una imagen HTTPS o una ruta de assets/ o img/ (máximo 3000 caracteres).";
+    if (aviso) {
+      publishAlert.textContent = aviso;
+      publishAlert.className = "alert-box alert-error";
+      publishAlert.style.display = "block";
+      btnPublish.disabled = false;
+      btnPublish.textContent = isEditing ? "Guardar Cambios" : "Publicar Noticia en la Web";
       return;
     }
 
@@ -189,8 +178,8 @@ if (publishNewsForm) {
           titulo: titulo,
           categoria: categoria,
           resumen: resumen,
-          imagen: safeImageUrl(imagen),
-          enlace: safeNewsLink(enlace),
+          imagen: image,
+          enlace: link,
           fecha_actualizacion: serverTimestamp()
         });
 
@@ -205,8 +194,8 @@ if (publishNewsForm) {
           titulo: titulo,
           categoria: categoria,
           resumen: resumen,
-          imagen: safeImageUrl(imagen),
-          enlace: safeNewsLink(enlace),
+          imagen: image,
+          enlace: link,
           activo: true,
           fecha: new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'America/Bogota' }),
           fecha_creacion: serverTimestamp()
@@ -242,12 +231,18 @@ if (publishNewsForm) {
 }
 
 // 8. CARGAR LISTA DE NOTICIAS PARA ADMINISTRACIÓN
+let listRequest = 0;
 async function loadAdminNews() {
-  if (!adminNewsList) return;
+  const user = auth.currentUser;
+  if (!adminNewsList || !user) return;
+  const request = ++listRequest;
+  const isCurrent = () => request === listRequest && auth.currentUser === user;
   adminNewsList.innerHTML = "<p style='text-align:center; color: var(--text-muted);'>Cargando noticias...</p>";
 
   try {
-    const querySnapshot = await getDocs(collection(db, "noticias"));
+    const querySnapshot = await getDocs(query(collection(db, "noticias"),
+      where("activo", "==", true), orderBy("fecha_creacion", "desc")));
+    if (!isCurrent()) return;
     
     if (querySnapshot.empty) {
       adminNewsList.innerHTML = "<p style='text-align: center; color: var(--text-muted); padding: 2rem;'>No hay noticias publicadas aún.</p>";
@@ -256,7 +251,7 @@ async function loadAdminNews() {
 
     adminNewsList.innerHTML = "";
 
-    activeDocs.forEach((docSnap) => {
+    querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
       const docId = docSnap.id;
       const imgUrl = escapeHTML(safeImageUrl(data.imagen) || "assets/drone_landscape.png");
@@ -276,7 +271,8 @@ async function loadAdminNews() {
           <button class="btn-edit" title="Editar noticia">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
-          <button class="btn-delete" title="Eliminar noticia">
+          <button type="button" class="btn-cancel-retire" hidden>Cancelar</button>
+          <button type="button" class="btn-delete" title="Retirar noticia">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
           </button>
         </div>
@@ -308,57 +304,45 @@ async function loadAdminNews() {
         document.getElementById("newsTitle").focus();
       });
 
-      // Evento de eliminar (sin confirm() que puede ser bloqueado por el navegador)
       const deleteBtn = itemEl.querySelector(".btn-delete");
+      const cancelBtn = itemEl.querySelector(".btn-cancel-retire");
+      const icon = deleteBtn.firstElementChild;
+      cancelBtn.addEventListener("click", () => {
+        cancelBtn.hidden = true;
+        deleteBtn.title = "Retirar noticia";
+        deleteBtn.replaceChildren(icon);
+        deleteBtn.focus();
+      });
       deleteBtn.addEventListener("click", async () => {
-        // Si ya está en modo confirmación, ejecutar la eliminación lógica (Soft Delete)
-        if (deleteBtn.dataset.confirming === "true") {
-          try {
-            deleteBtn.disabled = true;
-            deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
-            // Soft delete: mantiene el respaldo en Firestore pero oculta la noticia
-            await updateDoc(doc(db, "noticias", docId), {
-              activo: false,
-              fecha_eliminacion: serverTimestamp()
-            });
-            if (editingNewsId && editingNewsId.value === docId) {
-              resetNewsForm();
-            }
-            loadAdminNews();
-          } catch (delErr) {
-            deleteBtn.disabled = false;
-            deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
-            deleteBtn.dataset.confirming = "false";
-            if (publishAlert) {
-              publishAlert.style.display = "block";
-              publishAlert.className = "alert-box alert-error";
-              publishAlert.textContent = "Error al eliminar: " + delErr.message;
-            }
-          }
+        if (cancelBtn.hidden) {
+          cancelBtn.hidden = false;
+          deleteBtn.textContent = "Confirmar retiro";
+          deleteBtn.title = "Retirar la noticia de la página";
           return;
         }
-        // Primer clic: cambiar a modo confirmación
-        deleteBtn.dataset.confirming = "true";
-        deleteBtn.title = "Haz clic de nuevo para confirmar";
-        deleteBtn.style.background = "#DC2626";
-        deleteBtn.style.color = "#fff";
-        deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-        // Auto-cancelar después de 3 segundos
-        setTimeout(() => {
-          if (deleteBtn.dataset.confirming === "true") {
-            deleteBtn.dataset.confirming = "false";
-            deleteBtn.title = "Eliminar noticia";
-            deleteBtn.style.background = "";
-            deleteBtn.style.color = "";
-            deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
-          }
-        }, 3000);
+        deleteBtn.disabled = true;
+        cancelBtn.disabled = true;
+        try {
+          await updateDoc(doc(db, "noticias", docId), {
+            activo: false, fecha_eliminacion: serverTimestamp()
+          });
+          if (editingNewsId.value === docId) resetNewsForm();
+          await loadAdminNews();
+        } catch (error) {
+          deleteBtn.disabled = false;
+          cancelBtn.disabled = false;
+          publishAlert.style.display = "block";
+          publishAlert.className = "alert-box alert-error";
+          publishAlert.textContent = "No se pudo retirar la noticia. Revisa tu conexión y tus permisos.";
+          console.error("Error al retirar la noticia.", error.code);
+        }
       });
 
       adminNewsList.appendChild(itemEl);
     });
 
   } catch (err) {
+    if (!isCurrent()) return;
     console.error("Error listando noticias:", err);
     adminNewsList.innerHTML = "<p style='text-align:center; color: #EF4444;'>Error cargando noticias.</p>";
   }
@@ -380,7 +364,10 @@ if (btnExportBackup) {
         backupStatusMsg.textContent = "Generando copia de seguridad...";
       }
 
+      const user = auth.currentUser;
+      if (!user) return;
       const snap = await getDocs(collection(db, "noticias"));
+      if (auth.currentUser !== user) return;
       const records = [];
       snap.forEach(docSnap => {
         const d = docSnap.data();
@@ -392,6 +379,8 @@ if (btnExportBackup) {
           imagen: d.imagen || "",
           enlace: d.enlace || "",
           activo: d.activo === true,
+          fecha_actualizacion: d.fecha_actualizacion?.toDate?.().toISOString(),
+          fecha_eliminacion: d.fecha_eliminacion?.toDate?.().toISOString(),
           fecha: d.fecha || "",
           autor: d.autor || "",
           fecha_creacion: d.fecha_creacion ? (d.fecha_creacion.toDate ? d.fecha_creacion.toDate().toISOString() : d.fecha_creacion) : (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toISOString() : d.createdAt) : new Date().toISOString())
@@ -467,14 +456,16 @@ function parseBackup(raw) {
     const imagen = readText("imagen", 3000);
     const enlace = readText("enlace", 2000);
     const safeLink = safeNewsLink(enlace);
-    if (imagen && !safeImageUrl(imagen)) throw invalid("imagen");
+    if (imagen && (!safeImageUrl(imagen) || safeImageUrl(imagen).length > 3000)) throw invalid("imagen");
     if (enlace && (!safeLink || safeLink.length > 2000)) throw invalid("enlace");
     if (typeof item.activo !== "boolean") throw invalid("activo");
-    const fechaCreacion = item.fecha_creacion ? new Date(item.fecha_creacion) : null;
-    if (fechaCreacion && (typeof item.fecha_creacion !== "string"
-        || !/^\d{4}-\d{2}-\d{2}T/.test(item.fecha_creacion)
-        || !Number.isFinite(fechaCreacion.getTime()))) {
-      throw invalid("fecha_creacion");
+    const dates = {};
+    for (const field of ["fecha_creacion", "fecha_actualizacion", "fecha_eliminacion"]) {
+      const value = item[field];
+      if (value == null || value === "") continue;
+      if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T/.test(value)
+          || !Number.isFinite(Date.parse(value))) throw invalid(field);
+      dates[field] = new Date(value);
     }
     return {
       id,
@@ -487,8 +478,9 @@ function parseBackup(raw) {
         activo: item.activo,
         fecha: readText("fecha", 100),
         autor: readText("autor", 100),
-        fecha_creacion: fechaCreacion || serverTimestamp(),
-        fecha_actualizacion: serverTimestamp()
+        fecha_creacion: serverTimestamp(),
+        fecha_actualizacion: serverTimestamp(),
+        ...dates
       }
     };
   });

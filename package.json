@@ -5,11 +5,12 @@
   "main": "index.html",
   "scripts": {
     "build": "node scripts/build-hosting.mjs",
-    "dev": "npm run build && firebase emulators:start --project demo-stratum --only hosting",
+    "dev": "npm run build && node scripts/emuladores.mjs",
     "deploy": "firebase deploy",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-stratum \"node --test tests/firestore-rules.test.mjs\""
+    "test:rules": "node scripts/emuladores.mjs --test-rules",
+    "test:ui": "npm run build && node scripts/emuladores.mjs --test-ui"
   },
   "keywords": [
     "stratum-group",
@@ -23,7 +24,13 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "firebase-tools": "15.36.0"
+    "esbuild": "0.28.2",
+    "firebase": "13.4.0",
+    "firebase-tools": "15.37.0",
+    "playwright-core": "1.65.1"
+  },
+  "overrides": {
+    "@firebase/firestore": { "@grpc/grpc-js": "1.14.7" }
   },
   "engines": {
     "node": ">=22"

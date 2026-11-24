@@ -7,29 +7,27 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Noticias y Guías | Stratum Group</title>
   <meta name="description" content="Noticias, guías y comunicados técnicos sobre normativa minera, tecnología e IA y gestión ambiental en Colombia.">
-  <link rel="canonical" href="https://www.stratumgroup.com.co/noticias.html">
+  <link rel="canonical" href="{{SITE_ORIGIN}}/noticias">
 
   <!-- Open Graph / Redes Sociales -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.stratumgroup.com.co/noticias.html">
+  <meta property="og:url" content="{{SITE_ORIGIN}}/noticias">
   <meta property="og:title" content="Noticias y Guías | Stratum Group">
   <meta property="og:description" content="Normativa minera, tecnología e IA y gestión ambiental para quien opera en territorio.">
-  <meta property="og:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
+  <meta property="og:image" content="{{SITE_ORIGIN}}/img/logo_complet_sin_fondo.png">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Noticias y Guías | Stratum Group">
   <meta name="twitter:description" content="Normativa minera, tecnología e IA y gestión ambiental para quien opera en territorio.">
-  <meta name="twitter:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
+  <meta name="twitter:image" content="{{SITE_ORIGIN}}/img/logo_complet_sin_fondo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://www.gstatic.com">
-  <link rel="preconnect" href="https://firestore.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/main.css?v=3.7">
+  <link rel="stylesheet" href="css/main.css?v=3.7">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
   <!-- Google Analytics 4 (GA4) -->
-  <script src="/js/analytics.js?v=1" defer></script>
+  <script type="module" src="js/analytics.js?v=2"></script>
   <!-- Datos Estructurados Schema.org (JSON-LD) -->
   <script type="application/ld+json">
   {
@@ -40,11 +38,11 @@
     "publisher": {
       "@type": "Organization",
       "name": "Stratum Group S.A.S.",
-      "url": "https://www.stratumgroup.com.co"
+      "url": "{{SITE_ORIGIN}}/"
     }
   }
   </script>
-  <script src="/js/app.js?v=3.7" defer></script>
+  <script src="js/app.js?v=3.7" defer></script>
 </head>
 
 <body>
@@ -235,7 +233,7 @@
   </button>
 
   <!-- Scripts Firebase -->
-  <script type="module" src="/js/firebase_noticias.js?v=12"></script>
+  <script type="module" src="js/cargar-noticias.js"></script>
 </body>
 
 </html>

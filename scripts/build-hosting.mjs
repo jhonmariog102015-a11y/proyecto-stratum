@@ -1,14 +1,25 @@
-import { copyFile, lstat, mkdir, realpath, rm } from "node:fs/promises";
+import { copyFile, lstat, mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { build } from "esbuild";
 
 const root = await realpath(fileURLToPath(new URL("../", import.meta.url)));
 const output = join(root, ".hosting-public");
+let siteOrigin = "";
+if (process.env.SITE_ORIGIN) {
+  const url = new URL(process.env.SITE_ORIGIN);
+  if (url.protocol !== "https:" || url.username || url.password || url.href !== url.origin + "/"
+      || !/^[a-z0-9.-]+$/i.test(url.hostname)) {
+    throw new Error("SITE_ORIGIN debe ser el origen HTTPS del sitio, sin rutas ni credenciales.");
+  }
+  siteOrigin = url.origin;
+}
 const files = [
   "index.html", "nosotros.html", "servicios.html", "noticias.html", "contacto.html",
   "aviso-legal.html", "politica-privacidad.html", "gracias.html", "404.html",
-  "admin_noticias.html", "robots.txt", "sitemap.xml",
-  "css/main.css", "js/app.js", "js/analytics.js", "js/admin.js", "js/firebase_noticias.js",
+  "admin_noticias.html", "robots.txt", ...(siteOrigin ? ["sitemap.xml"] : []),
+  "css/main.css", "js/app.js", "js/analytics.js", "js/admin.js", "js/entorno.js",
+  "js/cargar-noticias.js", "js/contacto.js",
   "assets/Portafolio_Stratum_Group.pdf", "assets/drone_landscape.png", "assets/coal_hand.png",
   "img/favicon-stratum.png", "img/logo_complet_sin_fondo.png",
   "img/metodologia_paso1.jpg", "img/metodologia_paso2.jpg", "img/metodologia_paso3.jpg",
@@ -37,6 +48,23 @@ await rm(output, { recursive: true, force: true });
 for (const file of files) {
   const destination = join(output, file);
   await mkdir(dirname(destination), { recursive: true });
-  await copyFile(join(root, file), destination);
+  if (file === "robots.txt" && !siteOrigin) {
+    await writeFile(destination, "User-agent: *\nDisallow: /\n");
+  } else if (file.endsWith(".html") || file === "robots.txt" || file === "sitemap.xml") {
+    let template = await readFile(join(root, file), "utf8");
+    if (file === "404.html") {
+      // Hosting sirve este documento también desde direcciones de varios niveles.
+      template = template.replace(/\b(href|src)="(?=(?:css\/|js\/|img\/|assets\/|[\w-]+\.html))/g, '$1="/');
+    }
+    await writeFile(destination, template.replaceAll("{{SITE_ORIGIN}}", siteOrigin));
+  } else {
+    await copyFile(join(root, file), destination);
+  }
 }
-console.log("Sitio preparado: " + files.length + " archivos.");
+await build({
+  entryPoints: [join(root, "js/firebase_noticias.js")],
+  outfile: join(output, "js/firebase_noticias.js"),
+  bundle: true, format: "esm", platform: "browser", minify: true,
+  legalComments: "eof"
+});
+console.log("Sitio preparado: " + (files.length + 1) + " archivos.");

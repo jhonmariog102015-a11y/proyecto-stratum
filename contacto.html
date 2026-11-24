@@ -8,27 +8,27 @@
   <title>Contacto | Stratum Group</title>
   <meta name="description"
     content="Ponte en contacto con Stratum Group. Soluciones de ingeniería, minería y ambiente en Colombia.">
-  <link rel="canonical" href="https://www.stratumgroup.com.co/contacto.html">
+  <link rel="canonical" href="{{SITE_ORIGIN}}/contacto">
 
   <!-- Open Graph / Redes Sociales -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.stratumgroup.com.co/contacto.html">
+  <meta property="og:url" content="{{SITE_ORIGIN}}/contacto">
   <meta property="og:title" content="Contacto | Stratum Group">
   <meta property="og:description" content="Ponte en contacto con los asesores e ingenieros de Stratum Group S.A.S. en Ubaté y toda Colombia.">
-  <meta property="og:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
+  <meta property="og:image" content="{{SITE_ORIGIN}}/img/logo_complet_sin_fondo.png">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Contacto | Stratum Group">
   <meta name="twitter:description" content="Ponte en contacto con los asesores e ingenieros de Stratum Group S.A.S. en Ubaté y toda Colombia.">
-  <meta name="twitter:image" content="https://www.stratumgroup.com.co/img/logo_complet_sin_fondo.png">
+  <meta name="twitter:image" content="{{SITE_ORIGIN}}/img/logo_complet_sin_fondo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/main.css?v=3.7">
+  <link rel="stylesheet" href="css/main.css?v=3.7">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
   <!-- Google Analytics 4 (GA4) -->
-  <script src="/js/analytics.js?v=1" defer></script>
+  <script type="module" src="js/analytics.js?v=2"></script>
   <!-- Datos Estructurados Schema.org (JSON-LD) -->
   <script type="application/ld+json">
   {
@@ -50,7 +50,8 @@
     }
   }
   </script>
-  <script src="/js/app.js?v=3.7" defer></script>
+  <script src="js/app.js?v=3.7" defer></script>
+  <script type="module" src="js/contacto.js"></script>
 </head>
 
 <body>
@@ -214,10 +215,10 @@
       <!-- Lado Derecho: Formulario -->
       <div class="contact-form-panel">
         <h2>Envíanos un mensaje</h2>
-        <form id="contactForm" class="contact-form" method="post" action="https://formsubmit.co/stratumgroupsas@gmail.com" aria-describedby="contact-delivery">
+        <form id="contactForm" class="contact-form" method="dialog" data-destino="https://formsubmit.co/stratumgroupsas@gmail.com" aria-describedby="contact-delivery">
           <!-- Opciones de FormSubmit con protección anti-spam -->
           <input type="hidden" name="_subject" value="Nuevo contacto desde la página web de Stratum Group">
-          <input type="hidden" name="_next" value="https://www.stratumgroup.com.co/gracias">
+          <input type="hidden" name="_next">
           <!-- Honeypot invisible para neutralizar bots -->
           <input type="text" name="_honey" id="formHoney" style="display:none" tabindex="-1" autocomplete="off">
 
@@ -259,10 +260,11 @@
               <input type="checkbox" id="formConsent" name="consentimiento_datos" value="autorizado" required>
               <span>Autorizo el tratamiento de mis datos personales. <span class="req-star">*</span></span>
             </label>
-            <p id="contact-delivery">FormSubmit procesa el envío y puede pedirte una verificación antispam. Consulta la <a href="/politica-privacidad.html">política de tratamiento de datos</a>.</p>
+            <p id="contact-delivery">FormSubmit procesa el envío y puede pedirte una verificación antispam. Consulta la <a href="politica-privacidad.html">política de tratamiento de datos</a>.</p>
           </div>
 
-          <button type="submit" id="btnSubmitContact" class="btn-submit">ENVIAR</button>
+          <button type="submit" id="btnSubmitContact" class="btn-submit" disabled>ENVIAR</button>
+          <noscript>Para enviar tu consulta, escribe a <a href="mailto:stratumgroupsas@gmail.com">stratumgroupsas@gmail.com</a>.</noscript>
         </form>
       </div>
 

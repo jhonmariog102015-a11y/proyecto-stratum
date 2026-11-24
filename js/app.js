@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </svg>
     `;
     accessBtn.setAttribute('aria-expanded', 'false');
+    accessBtn.setAttribute('aria-controls', 'accessDrawer');
 
     // 5.1.2 Botón Flotante de WhatsApp para atención y conversión inmediata
     let waFloatBtn = document.querySelector('.btn-whatsapp-float');
@@ -226,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!document.getElementById('accessDrawer')) {
       const drawerHtml = `
-        <aside class="access-drawer" id="accessDrawer" role="dialog" aria-modal="true" aria-label="Panel de opciones de accesibilidad">
+        <aside class="access-drawer" id="accessDrawer" role="dialog" aria-modal="true" inert aria-label="Panel de opciones de accesibilidad">
           <!-- Encabezado del Panel -->
           <div class="access-drawer-header">
             <div class="access-drawer-title-wrap">
@@ -311,11 +312,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnReset = document.getElementById('btnAccessReset');
 
     // 5.3 Apertura y Cierre del Panel Lateral
+    let fondo = [];
     const openDrawer = () => {
+      drawer.inert = false;
+      fondo = [...document.body.children].filter(el => el !== drawer && el !== backdrop && !el.inert);
+      fondo.forEach(el => { el.inert = true; });
       drawer.classList.add('active');
       backdrop.classList.add('active');
       accessBtn.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
+      closeBtn.focus();
     };
 
     const closeDrawer = () => {
@@ -323,6 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
       backdrop.classList.remove('active');
       accessBtn.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      fondo.forEach(el => { el.inert = false; });
+      fondo = [];
+      drawer.inert = true;
+      accessBtn.focus();
     };
 
     accessBtn.addEventListener('click', (e) => {
@@ -339,8 +349,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && drawer.classList.contains('active')) {
+      if (!drawer.classList.contains('active')) return;
+      if (e.key === 'Escape') {
         closeDrawer();
+      } else if (e.key === 'Tab' && e.shiftKey && document.activeElement === closeBtn) {
+        e.preventDefault();
+        btnReset.focus();
+      } else if (e.key === 'Tab' && !e.shiftKey && document.activeElement === btnReset) {
+        e.preventDefault();
+        closeBtn.focus();
       }
     });
 
@@ -355,7 +372,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getCurrentPrefs = () => {
       try {
-        return JSON.parse(localStorage.getItem('stratum_access_prefs') || '{}');
+        const prefs = JSON.parse(localStorage.getItem('stratum_access_prefs'));
+        return prefs && typeof prefs === 'object' && !Array.isArray(prefs) ? prefs : {};
       } catch (e) {
         return {};
       }
@@ -492,7 +510,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 7. ENVÍO ASÍNCRONO DEL FORMULARIO DE CONTACTO (AJAX / FORMSUBMIT) Y CAPTCHA (REQ. 45)
   // 9. MEDICIÓN AUTOMÁTICA DE CONVERSIONES Y EVENTOS CLAVE EN GA4
   initConversionTracking();
 

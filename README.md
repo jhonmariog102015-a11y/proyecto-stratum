@@ -10,16 +10,18 @@ Portal corporativo estático con un panel de noticias. Las páginas públicas us
 
 ## Vista local
 
-Con Node.js 22 o superior:
+Con Node.js 22 o superior y Java 21:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Abre `http://127.0.0.1:5500/`. La vista previa aplica la configuración de Hosting. El SDK del navegador está configurado para el Firebase de Stratum Group: no uses credenciales ni envíes el formulario real para probar la vista local. Las pruebas de reglas usan únicamente el proyecto ficticio `demo-stratum`.
+Abre `http://127.0.0.1:5500/`. La vista previa usa el proyecto ficticio `demo-stratum`, Authentication en el puerto 19099 y Firestore en el 18080. El formulario valida los campos localmente y la analítica se desactiva. Al cerrar los emuladores se descartan sus datos. Reinicia `npm run dev` para incorporar cambios en los archivos.
 
 ## Preparar el primer despliegue con estas reglas
+
+Cuando se defina el dominio oficial, configura `SITE_ORIGIN` con su origen HTTPS en el entorno que ejecute la compilación. Este valor genera las direcciones canónicas y el mapa del sitio. Mientras esté vacío, la compilación usa referencias locales y pide a los buscadores que omitan el sitio.
 
 Las reglas cierran el acceso por defecto. Completar este orden con una cuenta de operación autorizada:
 
@@ -43,4 +45,6 @@ Con Java 21 disponible y las dependencias de desarrollo instaladas:
 npm run test:rules
 ```
 
-Las pruebas comprueban el control por UID, la lectura pública, la validación de publicaciones y la restauración atómica. En Windows, si el emulador de Java pierde los acentos en la ruta de `firestore.rules`, ejecuta las pruebas desde una copia de trabajo con una ruta sin acentos.
+Las pruebas comprueban el control por UID, la lectura pública, la validación de publicaciones y la restauración atómica. Ejecuta la suite con la vista previa cerrada para liberar el puerto de Firestore.
+
+Para probar los recorridos completos en Chromium, ejecuta `npx playwright-core install chromium` y `npm run test:ui`. También puedes definir `CHROME_PATH` con la ruta a un Chrome instalado. La prueba crea una cuenta ficticia y noticias de ejemplo en emuladores temporales.

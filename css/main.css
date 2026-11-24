@@ -4350,6 +4350,22 @@ body:has(.dash-header) .btn-whatsapp-float,
   transform: translateY(-1px);
 }
 
+.btn-cancel-retire,
+.btn-cancel-retire:not([hidden]) + .btn-delete {
+  width: auto;
+  padding: 0.4rem 0.65rem;
+  font: inherit;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-cancel-retire {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+}
+
 .form-actions-group {
   display: flex;
   flex-direction: column;
