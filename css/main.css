@@ -4817,8 +4817,9 @@ article.post .post__desc {
 .adm-brand {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
-  padding: 0 0.5rem;
+  gap: 1.75rem;
+  padding: 0.5rem 0.5rem 1.5rem;
+  border-bottom: 1px solid rgba(236, 210, 242, 0.16);
 }
 
 .adm-brand img {
@@ -5164,9 +5165,10 @@ article.post .post__desc {
   gap: 0.3rem;
 }
 
-/* Al confirmar un retiro solo quedan «Cancelar» y «Sí, retirar». */
+/* Al confirmar solo quedan «Cancelar» y la acción («Sí, retirar» o «Sí, eliminar»). */
 .adm-row.is-confirming .btn-view,
-.adm-row.is-confirming .btn-edit {
+.adm-row.is-confirming .btn-edit,
+.adm-row.is-confirming .btn-reactivate {
   display: none;
 }
 
@@ -5211,6 +5213,7 @@ article.post .post__desc {
 }
 
 .adm-icon-btn.btn-delete:hover,
+.adm-icon-btn.btn-delete-forever:hover,
 .adm-icon-btn.is-confirm {
   background: #FDECEC;
   color: #B42318;
@@ -5420,6 +5423,7 @@ article.post .post__desc {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    padding: 0 0.25rem 0.9rem;
   }
 
   .adm-brand img {

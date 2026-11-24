@@ -216,6 +216,22 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   await publico.locator("#firebase-news-container").getByText("Borrador interno").waitFor();
   await publico.close();
 
+  // Una noticia retirada se puede eliminar para siempre, con una segunda confirmación.
+  const fila = list.locator(".adm-row", { hasText: "Borrador interno" });
+  await fila.getByRole("button", { name: "Retirar noticia" }).click();
+  await fila.getByRole("button", { name: "Sí, retirar" }).click();
+  await list.locator(".adm-row", { hasText: "Borrador interno" }).waitFor({ state: "detached" });
+  await page.getByRole("button", { name: "Retiradas" }).click();
+  const retirada = list.locator(".adm-row", { hasText: "Borrador interno" });
+  await retirada.getByRole("button", { name: "Eliminar definitivamente" }).click();
+  await retirada.getByRole("button", { name: "Cancelar" }).click();
+  await retirada.getByRole("button", { name: "Eliminar definitivamente" }).click();
+  await retirada.getByRole("button", { name: "Sí, eliminar" }).click();
+  await list.getByText(/No hay noticias retiradas/).waitFor();
+  await page.locator("#publishAlert").getByText(/eliminada definitivamente/).waitFor();
+  await page.getByRole("button", { name: "Publicadas" }).click();
+  await list.getByText("Noticia restaurada").waitFor();
+
   await page.locator("#btnLogout").click();
   await page.locator("#loginEmail").waitFor();
   assert.equal(await list.locator(".adm-row").count(), 0);

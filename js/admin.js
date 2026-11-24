@@ -1,10 +1,10 @@
 // Panel de administración de noticias de Stratum Group.
 import {
   db, auth, collection, getDocs, getDoc, addDoc, updateDoc, doc,
-  query, where, orderBy, deleteField, getCount,
+  query, where, orderBy, deleteField, deleteDoc, getCount,
   serverTimestamp, signInWithEmailAndPassword, signOut, onAuthStateChanged,
   writeBatch
-} from "./firebase_noticias.js?v=14";
+} from "./firebase_noticias.js?v=15";
 
 const { escapeHTML, safeImageUrl, safeNewsLink, fechaVisible, anclaNoticia, htmlPost } = formatoNoticias;
 const $ = id => document.getElementById(id);
@@ -428,6 +428,7 @@ listFilters.forEach(button => button.addEventListener("click", () => setListView
 const ICON = {
   view: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
   edit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14M10 11v6M14 11v6"/></svg>',
   retire: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg>'
 };
 
@@ -476,6 +477,50 @@ function retireControls(row, docId) {
       cancelBtn.disabled = false;
       showPublishAlert("No se pudo retirar la noticia. Revisa tu conexión y tus permisos.", "error");
       console.error("Error al retirar la noticia.", error.code);
+    }
+  });
+}
+
+// Eliminar para siempre: solo en Retiradas y con una segunda confirmación en la fila.
+function deleteForeverControl(row, docId, titulo) {
+  const deleteBtn = row.querySelector(".btn-delete-forever");
+  const cancelBtn = row.querySelector(".btn-cancel-delete");
+  const icon = deleteBtn.firstElementChild;
+  const restore = () => {
+    cancelBtn.hidden = true;
+    row.classList.remove("is-confirming");
+    deleteBtn.classList.remove("is-confirm");
+    deleteBtn.setAttribute("aria-label", "Eliminar definitivamente");
+    deleteBtn.replaceChildren(icon);
+  };
+  cancelBtn.addEventListener("click", () => {
+    restore();
+    deleteBtn.focus();
+  });
+  deleteBtn.addEventListener("click", async () => {
+    if (cancelBtn.hidden) {
+      cancelBtn.hidden = false;
+      row.classList.add("is-confirming");
+      deleteBtn.classList.add("is-confirm");
+      deleteBtn.textContent = "Sí, eliminar";
+      deleteBtn.setAttribute("aria-label", "Sí, eliminar «" + titulo + "» para siempre");
+      return;
+    }
+    deleteBtn.disabled = true;
+    cancelBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "noticias", docId));
+      showPublishAlert("Noticia eliminada definitivamente. Solo se puede recuperar desde un respaldo.", "success");
+      updateStats();
+      await loadAdminNews();
+    } catch (error) {
+      deleteBtn.disabled = false;
+      cancelBtn.disabled = false;
+      restore();
+      showPublishAlert(error.code === "permission-denied"
+        ? "No se pudo eliminar por permisos. Revisa que las reglas de Firestore estén actualizadas."
+        : "No se pudo eliminar la noticia. Revisa tu conexión.", "error");
+      console.error("Error al eliminar la noticia.", error.code);
     }
   });
 }
@@ -544,7 +589,9 @@ const normalizar = texto => (texto || "").normalize("NFD").replace(/\p{Diacritic
 
 function rowActions(view, docId) {
   if (view === "retiradas") {
-    return '<button type="button" class="adm-btn adm-btn-secondary adm-btn-sm btn-reactivate">Reactivar</button>';
+    return '<button type="button" class="adm-btn adm-btn-secondary adm-btn-sm btn-reactivate">Reactivar</button>'
+      + '<button type="button" class="adm-btn adm-btn-ghost adm-btn-sm btn-cancel-delete" hidden>Cancelar</button>'
+      + `<button type="button" class="adm-icon-btn btn-delete-forever" title="Eliminar definitivamente" aria-label="Eliminar definitivamente">${ICON.trash}</button>`;
   }
   const ver = view === "activas"
     ? `<a class="adm-icon-btn btn-view" href="noticias.html#${escapeHTML(encodeURIComponent(anclaNoticia(docId)))}" target="_blank" rel="noopener" title="Ver en la web" aria-label="Ver en la web">${ICON.view}</a>`
@@ -567,9 +614,10 @@ function renderList() {
   const visible = loadedNews.filter(({ data }) =>
     (!category || (data.categoria || "General") === category)
     && (!search || normalizar(data.titulo + " " + data.resumen).includes(search)));
-  newsListSummary.textContent = visible.length === loadedNews.length
+  newsListSummary.textContent = (visible.length === loadedNews.length
     ? loadedNews.length + (loadedNews.length === 1 ? " noticia" : " noticias")
-    : "Mostrando " + visible.length + " de " + loadedNews.length;
+    : "Mostrando " + visible.length + " de " + loadedNews.length)
+    + (listView === "retiradas" ? ". Lo que elimines aquí no se puede recuperar, salvo desde un respaldo." : "");
   if (visible.length === 0) {
     showListMessage("Ninguna noticia coincide con la búsqueda.");
     return;
@@ -595,6 +643,7 @@ function renderList() {
     }, { once: true });
     if (view === "retiradas") {
       reactivateControl(row, docId);
+      deleteForeverControl(row, docId, data.titulo || "Sin título");
     } else {
       row.querySelector(".btn-edit").addEventListener("click", () => startEditing(docId, data));
       retireControls(row, docId);

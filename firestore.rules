@@ -40,6 +40,9 @@ service cloud.firestore {
       allow get: if esAdmin() || resource.data.activo == true;
       allow list: if esAdmin() || (request.query.limit <= 20 && resource.data.activo == true);
       allow create, update: if esAdmin() && esNoticiaValida();
+      // Solo se elimina para siempre una noticia ya retirada (ni publicada ni borrador).
+      allow delete: if esAdmin() && resource.data.activo == false
+        && resource.data.get('borrador', false) != true;
     }
 
     match /administradores/{uid} {

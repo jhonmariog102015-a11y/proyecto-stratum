@@ -88,7 +88,7 @@ test("el público solo puede leer noticias activas y con un límite en la consul
   await list({ where: published, limit: 21 }, 403);
 });
 
-test("un UID autorizado puede publicar y retirar pero no delegar permisos", async () => {
+test("un UID autorizado publica, retira y elimina solo lo retirado, sin delegar permisos", async () => {
   await read("administradores/editor-aprobado", admin);
   await read("administradores/cuenta-ajena", admin, 403);
   await read("administradores", admin, 403);
@@ -110,11 +110,18 @@ test("un UID autorizado puede publicar y retirar pero no delegar permisos", asyn
   await write(path, { ...news, borrador: { stringValue: "sí" } }, admin, 403);
   await write(path, { ...news, activo: { booleanValue: false }, borrador: { booleanValue: true } }, admin);
   await read(path, undefined, 403);
+  // Ni un borrador ni una noticia publicada se pueden eliminar.
+  await request("/" + path, { method: "DELETE", auth: admin, status: 403 });
   await write(path, { ...news, borrador: { booleanValue: false } }, admin);
   await read(path);
+  await request("/" + path, { method: "DELETE", auth: admin, status: 403 });
   await write(path, { ...news, activo: { booleanValue: false } }, admin);
   await read(path, undefined, 403);
-  await request("/" + path, { method: "DELETE", auth: admin, status: 403 });
+  // Una noticia retirada solo la elimina un administrador.
+  await request("/" + path, { method: "DELETE", status: 403 });
+  await request("/" + path, { method: "DELETE", auth: stranger, status: 403 });
+  await request("/" + path, { method: "DELETE", auth: admin });
+  await read(path, admin, 404);
 });
 
 test("un respaldo inválido no deja una restauración parcial", async () => {
