@@ -5,6 +5,8 @@ import { build } from "esbuild";
 
 const root = await realpath(fileURLToPath(new URL("../", import.meta.url)));
 const output = join(root, ".hosting-public");
+const basePath = process.env.SITE_BASE_PATH || "";
+if (basePath && !/^\/[\w.-]+$/.test(basePath)) throw new Error("Ruta de publicación inválida.");
 let siteOrigin = "";
 if (process.env.SITE_ORIGIN) {
   const url = new URL(process.env.SITE_ORIGIN);
@@ -54,9 +56,9 @@ for (const file of files) {
     let template = await readFile(join(root, file), "utf8");
     if (file === "404.html") {
       // Hosting sirve este documento también desde direcciones de varios niveles.
-      template = template.replace(/\b(href|src)="(?=(?:css\/|js\/|img\/|assets\/|[\w-]+\.html))/g, '$1="/');
+      template = template.replace(/\b(href|src)="(?=(?:css\/|js\/|img\/|assets\/|[\w-]+\.html))/g, `$1="${basePath}/`);
     }
-    await writeFile(destination, template.replaceAll("{{SITE_ORIGIN}}", siteOrigin));
+    await writeFile(destination, template.replaceAll("{{SITE_ORIGIN}}", siteOrigin + basePath));
   } else {
     await copyFile(join(root, file), destination);
   }

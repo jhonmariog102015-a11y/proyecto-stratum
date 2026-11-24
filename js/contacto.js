@@ -14,6 +14,6 @@ if (esVistaLocal) {
 } else {
   form.action = form.dataset.destino;
   form.method = "post";
-  form.elements.namedItem("_next").value = new URL("/gracias", location.origin).href;
+  form.elements.namedItem("_next").value = new URL("gracias", location.href).href;
 }
 boton.disabled = false;

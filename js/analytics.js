@@ -14,7 +14,7 @@ if (!esVistaLocal) {
       } catch { /* El formulario puede enviarse sin almacenamiento. */ }
     }
   });
-  if (/^\/gracias(?:\.html)?$/.test(location.pathname)) {
+  if (/\/gracias(?:\.html)?$/.test(location.pathname)) {
     try {
       const submittedAt = Number(sessionStorage.getItem(pendingLead));
       sessionStorage.removeItem(pendingLead);
