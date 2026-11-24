@@ -138,7 +138,7 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   await list.locator(".btn-delete").click();
   await list.getByRole("button", { name: "Cancelar" }).click();
   await list.getByRole("button", { name: "Retirar noticia" }).click();
-  await list.getByRole("button", { name: "Confirmar retiro" }).click();
+  await list.getByRole("button", { name: "Sí, retirar" }).click();
   try {
     await list.getByText(/No hay noticias/).waitFor();
   } catch (error) {
@@ -185,7 +185,7 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
 
   // Una noticia retirada se puede volver a publicar desde la pestaña Retiradas.
   await list.getByRole("button", { name: "Retirar noticia" }).click();
-  await list.getByRole("button", { name: "Confirmar retiro" }).click();
+  await list.getByRole("button", { name: "Sí, retirar" }).click();
   await list.getByText(/No hay noticias publicadas/).waitFor();
   await page.getByRole("button", { name: "Retiradas" }).click();
   await list.getByRole("button", { name: "Reactivar" }).click();

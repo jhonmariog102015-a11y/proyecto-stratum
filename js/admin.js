@@ -447,6 +447,7 @@ function retireControls(row, docId) {
   const icon = deleteBtn.firstElementChild;
   cancelBtn.addEventListener("click", () => {
     cancelBtn.hidden = true;
+    row.classList.remove("is-confirming");
     deleteBtn.title = "Retirar noticia";
     deleteBtn.classList.remove("is-confirm");
     deleteBtn.replaceChildren(icon);
@@ -455,7 +456,8 @@ function retireControls(row, docId) {
   deleteBtn.addEventListener("click", async () => {
     if (cancelBtn.hidden) {
       cancelBtn.hidden = false;
-      deleteBtn.textContent = "Confirmar retiro";
+      row.classList.add("is-confirming");
+      deleteBtn.textContent = "Sí, retirar";
       deleteBtn.title = "Retirar la noticia de la página";
       deleteBtn.classList.add("is-confirm");
       return;

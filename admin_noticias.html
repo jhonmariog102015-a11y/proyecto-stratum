@@ -28,12 +28,12 @@
       <form id="loginForm">
         <div class="form-group">
           <label class="form-label" for="loginEmail">Correo Electrónico</label>
-          <input type="email" id="loginEmail" class="form-input" placeholder="admin@stratumgroup.com" required autocomplete="username">
+          <input type="email" id="loginEmail" class="form-input" required autocomplete="username">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="loginPassword">Contraseña</label>
-          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+          <input type="password" id="loginPassword" class="form-input" required autocomplete="current-password">
         </div>
 
         <button type="submit" id="btnLogin" class="btn-primary" disabled>
@@ -132,7 +132,7 @@
                 <label class="adm-label" for="newsTitle">Título <span class="req-star">*</span></label>
                 <span class="adm-count" id="newsTitleCount" aria-live="polite">0/300</span>
               </div>
-              <input type="text" minlength="2" maxlength="300" id="newsTitle" class="adm-input" placeholder="Implementación de IA en proyectos mineros de Cundinamarca" required>
+              <input type="text" minlength="2" maxlength="300" id="newsTitle" class="adm-input" required>
             </div>
 
             <div class="adm-field">
@@ -152,17 +152,17 @@
                 <label class="adm-label" for="newsSummary">Resumen <span class="req-star">*</span></label>
                 <span class="adm-count" id="newsSummaryCount">0/20000</span>
               </div>
-              <textarea id="newsSummary" class="adm-input adm-textarea" rows="5" maxlength="20000" placeholder="Describe el avance, proyecto o noticia que quieres comunicar a los clientes." required></textarea>
+              <textarea id="newsSummary" class="adm-input adm-textarea" rows="5" maxlength="20000" required></textarea>
             </div>
 
             <div class="adm-field">
-              <label class="adm-label" for="newsImage">Imagen (opcional)</label>
-              <input type="text" inputmode="url" maxlength="3000" id="newsImage" class="adm-input" placeholder="https://… o vacío para usar la imagen corporativa">
+              <label class="adm-label" for="newsImage">Enlace de la imagen (opcional)</label>
+              <input type="text" inputmode="url" maxlength="3000" id="newsImage" class="adm-input">
             </div>
 
             <div class="adm-field">
               <label class="adm-label" for="newsLink">Enlace a la noticia completa (opcional)</label>
-              <input type="url" maxlength="2000" id="newsLink" class="adm-input" placeholder="https://linkedin.com/posts/…">
+              <input type="url" maxlength="2000" id="newsLink" class="adm-input">
             </div>
 
             <div class="adm-actions">

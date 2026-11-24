@@ -4817,7 +4817,7 @@ article.post .post__desc {
 .adm-brand {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.1rem;
   padding: 0 0.5rem;
 }
 
@@ -5113,7 +5113,7 @@ article.post .post__desc {
 
 .adm-table th:nth-child(2) { width: 22%; }
 .adm-table th:nth-child(3) { width: 15%; }
-.adm-table th:nth-child(4) { width: 9.5rem; }
+.adm-table th:nth-child(4) { width: 11.5rem; }
 
 .adm-table td {
   padding: 0.7rem 1rem;
@@ -5158,9 +5158,16 @@ article.post .post__desc {
 
 .adm-row-actions {
   display: flex;
+  white-space: nowrap;
   justify-content: flex-end;
   align-items: center;
   gap: 0.3rem;
+}
+
+/* Al confirmar un retiro solo quedan «Cancelar» y «Sí, retirar». */
+.adm-row.is-confirming .btn-view,
+.adm-row.is-confirming .btn-edit {
+  display: none;
 }
 
 .adm-badge {
@@ -5211,6 +5218,7 @@ article.post .post__desc {
 
 .adm-icon-btn.is-confirm {
   width: auto;
+  white-space: nowrap;
   padding: 0 0.7rem;
   font: inherit;
   font-size: 0.82rem;
