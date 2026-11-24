@@ -10,7 +10,7 @@
   <script src="js/anti-marco.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css?v=3.8">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
 </head>
@@ -48,165 +48,155 @@
   </main>
 
   <!-- ==============================================
-       VISTA 2: DASHBOARD DE CONTROL DE NOTICIAS
+       VISTA 2: PANEL DE NOTICIAS
        ============================================== -->
-  <div id="dashboardSection" class="dashboard-wrapper" style="display: none;">
-    
-    <!-- Barra Superior -->
-    <header class="dashboard-nav">
-      <div class="dash-brand">
+  <div id="dashboardSection" class="adm" style="display: none;">
+
+    <!-- Menú lateral -->
+    <aside class="adm-side">
+      <div class="adm-brand">
         <img src="img/logo_complet_sin_fondo.png" alt="Stratum Group">
-        <span>Gestor de Noticias</span>
+        <span>Noticias</span>
       </div>
-      <div class="dash-user-controls">
-        <span id="currentUserEmail" class="user-badge">...</span>
-        <a href="noticias.html" target="_blank" rel="noopener noreferrer" class="dash-live-link">Ver Web en Vivo &rarr;</a>
-        <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
-      </div>
-    </header>
-
-    <!-- Contenedor Principal -->
-    <main class="dash-container">
-
-      <!-- BREADCRUMB ADMIN (REQ. 4) -->
-      <nav class="breadcrumb-nav-admin" aria-label="Migas de pan de administración" style="grid-column: 1 / -1;">
-        <ol class="breadcrumb-list">
-          <li class="breadcrumb-item"><a href="index.html">Portal Stratum</a></li>
-          <li class="breadcrumb-separator">&gt;</li>
-          <li class="breadcrumb-item"><a href="admin_noticias.html">Panel Admin</a></li>
-          <li class="breadcrumb-separator">&gt;</li>
-          <li class="breadcrumb-item active" aria-current="page">Gestor de Noticias</li>
-        </ol>
+      <nav class="adm-nav" aria-label="Secciones del panel">
+        <a class="adm-nav-link" href="#resumen" data-seccion="resumen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          Resumen
+        </a>
+        <a class="adm-nav-link" href="#noticias" data-seccion="noticias">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h13a2 2 0 0 1 2 2v12a2 2 0 0 0 2-2V8"/><path d="M4 5v13a2 2 0 0 0 2 2h13"/><path d="M8 9h7M8 13h7M8 17h4"/></svg>
+          Noticias
+        </a>
+        <a class="adm-nav-link" href="#editor" data-seccion="editor" id="navNuevaNoticia">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          Nueva noticia
+        </a>
+        <a class="adm-nav-link" href="#respaldos" data-seccion="respaldos">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+          Respaldos
+        </a>
       </nav>
+      <div class="adm-side-foot">
+        <a href="noticias.html" target="_blank" rel="noopener noreferrer" class="adm-live-link">Ver la web en vivo &nearr;</a>
+        <span id="currentUserEmail" class="adm-user"></span>
+        <button type="button" id="btnLogout" class="adm-logout">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="adm-main">
 
       <!-- Resumen -->
-      <section class="dash-stats" aria-label="Resumen de noticias">
-        <div class="dash-stat"><span class="dash-stat-label">Publicadas</span><strong id="statPublicadas" class="dash-stat-value">–</strong></div>
-        <div class="dash-stat"><span class="dash-stat-label">Retiradas</span><strong id="statRetiradas" class="dash-stat-value">–</strong></div>
-        <div class="dash-stat"><span class="dash-stat-label">Último respaldo en este navegador</span><strong id="statRespaldo" class="dash-stat-value dash-stat-text">Ninguno</strong></div>
+      <section id="resumen" class="adm-stats" aria-label="Resumen de noticias">
+        <div class="adm-stat"><span class="adm-stat-label">Publicadas</span><strong id="statPublicadas" class="adm-stat-value">–</strong></div>
+        <div class="adm-stat"><span class="adm-stat-label">Borradores</span><strong id="statBorradores" class="adm-stat-value">–</strong></div>
+        <div class="adm-stat"><span class="adm-stat-label">Último respaldo en este navegador</span><strong id="statRespaldo" class="adm-stat-value adm-stat-text">Ninguno</strong></div>
       </section>
 
-      <!-- Columna 1: Formulario Crear Noticia -->
-      <section class="dash-card">
-        <h2 class="dash-card-title" id="formCardTitle">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          <span id="formTitleText">Publicar Nueva Noticia</span>
-        </h2>
-
-        <form id="publishNewsForm">
-          <input type="hidden" id="editingNewsId" value="">
-
-          <div class="form-group">
-            <div class="form-label-row">
-              <label class="form-label" for="newsTitle">Título de la Noticia <span class="req-star">*</span></label>
-              <span class="char-count" id="newsTitleCount" aria-live="polite">0/300</span>
-            </div>
-            <input type="text" minlength="2" maxlength="300" id="newsTitle" class="form-input" placeholder="Ej: Implementación de IA en proyectos mineros de Cundinamarca" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="newsCategory">Categoría / Pilar <span class="req-star">*</span></label>
-            <select id="newsCategory" class="form-select" required>
-              <option value="Ingeniería Minera">1. Ingeniería y Planeamiento Minero</option>
-              <option value="Geología & Exploración">2. Geología y Exploración</option>
-              <option value="Gestión Ambiental">3. Gestión y Cumplimiento Ambiental</option>
-              <option value="Seguridad y SST">4. Seguridad, Salud en el Trabajo y Riesgos</option>
-              <option value="Tecnología e IA">5. Tecnología, Software e IA Minera</option>
-              <option value="Corporativo" selected>Comunicado Corporativo</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <div class="form-label-row">
-              <label class="form-label" for="newsSummary">Resumen / Contenido de la Noticia <span class="req-star">*</span></label>
-              <span class="char-count" id="newsSummaryCount">0/20000</span>
-            </div>
-            <textarea id="newsSummary" class="form-textarea" rows="4" maxlength="20000" placeholder="Describe brevemente el avance, proyecto o noticia que deseas comunicar a los clientes..." required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="newsImage">URL de la Imagen (Opcional)</label>
-            <input type="text" inputmode="url" maxlength="3000" id="newsImage" class="form-input" placeholder="Ej: https://... o deja vacío para usar imagen corporativa">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="newsLink">Enlace Externo / Noticia Completa (Opcional)</label>
-            <input type="url" maxlength="2000" id="newsLink" class="form-input" placeholder="Ej: https://linkedin.com/posts/... o PDF">
-          </div>
-
-          <div class="form-actions-group">
-            <button type="submit" id="btnPublish" class="btn-primary">
-              Publicar Noticia en la Web
-            </button>
-            <button type="button" id="btnCancelEdit" class="btn-cancel-edit" style="display: none;">
-              Cancelar Edición
-            </button>
-          </div>
-        </form>
-
-        <div id="publishAlert" role="status" class="alert-box"></div>
-
-        <div class="news-preview">
-          <p class="news-preview-label">Vista previa: así se verá en la página de Noticias</p>
-          <div id="newsPreview" class="news-preview-card"></div>
-        </div>
-      </section>
-
-      <!-- Columna 2: Lista de Noticias Activas -->
-      <section class="dash-card">
-        <h2 class="dash-card-title">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-          Noticias en la Base de Datos
-        </h2>
-
-        <div class="news-list-filters" role="group" aria-label="Noticias que se muestran">
-          <button type="button" class="news-filter-btn" data-vista-lista="activas" aria-pressed="true">Publicadas</button>
-          <button type="button" class="news-filter-btn" data-vista-lista="retiradas" aria-pressed="false">Retiradas</button>
-        </div>
-
-        <div class="news-toolbar">
+      <!-- Lista de noticias -->
+      <section id="noticias" class="adm-card" aria-labelledby="tituloNoticias">
+        <h2 id="tituloNoticias" class="adm-card-title">Noticias</h2>
+        <div class="adm-toolbar">
           <label class="visually-hidden" for="newsSearch">Buscar noticias</label>
-          <input type="search" id="newsSearch" class="form-input" placeholder="Buscar por título o texto" autocomplete="off">
+          <input type="search" id="newsSearch" class="adm-input adm-search" placeholder="Buscar por título o texto" autocomplete="off">
+          <div class="adm-chips" role="group" aria-label="Estado de las noticias">
+            <button type="button" class="adm-chip" data-vista-lista="activas" aria-pressed="true">Publicadas <span id="countActivas" class="adm-chip-count"></span></button>
+            <button type="button" class="adm-chip" data-vista-lista="borradores" aria-pressed="false">Borradores <span id="countBorradores" class="adm-chip-count"></span></button>
+            <button type="button" class="adm-chip" data-vista-lista="retiradas" aria-pressed="false">Retiradas <span id="countRetiradas" class="adm-chip-count"></span></button>
+          </div>
           <label class="visually-hidden" for="newsCategoryFilter">Filtrar por categoría</label>
-          <select id="newsCategoryFilter" class="form-select">
+          <select id="newsCategoryFilter" class="adm-input adm-select">
             <option value="">Todas las categorías</option>
           </select>
         </div>
-        <p id="newsListSummary" class="news-list-summary" aria-live="polite"></p>
-
-        <div id="adminNewsList" class="news-list">
-          <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Cargando lista de noticias...</p>
+        <p id="newsListSummary" class="adm-list-summary" aria-live="polite"></p>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr><th scope="col">Título</th><th scope="col">Categoría</th><th scope="col">Fecha</th><th scope="col"><span class="visually-hidden">Acciones</span></th></tr>
+            </thead>
+            <tbody id="adminNewsList"></tbody>
+          </table>
         </div>
       </section>
 
-      <!-- Copias de seguridad -->
-      <section class="dash-card dash-card-full">
-          <div>
-            <h2 class="dash-sec-col-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Copias de seguridad
-            </h2>
-            <p class="dash-sec-subtitle">Exporta un respaldo completo de las noticias en formato JSON o restaura registros existentes en Firestore.</p>
+      <!-- Editor y vista previa -->
+      <div id="editor" class="adm-editor-grid">
+        <section class="adm-card" aria-labelledby="formTitleText">
+          <h2 class="adm-card-title" id="formTitleText">Nueva noticia</h2>
 
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <button type="button" id="btnExportBackup" class="btn-primary dash-btn-compact" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Descargar Copia de Seguridad (.JSON)
-              </button>
+          <form id="publishNewsForm">
+            <input type="hidden" id="editingNewsId" value="">
 
-              <label class="dash-btn-compact" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: #EEF2FF; color: #4338CA; border: 1px dashed #6366F1; cursor: pointer; border-radius: 6px; padding: 0.6rem 1rem; font-weight: 600; font-size: 0.85rem; box-sizing: border-box;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Restaurar Respaldo (.JSON)
-                <input type="file" id="backupFileInput" accept=".json" class="visually-hidden">
-              </label>
-
-              <p id="backupStatusMsg" role="status" style="font-size: 0.78rem; color: #64748B; margin: 0;"></p>
+            <div class="adm-field">
+              <div class="adm-label-row">
+                <label class="adm-label" for="newsTitle">Título <span class="req-star">*</span></label>
+                <span class="adm-count" id="newsTitleCount" aria-live="polite">0/300</span>
+              </div>
+              <input type="text" minlength="2" maxlength="300" id="newsTitle" class="adm-input" placeholder="Implementación de IA en proyectos mineros de Cundinamarca" required>
             </div>
-          </div>
+
+            <div class="adm-field">
+              <label class="adm-label" for="newsCategory">Categoría <span class="req-star">*</span></label>
+              <select id="newsCategory" class="adm-input" required>
+                <option value="Ingeniería Minera">Ingeniería y planeamiento minero</option>
+                <option value="Geología & Exploración">Geología y exploración</option>
+                <option value="Gestión Ambiental">Gestión y cumplimiento ambiental</option>
+                <option value="Seguridad y SST">Seguridad, salud en el trabajo y riesgos</option>
+                <option value="Tecnología e IA">Tecnología, software e IA minera</option>
+                <option value="Corporativo" selected>Comunicado corporativo</option>
+              </select>
+            </div>
+
+            <div class="adm-field">
+              <div class="adm-label-row">
+                <label class="adm-label" for="newsSummary">Resumen <span class="req-star">*</span></label>
+                <span class="adm-count" id="newsSummaryCount">0/20000</span>
+              </div>
+              <textarea id="newsSummary" class="adm-input adm-textarea" rows="5" maxlength="20000" placeholder="Describe el avance, proyecto o noticia que quieres comunicar a los clientes." required></textarea>
+            </div>
+
+            <div class="adm-field">
+              <label class="adm-label" for="newsImage">Imagen (opcional)</label>
+              <input type="text" inputmode="url" maxlength="3000" id="newsImage" class="adm-input" placeholder="https://… o vacío para usar la imagen corporativa">
+            </div>
+
+            <div class="adm-field">
+              <label class="adm-label" for="newsLink">Enlace a la noticia completa (opcional)</label>
+              <input type="url" maxlength="2000" id="newsLink" class="adm-input" placeholder="https://linkedin.com/posts/…">
+            </div>
+
+            <div class="adm-actions">
+              <button type="button" id="btnSaveDraft" class="adm-btn adm-btn-secondary">Guardar borrador</button>
+              <button type="submit" id="btnPublish" class="adm-btn adm-btn-primary">Publicar</button>
+              <button type="button" id="btnCancelEdit" class="adm-btn adm-btn-ghost" style="display: none;">Cancelar edición</button>
+            </div>
+          </form>
+
+          <div id="publishAlert" role="status" class="alert-box"></div>
+        </section>
+
+        <section class="adm-card adm-preview" aria-labelledby="tituloVistaPrevia">
+          <h2 class="adm-card-title" id="tituloVistaPrevia">Vista previa en la web</h2>
+          <p class="adm-hint">Así se verá la tarjeta en la página de Noticias.</p>
+          <div id="newsPreview" class="adm-preview-card"></div>
+        </section>
+      </div>
+
+      <!-- Copias de seguridad -->
+      <section id="respaldos" class="adm-card" aria-labelledby="tituloRespaldos">
+        <h2 class="adm-card-title" id="tituloRespaldos">Copias de seguridad</h2>
+        <p class="adm-hint">Descarga todas las noticias en un archivo JSON o restaura un respaldo. Las noticias con el mismo identificador se actualizan.</p>
+        <div class="adm-backup-actions">
+          <button type="button" id="btnExportBackup" class="adm-btn adm-btn-primary">Descargar respaldo (.json)</button>
+          <label class="adm-btn adm-btn-secondary adm-file">
+            Restaurar respaldo (.json)
+            <input type="file" id="backupFileInput" accept=".json" class="visually-hidden">
+          </label>
+        </div>
+        <p id="backupStatusMsg" role="status" class="adm-backup-status"></p>
       </section>
 
     </main>
-
   </div>
 
   <!-- CONTROL Y GESTIÓN CON FIREBASE -->

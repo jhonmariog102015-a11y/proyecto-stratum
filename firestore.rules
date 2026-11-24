@@ -13,13 +13,15 @@ service cloud.firestore {
       return data.keys().hasOnly([
           'titulo', 'resumen', 'categoria', 'activo', 'fecha_creacion',
           'imagen', 'enlace', 'fecha', 'fecha_actualizacion', 'fecha_eliminacion',
-          'autor', 'createdAt', 'updatedAt'
+          'autor', 'createdAt', 'updatedAt', 'borrador'
         ])
         && data.keys().hasAll(['titulo', 'resumen', 'categoria', 'activo', 'fecha_creacion'])
         && data.titulo is string && data.titulo.size() >= 2 && data.titulo.size() <= 300
         && data.resumen is string && data.resumen.size() <= 20000
         && data.categoria is string && data.categoria.size() >= 1 && data.categoria.size() <= 100
         && data.activo is bool
+        // Un borrador nunca está publicado.
+        && (!('borrador' in data) || (data.borrador is bool && !(data.borrador && data.activo)))
         && data.fecha_creacion is timestamp
         && (!('imagen' in data) || (data.imagen is string && data.imagen.size() <= 3000))
         && (!('enlace' in data) || (data.enlace is string && data.enlace.size() <= 2000))

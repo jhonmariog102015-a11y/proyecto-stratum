@@ -105,6 +105,13 @@ test("un UID autorizado puede publicar y retirar pero no delegar permisos", asyn
   await write(path, { ...news, createdAt: { timestampValue: "2025-01-01T00:00:00Z" },
     updatedAt: { stringValue: "2025-01-02T00:00:00Z" } }, admin);
   await write(path, news, admin);
+  // Un borrador queda oculto al público y no puede estar publicado a la vez.
+  await write(path, { ...news, activo: { booleanValue: true }, borrador: { booleanValue: true } }, admin, 403);
+  await write(path, { ...news, borrador: { stringValue: "sí" } }, admin, 403);
+  await write(path, { ...news, activo: { booleanValue: false }, borrador: { booleanValue: true } }, admin);
+  await read(path, undefined, 403);
+  await write(path, { ...news, borrador: { booleanValue: false } }, admin);
+  await read(path);
   await write(path, { ...news, activo: { booleanValue: false } }, admin);
   await read(path, undefined, 403);
   await request("/" + path, { method: "DELETE", auth: admin, status: 403 });

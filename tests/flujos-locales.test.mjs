@@ -90,6 +90,11 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   await page.locator("#btnLogin").click();
   const list = page.locator("#adminNewsList");
   await list.getByText(/No hay noticias/).waitFor();
+  // El menú lateral marca la sección visible, también la última de la página.
+  for (const seccion of ["respaldos", "noticias", "resumen"]) {
+    await page.locator(`a[data-seccion="${seccion}"]`).click();
+    await page.locator(`a[data-seccion="${seccion}"][aria-current="true"]`).waitFor();
+  }
   await page.locator("#newsTitle").fill("Noticia de prueba");
   await page.locator("#newsSummary").fill("Resumen para la vista local.");
   await page.locator("#btnPublish").click();
@@ -101,7 +106,7 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
 
   // Resumen, contadores, vista previa y búsqueda.
   await page.locator("#statPublicadas").getByText("1", { exact: true }).waitFor();
-  assert.equal(await page.locator("#statRetiradas").textContent(), "0");
+  await page.locator("#countRetiradas").getByText("0", { exact: true }).waitFor();
   await page.locator("#newsTitle").fill("Borrador sin guardar");
   assert.equal(await page.locator("#newsTitleCount").textContent(), "20/300");
   await page.locator("#newsPreview").getByText("Borrador sin guardar").waitFor();
@@ -187,9 +192,33 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   await list.getByText(/No hay noticias retiradas/).waitFor();
   await page.getByRole("button", { name: "Publicadas" }).click();
   await list.getByText("Noticia restaurada").waitFor();
+
+  // Un borrador no aparece en la web hasta que se publica.
+  await page.locator("#navNuevaNoticia").click();
+  await page.locator("#newsTitle").fill("Borrador interno");
+  await page.locator("#btnSaveDraft").click();
+  await list.getByText("Borrador interno").waitFor();
+  await list.locator(".adm-badge").getByText("Borrador").waitFor();
+  await page.locator("#statBorradores").getByText("1", { exact: true }).waitFor();
+  const publico = await context.newPage();
+  await publico.goto(base + "/noticias");
+  await publico.locator("#firebase-news-container").getByText("Noticia restaurada").waitFor();
+  assert.equal(await publico.getByText("Borrador interno").count(), 0);
+  await page.bringToFront();
+  await list.locator(".btn-edit").click();
+  assert.equal(await page.locator("#btnPublish").textContent(), "Publicar");
+  await page.locator("#newsSummary").fill("Resumen del borrador.");
+  await page.locator("#btnPublish").click();
+  await page.locator("#publishAlert").getByText(/publicada/).waitFor();
+  await list.getByText("Borrador interno").waitFor();
+  await page.locator("#statBorradores").getByText("0", { exact: true }).waitFor();
+  await publico.reload();
+  await publico.locator("#firebase-news-container").getByText("Borrador interno").waitFor();
+  await publico.close();
+
   await page.locator("#btnLogout").click();
   await page.locator("#loginEmail").waitFor();
-  assert.equal(await list.locator(".news-item-card").count(), 0);
+  assert.equal(await list.locator(".adm-row").count(), 0);
 });
 
 test("las páginas declaran su CSP y el panel no se muestra dentro de un marco", async () => {

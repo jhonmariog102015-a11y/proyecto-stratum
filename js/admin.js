@@ -7,52 +7,58 @@ import {
 } from "./firebase_noticias.js?v=14";
 
 const { escapeHTML, safeImageUrl, safeNewsLink, fechaVisible, anclaNoticia, htmlPost } = formatoNoticias;
+const $ = id => document.getElementById(id);
 
-const loginSection = document.getElementById("loginSection");
-const dashboardSection = document.getElementById("dashboardSection");
-const loginForm = document.getElementById("loginForm");
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
-const btnLogin = document.getElementById("btnLogin");
-const loginAlert = document.getElementById("loginAlert");
-const currentUserEmail = document.getElementById("currentUserEmail");
-const btnLogout = document.getElementById("btnLogout");
-const publishNewsForm = document.getElementById("publishNewsForm");
-const btnPublish = document.getElementById("btnPublish");
-const btnCancelEdit = document.getElementById("btnCancelEdit");
-const editingNewsId = document.getElementById("editingNewsId");
-const formTitleText = document.getElementById("formTitleText");
-const publishAlert = document.getElementById("publishAlert");
-const adminNewsList = document.getElementById("adminNewsList");
-const newsCategory = document.getElementById("newsCategory");
+const loginSection = $("loginSection");
+const dashboardSection = $("dashboardSection");
+const loginForm = $("loginForm");
+const loginEmail = $("loginEmail");
+const loginPassword = $("loginPassword");
+const btnLogin = $("btnLogin");
+const loginAlert = $("loginAlert");
+const currentUserEmail = $("currentUserEmail");
+const btnLogout = $("btnLogout");
+const publishNewsForm = $("publishNewsForm");
+const btnPublish = $("btnPublish");
+const btnSaveDraft = $("btnSaveDraft");
+const btnCancelEdit = $("btnCancelEdit");
+const editingNewsId = $("editingNewsId");
+const formTitleText = $("formTitleText");
+const publishAlert = $("publishAlert");
+const adminNewsList = $("adminNewsList");
+const newsCategory = $("newsCategory");
 const listFilters = [...document.querySelectorAll("[data-vista-lista]")];
-const btnExportBackup = document.getElementById("btnExportBackup");
-const backupFileInput = document.getElementById("backupFileInput");
-const backupStatusMsg = document.getElementById("backupStatusMsg");
-const newsTitle = document.getElementById("newsTitle");
-const newsSummary = document.getElementById("newsSummary");
-const newsImage = document.getElementById("newsImage");
-const newsLink = document.getElementById("newsLink");
-const newsTitleCount = document.getElementById("newsTitleCount");
-const newsSummaryCount = document.getElementById("newsSummaryCount");
-const newsPreview = document.getElementById("newsPreview");
-const newsSearch = document.getElementById("newsSearch");
-const newsCategoryFilter = document.getElementById("newsCategoryFilter");
-const newsListSummary = document.getElementById("newsListSummary");
-const statPublicadas = document.getElementById("statPublicadas");
-const statRetiradas = document.getElementById("statRetiradas");
-const statRespaldo = document.getElementById("statRespaldo");
+const navLinks = [...document.querySelectorAll(".adm-nav-link")];
+const btnExportBackup = $("btnExportBackup");
+const backupFileInput = $("backupFileInput");
+const backupStatusMsg = $("backupStatusMsg");
+const newsTitle = $("newsTitle");
+const newsSummary = $("newsSummary");
+const newsImage = $("newsImage");
+const newsLink = $("newsLink");
+const newsTitleCount = $("newsTitleCount");
+const newsSummaryCount = $("newsSummaryCount");
+const newsPreview = $("newsPreview");
+const newsSearch = $("newsSearch");
+const newsCategoryFilter = $("newsCategoryFilter");
+const newsListSummary = $("newsListSummary");
+const statPublicadas = $("statPublicadas");
+const statBorradores = $("statBorradores");
+const statRespaldo = $("statRespaldo");
+const counts = { activas: $("countActivas"), borradores: $("countBorradores"), retiradas: $("countRetiradas") };
 const BACKUP_KEY = "stratum_ultimo_respaldo";
+const IMAGEN_RESPALDO = "assets/drone_landscape.png";
+const FECHA = { day: "2-digit", month: "short", year: "numeric", timeZone: "America/Bogota" };
+const hoy = () => new Date().toLocaleDateString("es-CO", FECHA);
 
 // Estado del panel (declarado antes de cualquier callback de Firebase).
 let savedForm = "";
-let editingData = null;
+let editing = null; // { id, data, borrador } de la noticia en edición
 let listView = "activas";
 let listRequest = 0;
 let loadedNews = [];
-
-const PUBLISH_LABEL = "Publicar Noticia en la Web";
-const SAVE_LABEL = "Guardar Cambios";
+let inactivityTimer;
+const inactivityEvents = ["pointerdown", "keydown", "scroll", "touchstart"];
 
 function showLoginError(message) {
   loginAlert.textContent = message;
@@ -65,9 +71,6 @@ function showPublishAlert(message, type) {
   publishAlert.className = "alert-box " + (type === "success" ? "alert-success" : "alert-error");
   publishAlert.style.display = "block";
 }
-
-let inactivityTimer;
-const inactivityEvents = ["pointerdown", "keydown", "scroll", "touchstart"];
 
 function resetInactivity() {
   clearTimeout(inactivityTimer);
@@ -86,6 +89,7 @@ function stopInactivityWatcher() {
   inactivityEvents.forEach(event => document.removeEventListener(event, resetInactivity));
 }
 
+// SESIÓN
 async function showDashboard(user) {
   const permission = await getDoc(doc(db, "administradores", user.uid));
   if (auth.currentUser?.uid !== user.uid) return;
@@ -96,12 +100,13 @@ async function showDashboard(user) {
   }
   loginAlert.style.display = "none";
   loginSection.style.display = "none";
-  dashboardSection.style.display = "flex";
+  dashboardSection.style.display = "";
   currentUserEmail.textContent = user.email || "";
   btnLogout.focus();
   setListView("activas");
   updateStats();
   showLastBackup();
+  updateActiveSection();
   inactivityEvents.forEach(event => document.addEventListener(event, resetInactivity, { passive: true }));
   resetInactivity();
 }
@@ -112,6 +117,7 @@ onAuthStateChanged(auth, async user => {
   dashboardSection.style.display = "none";
   currentUserEmail.textContent = "";
   adminNewsList.replaceChildren();
+  loadedNews = [];
   resetNewsForm();
   publishAlert.style.display = "none";
   backupStatusMsg.textContent = "";
@@ -156,20 +162,46 @@ btnLogout.addEventListener("click", async () => {
   }
 });
 
-// Una categoría que no está en la lista (de un respaldo o de una versión anterior) se conserva
-// como opción temporal; sin ella el selector quedaría vacío y la edición la borraría.
-function selectCategory(value) {
-  newsCategory.querySelectorAll("option[data-temporal]").forEach(option => option.remove());
-  const category = value || "Corporativo";
-  if (![...newsCategory.options].some(option => option.value === category)) {
-    const option = new Option(category + " (categoría actual)", category);
-    option.dataset.temporal = "";
-    newsCategory.append(option);
-  }
-  newsCategory.value = category;
+// MENÚ LATERAL: marca la sección visible y «Nueva noticia» prepara un formulario vacío.
+function markSection(id) {
+  navLinks.forEach(link => {
+    if (link.dataset.seccion === id) link.setAttribute("aria-current", "true");
+    else link.removeAttribute("aria-current");
+  });
 }
 
-// CAMBIOS SIN GUARDAR, CONTADORES Y VISTA PREVIA
+navLinks.forEach(link => link.addEventListener("click", event => {
+  if (link.id === "navNuevaNoticia") {
+    if (!confirmDiscard()) {
+      event.preventDefault();
+      return;
+    }
+    resetNewsForm();
+    publishAlert.style.display = "none";
+    requestAnimationFrame(() => newsTitle.focus({ preventScroll: true }));
+  }
+  markSection(link.dataset.seccion);
+}));
+
+// La sección activa es la última que ya llegó a la parte superior de la pantalla; al final de
+// la página se marca la última, aunque no alcance a subir hasta arriba.
+let spyFrame = 0;
+function updateActiveSection() {
+  spyFrame = 0;
+  if (dashboardSection.style.display === "none") return;
+  const sections = navLinks.map(link => $(link.dataset.seccion)).filter(Boolean);
+  const atBottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+  let active = sections[0];
+  for (const section of sections) {
+    if (section.getBoundingClientRect().top <= Math.min(innerHeight / 3, 120)) active = section;
+  }
+  markSection((atBottom ? sections.at(-1) : active).id);
+}
+addEventListener("scroll", () => {
+  if (!spyFrame) spyFrame = requestAnimationFrame(updateActiveSection);
+}, { passive: true });
+
+// FORMULARIO: cambios sin guardar, contadores y vista previa
 const formState = () => JSON.stringify([newsTitle.value, newsCategory.value, newsSummary.value,
   newsImage.value, newsLink.value]);
 const isDirty = () => formState() !== savedForm;
@@ -187,37 +219,59 @@ window.addEventListener("beforeunload", event => {
   if (auth.currentUser && isDirty()) event.preventDefault();
 });
 
+// Una categoría que no está en la lista (de un respaldo o de una versión anterior) se conserva
+// como opción temporal; sin ella el selector quedaría vacío y la edición la borraría.
+function selectCategory(value) {
+  newsCategory.querySelectorAll("option[data-temporal]").forEach(option => option.remove());
+  const category = value || "Corporativo";
+  if (![...newsCategory.options].some(option => option.value === category)) {
+    const option = new Option(category + " (categoría actual)", category);
+    option.dataset.temporal = "";
+    newsCategory.append(option);
+  }
+  newsCategory.value = category;
+}
+
 function updateFormExtras() {
   newsTitleCount.textContent = newsTitle.value.length + "/300";
   newsSummaryCount.textContent = newsSummary.value.length + "/20000";
-  const fecha = editingData?.fecha || editingData?.fecha_creacion ? editingData
-    : { fecha: new Date().toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric", timeZone: "America/Bogota" }) };
+  // Una noticia publicada conserva su fecha; una nueva o un borrador se publicarán hoy.
+  const publicada = editing && !editing.borrador;
   newsPreview.innerHTML = htmlPost({
     titulo: newsTitle.value.trim() || "Título de la noticia",
     resumen: newsSummary.value.trim() || "El resumen aparecerá aquí.",
     categoria: newsCategory.value,
     imagen: newsImage.value.trim(),
     enlace: newsLink.value.trim(),
-    fecha: fecha.fecha,
-    fecha_creacion: fecha.fecha_creacion
+    fecha: publicada ? editing.data.fecha : hoy(),
+    fecha_creacion: publicada ? editing.data.fecha_creacion : undefined
   });
   newsPreview.querySelector("img").addEventListener("error", event => {
-    event.target.src = "assets/drone_landscape.png";
+    event.target.src = IMAGEN_RESPALDO;
   }, { once: true });
 }
 
 publishNewsForm.addEventListener("input", updateFormExtras);
 publishNewsForm.addEventListener("change", updateFormExtras);
 
+function setFormButtons() {
+  const publicada = editing && !editing.borrador;
+  formTitleText.textContent = !editing ? "Nueva noticia" : publicada ? "Editar noticia" : "Editar borrador";
+  btnPublish.textContent = publicada ? "Guardar cambios" : "Publicar";
+  // Una noticia publicada no vuelve a borrador; para ocultarla se retira.
+  btnSaveDraft.hidden = Boolean(publicada);
+  btnSaveDraft.textContent = "Guardar borrador";
+  btnPublish.disabled = false;
+  btnSaveDraft.disabled = false;
+  btnCancelEdit.style.display = editing ? "inline-flex" : "none";
+}
+
 function resetNewsForm() {
   publishNewsForm.reset();
   selectCategory("Corporativo");
   editingNewsId.value = "";
-  editingData = null;
-  formTitleText.textContent = "Publicar Nueva Noticia";
-  btnPublish.disabled = false;
-  btnPublish.textContent = PUBLISH_LABEL;
-  btnCancelEdit.style.display = "none";
+  editing = null;
+  setFormButtons();
   updateFormExtras();
   markClean();
 }
@@ -228,23 +282,38 @@ btnCancelEdit.addEventListener("click", () => {
   publishAlert.style.display = "none";
 });
 
-publishNewsForm.addEventListener("submit", async event => {
-  event.preventDefault();
+function startEditing(docId, data) {
+  if (editingNewsId.value !== docId && !confirmDiscard()) return;
+  newsTitle.value = data.titulo || "";
+  selectCategory(data.categoria);
+  newsSummary.value = data.resumen || "";
+  newsImage.value = safeImageUrl(data.imagen);
+  newsLink.value = safeNewsLink(data.enlace);
+  editingNewsId.value = docId;
+  editing = { id: docId, data, borrador: data.borrador === true };
+  setFormButtons();
+  updateFormExtras();
+  markClean();
+  publishAlert.style.display = "none";
+  $("editor").scrollIntoView({ behavior: "smooth", block: "start" });
+  newsTitle.focus({ preventScroll: true });
+}
+
+// GUARDAR: «Publicar» (envío del formulario) o «Guardar borrador».
+async function saveNews(asDraft) {
   if (btnPublish.disabled) return;
   publishAlert.style.display = "none";
-
-  const currentEditId = editingNewsId.value.trim() || null;
-  const idleLabel = currentEditId ? SAVE_LABEL : PUBLISH_LABEL;
-  const titulo = document.getElementById("newsTitle").value.trim();
+  const titulo = newsTitle.value.trim();
   const categoria = newsCategory.value;
-  const resumen = document.getElementById("newsSummary").value.trim();
-  const imagen = document.getElementById("newsImage").value.trim();
-  const enlace = document.getElementById("newsLink").value.trim();
-
+  const resumen = newsSummary.value.trim();
+  const imagen = newsImage.value.trim();
+  const enlace = newsLink.value.trim();
   const link = safeNewsLink(enlace);
   const image = safeImageUrl(imagen);
+
   let aviso;
-  if (titulo.length < 2 || !resumen) aviso = "Escribe un título de al menos dos caracteres y un resumen.";
+  if (titulo.length < 2) aviso = "Escribe un título de al menos dos caracteres.";
+  else if (!resumen && !asDraft) aviso = "Escribe el resumen antes de publicar.";
   else if (!categoria) aviso = "Elige una categoría.";
   else if (enlace && (!link || link.length > 2000)) aviso = "Revisa el enlace HTTPS de la noticia (máximo 2000 caracteres).";
   else if (imagen && (!image || image.length > 3000)) aviso = "Usa una imagen HTTPS o una ruta de assets/ o img/ (máximo 3000 caracteres).";
@@ -253,49 +322,81 @@ publishNewsForm.addEventListener("submit", async event => {
     return;
   }
 
+  const campos = { titulo, categoria, resumen, imagen: image, enlace: link };
+  const publicada = editing && !editing.borrador;
+  const boton = asDraft ? btnSaveDraft : btnPublish;
+  const textoBoton = boton.textContent;
   btnPublish.disabled = true;
-  btnPublish.textContent = currentEditId ? "Guardando cambios en la base de datos..." : "Publicando en la base de datos...";
+  btnSaveDraft.disabled = true;
+  boton.textContent = "Guardando…";
   try {
-    if (currentEditId) {
-      await updateDoc(doc(db, "noticias", currentEditId), {
-        titulo, categoria, resumen, imagen: image, enlace: link,
-        fecha_actualizacion: serverTimestamp()
-      });
-      showPublishAlert("¡Noticia actualizada con éxito!", "success");
+    let mensaje;
+    if (publicada) {
+      await updateDoc(doc(db, "noticias", editing.id), { ...campos, fecha_actualizacion: serverTimestamp() });
+      mensaje = "Cambios guardados. La noticia ya está actualizada en la web.";
+    } else if (asDraft) {
+      if (editing) {
+        await updateDoc(doc(db, "noticias", editing.id), { ...campos, fecha_actualizacion: serverTimestamp() });
+      } else {
+        await addDoc(collection(db, "noticias"), {
+          ...campos, activo: false, borrador: true, fecha_creacion: serverTimestamp()
+        });
+      }
+      mensaje = "Borrador guardado. No se muestra en la web hasta que lo publiques.";
     } else {
-      await addDoc(collection(db, "noticias"), {
-        titulo, categoria, resumen, imagen: image, enlace: link,
-        activo: true,
-        fecha: new Date().toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric", timeZone: "America/Bogota" }),
-        fecha_creacion: serverTimestamp()
-      });
-      showPublishAlert("¡Noticia publicada con éxito!", "success");
+      // Nueva noticia o borrador que se publica: la fecha de publicación es la de hoy.
+      const publicacion = { ...campos, activo: true, fecha: hoy(), fecha_creacion: serverTimestamp() };
+      if (editing) {
+        await updateDoc(doc(db, "noticias", editing.id), {
+          ...publicacion, borrador: false, fecha_actualizacion: serverTimestamp()
+        });
+      } else {
+        await addDoc(collection(db, "noticias"), publicacion);
+      }
+      mensaje = "¡Noticia publicada con éxito!";
     }
     resetNewsForm();
-    setListView("activas");
+    showPublishAlert(mensaje, "success");
+    setListView(asDraft && !publicada ? "borradores" : "activas");
     updateStats();
   } catch (error) {
     console.error("Error al guardar noticia:", error);
     showPublishAlert(error.code === "permission-denied"
-      ? "Error de permisos: Asegúrate de tener una sesión activa de administrador en el sistema."
+      ? "No se pudo guardar por permisos. Revisa que tu sesión siga activa y que las reglas de Firestore estén actualizadas."
       : "Error al guardar: " + error.message, "error");
     btnPublish.disabled = false;
-    btnPublish.textContent = idleLabel;
+    btnSaveDraft.disabled = false;
+    boton.textContent = textoBoton;
   }
+}
+
+publishNewsForm.addEventListener("submit", event => {
+  event.preventDefault();
+  saveNews(false);
+});
+btnSaveDraft.addEventListener("click", () => {
+  // El resumen puede quedar vacío en un borrador; el título sigue siendo obligatorio.
+  if (!newsTitle.reportValidity()) return;
+  saveNews(true);
 });
 
-// LISTA DE NOTICIAS: publicadas o retiradas
-
-// Cantidades de noticias publicadas y retiradas (consultas de conteo, sin leer cada noticia).
+// RESUMEN
 async function updateStats() {
   const user = auth.currentUser;
   try {
     const noticias = collection(db, "noticias");
-    const [activas, retiradas] = await Promise.all([true, false].map(estado =>
-      getCount(query(noticias, where("activo", "==", estado)))));
+    const contar = async (...filtros) => (await getCount(query(noticias, ...filtros))).data().count;
+    const [activas, inactivas, borradores] = await Promise.all([
+      contar(where("activo", "==", true)),
+      contar(where("activo", "==", false)),
+      contar(where("borrador", "==", true))
+    ]);
     if (auth.currentUser !== user) return;
-    statPublicadas.textContent = activas.data().count;
-    statRetiradas.textContent = retiradas.data().count;
+    statPublicadas.textContent = activas;
+    statBorradores.textContent = borradores;
+    counts.activas.textContent = activas;
+    counts.borradores.textContent = borradores;
+    counts.retiradas.textContent = Math.max(inactivas - borradores, 0);
   } catch (error) {
     console.error("No se pudo contar las noticias.", error.code);
   }
@@ -305,9 +406,16 @@ function showLastBackup() {
   let fecha = null;
   try { fecha = new Date(localStorage.getItem(BACKUP_KEY) || NaN); } catch { /* Sin almacenamiento. */ }
   statRespaldo.textContent = fecha && Number.isFinite(fecha.getTime())
-    ? fecha.toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric", timeZone: "America/Bogota" })
+    ? fecha.toLocaleDateString("es-CO", FECHA)
     : "Ninguno";
 }
+
+// LISTA DE NOTICIAS: publicadas, borradores o retiradas
+const VACIA = {
+  activas: "No hay noticias publicadas aún.",
+  borradores: "No hay borradores.",
+  retiradas: "No hay noticias retiradas."
+};
 
 function setListView(view) {
   listView = view;
@@ -317,43 +425,30 @@ function setListView(view) {
 
 listFilters.forEach(button => button.addEventListener("click", () => setListView(button.dataset.vistaLista)));
 
-const ICON_EDIT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-const ICON_VIEW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
-const ICON_RETIRE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+const ICON = {
+  view: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  retire: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg>'
+};
 
-function showListMessage(text, color = "var(--text-muted)") {
-  const message = document.createElement("p");
-  message.style.cssText = "text-align: center; padding: 2rem; color: " + color + ";";
-  message.textContent = text;
-  adminNewsList.replaceChildren(message);
+function showListMessage(text, error = false) {
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = 4;
+  cell.className = error ? "adm-empty adm-empty-error" : "adm-empty";
+  cell.textContent = text;
+  row.append(cell);
+  adminNewsList.replaceChildren(row);
 }
 
-function startEditing(docId, data) {
-  if (editingNewsId.value !== docId && !confirmDiscard()) return;
-  newsTitle.value = data.titulo || "";
-  selectCategory(data.categoria);
-  newsSummary.value = data.resumen || "";
-  newsImage.value = safeImageUrl(data.imagen);
-  newsLink.value = safeNewsLink(data.enlace);
-  editingNewsId.value = docId;
-  editingData = data;
-  updateFormExtras();
-  markClean();
-  formTitleText.textContent = "Editar Noticia";
-  btnPublish.textContent = SAVE_LABEL;
-  btnCancelEdit.style.display = "inline-flex";
-  publishAlert.style.display = "none";
-  publishNewsForm.scrollIntoView({ behavior: "smooth", block: "center" });
-  newsTitle.focus();
-}
-
-function retireControls(itemEl, docId) {
-  const deleteBtn = itemEl.querySelector(".btn-delete");
-  const cancelBtn = itemEl.querySelector(".btn-cancel-retire");
+function retireControls(row, docId) {
+  const deleteBtn = row.querySelector(".btn-delete");
+  const cancelBtn = row.querySelector(".btn-cancel-retire");
   const icon = deleteBtn.firstElementChild;
   cancelBtn.addEventListener("click", () => {
     cancelBtn.hidden = true;
     deleteBtn.title = "Retirar noticia";
+    deleteBtn.classList.remove("is-confirm");
     deleteBtn.replaceChildren(icon);
     deleteBtn.focus();
   });
@@ -362,13 +457,14 @@ function retireControls(itemEl, docId) {
       cancelBtn.hidden = false;
       deleteBtn.textContent = "Confirmar retiro";
       deleteBtn.title = "Retirar la noticia de la página";
+      deleteBtn.classList.add("is-confirm");
       return;
     }
     deleteBtn.disabled = true;
     cancelBtn.disabled = true;
     try {
       await updateDoc(doc(db, "noticias", docId), {
-        activo: false, fecha_eliminacion: serverTimestamp()
+        activo: false, borrador: false, fecha_eliminacion: serverTimestamp()
       });
       if (editingNewsId.value === docId) resetNewsForm();
       updateStats();
@@ -382,13 +478,13 @@ function retireControls(itemEl, docId) {
   });
 }
 
-function reactivateControl(itemEl, docId) {
-  const button = itemEl.querySelector(".btn-reactivate");
+function reactivateControl(row, docId) {
+  const button = row.querySelector(".btn-reactivate");
   button.addEventListener("click", async () => {
     button.disabled = true;
     try {
       await updateDoc(doc(db, "noticias", docId), {
-        activo: true, fecha_eliminacion: deleteField(), fecha_actualizacion: serverTimestamp()
+        activo: true, borrador: false, fecha_eliminacion: deleteField(), fecha_actualizacion: serverTimestamp()
       });
       showPublishAlert("Noticia publicada de nuevo en la web.", "success");
       updateStats();
@@ -405,23 +501,30 @@ async function loadAdminNews() {
   const user = auth.currentUser;
   if (!user) return;
   const request = ++listRequest;
-  const activas = listView === "activas";
+  const view = listView;
   const isCurrent = () => request === listRequest && auth.currentUser === user;
   loadedNews = [];
   newsListSummary.textContent = "";
-  showListMessage("Cargando noticias...");
+  showListMessage("Cargando noticias…");
 
   try {
+    // Borradores y retiradas comparten activo == false; se separan por el campo borrador.
     const querySnapshot = await getDocs(query(collection(db, "noticias"),
-      where("activo", "==", activas), orderBy("fecha_creacion", "desc")));
+      where("activo", "==", view === "activas"), orderBy("fecha_creacion", "desc")));
     if (!isCurrent()) return;
-    querySnapshot.forEach(docSnap => loadedNews.push({ id: docSnap.id, data: docSnap.data(), activas }));
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const esBorrador = data.borrador === true;
+      if (view === "activas" || (view === "borradores") === esBorrador) {
+        loadedNews.push({ id: docSnap.id, data, view });
+      }
+    });
     updateCategoryFilter();
     renderList();
   } catch (err) {
     if (!isCurrent()) return;
     console.error("Error listando noticias:", err);
-    showListMessage("Error cargando noticias.", "#EF4444");
+    showListMessage("Error cargando noticias. Recarga la página para volver a intentarlo.", true);
   }
 }
 
@@ -437,12 +540,24 @@ function updateCategoryFilter() {
 
 const normalizar = texto => (texto || "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
+function rowActions(view, docId) {
+  if (view === "retiradas") {
+    return '<button type="button" class="adm-btn adm-btn-secondary adm-btn-sm btn-reactivate">Reactivar</button>';
+  }
+  const ver = view === "activas"
+    ? `<a class="adm-icon-btn btn-view" href="noticias.html#${escapeHTML(encodeURIComponent(anclaNoticia(docId)))}" target="_blank" rel="noopener" title="Ver en la web" aria-label="Ver en la web">${ICON.view}</a>`
+    : "";
+  return ver
+    + `<button type="button" class="adm-icon-btn btn-edit" title="Editar noticia" aria-label="Editar noticia">${ICON.edit}</button>`
+    + '<button type="button" class="adm-btn adm-btn-ghost adm-btn-sm btn-cancel-retire" hidden>Cancelar</button>'
+    + `<button type="button" class="adm-icon-btn btn-delete" title="Retirar noticia">${ICON.retire}</button>`;
+}
+
 function renderList() {
   if (!auth.currentUser || listRequest === 0) return;
-  const activas = listView === "activas";
   if (loadedNews.length === 0) {
     newsListSummary.textContent = "";
-    showListMessage(activas ? "No hay noticias publicadas aún." : "No hay noticias retiradas.");
+    showListMessage(VACIA[listView]);
     return;
   }
   const search = normalizar(newsSearch.value.trim());
@@ -458,35 +573,31 @@ function renderList() {
     return;
   }
 
-  adminNewsList.replaceChildren(...visible.map(({ id: docId, data, activas: esActiva }) => {
-    const imgUrl = escapeHTML(safeImageUrl(data.imagen) || "assets/drone_landscape.png");
-    const itemEl = document.createElement("div");
-    itemEl.className = "news-item-card";
-    itemEl.innerHTML = `
-      <img src="${imgUrl}" alt="" class="news-item-thumb">
-      <div class="news-item-info">
-        <h4>${escapeHTML(data.titulo || "")}</h4>
-        <p>${escapeHTML(fechaVisible(data))} &bull; <strong style="color: var(--brand-purple);">${escapeHTML(data.categoria || "General")}</strong></p>
-      </div>
-      <div class="news-item-actions">
-        ${esActiva ? `
-        <a class="btn-view" href="noticias.html#${escapeHTML(encodeURIComponent(anclaNoticia(docId)))}" target="_blank" rel="noopener" title="Ver en la web" aria-label="Ver en la web">${ICON_VIEW}</a>
-        <button type="button" class="btn-edit" title="Editar noticia" aria-label="Editar noticia">${ICON_EDIT}</button>
-        <button type="button" class="btn-cancel-retire" hidden>Cancelar</button>
-        <button type="button" class="btn-delete" title="Retirar noticia">${ICON_RETIRE}</button>` : `
-        <button type="button" class="btn-cancel-edit btn-reactivate">Reactivar</button>`}
-      </div>
+  adminNewsList.replaceChildren(...visible.map(({ id: docId, data, view }) => {
+    const row = document.createElement("tr");
+    row.className = "adm-row";
+    const fecha = view === "borradores"
+      ? '<span class="adm-badge">Borrador</span>'
+      : escapeHTML(fechaVisible(data));
+    row.innerHTML = `
+      <td class="adm-cell-title" data-etiqueta="Título">
+        <img src="${escapeHTML(safeImageUrl(data.imagen) || IMAGEN_RESPALDO)}" alt="" class="adm-thumb" loading="lazy">
+        <span class="adm-title-text">${escapeHTML(data.titulo || "Sin título")}</span>
+      </td>
+      <td class="adm-cell-muted" data-etiqueta="Categoría">${escapeHTML(data.categoria || "General")}</td>
+      <td class="adm-cell-muted" data-etiqueta="Fecha">${fecha}</td>
+      <td class="adm-cell-actions"><div class="adm-row-actions">${rowActions(view, docId)}</div></td>
     `;
-    itemEl.querySelector(".news-item-thumb").addEventListener("error", event => {
-      event.target.src = "assets/drone_landscape.png";
+    row.querySelector(".adm-thumb").addEventListener("error", event => {
+      event.target.src = IMAGEN_RESPALDO;
     }, { once: true });
-    if (esActiva) {
-      itemEl.querySelector(".btn-edit").addEventListener("click", () => startEditing(docId, data));
-      retireControls(itemEl, docId);
+    if (view === "retiradas") {
+      reactivateControl(row, docId);
     } else {
-      reactivateControl(itemEl, docId);
+      row.querySelector(".btn-edit").addEventListener("click", () => startEditing(docId, data));
+      retireControls(row, docId);
     }
-    return itemEl;
+    return row;
   }));
 }
 
@@ -502,16 +613,16 @@ function isoDate(value) {
   return undefined;
 }
 
-function setBackupStatus(message, color = "#64748B") {
-  backupStatusMsg.style.color = color;
+function setBackupStatus(message, tipo = "") {
   backupStatusMsg.textContent = message;
+  backupStatusMsg.dataset.tipo = tipo;
 }
 
 btnExportBackup.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user || btnExportBackup.disabled) return;
   btnExportBackup.disabled = true;
-  setBackupStatus("Generando copia de seguridad...", "#7B61FF");
+  setBackupStatus("Generando copia de seguridad…");
   try {
     const snap = await getDocs(collection(db, "noticias"));
     if (auth.currentUser !== user) return;
@@ -526,6 +637,7 @@ btnExportBackup.addEventListener("click", async () => {
         imagen: d.imagen || "",
         enlace: d.enlace || "",
         activo: d.activo === true,
+        borrador: d.borrador === true,
         fecha: d.fecha || "",
         autor: d.autor || "",
         // Sin una fecha real, el campo se omite: al restaurar se conserva la del documento.
@@ -537,7 +649,7 @@ btnExportBackup.addEventListener("click", async () => {
 
     const backupData = {
       sistema: "Stratum Group S.A.S. - Panel de Noticias",
-      version: "3.1",
+      version: "3.2",
       fecha_exportacion: new Date().toISOString(),
       usuario_exportador: user.email || "admin",
       total_registros: records.length,
@@ -554,12 +666,12 @@ btnExportBackup.addEventListener("click", async () => {
     a.remove();
     // Algunos navegadores leen el archivo después del clic; se libera más tarde.
     setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
-    setBackupStatus(`Copia descargada exitosamente (${records.length} registros).`, "#10B981");
+    setBackupStatus(`Copia descargada (${records.length} registros).`, "ok");
     try { localStorage.setItem(BACKUP_KEY, new Date().toISOString()); } catch { /* Sin almacenamiento. */ }
     showLastBackup();
   } catch (err) {
     console.error("Error al exportar respaldo:", err);
-    setBackupStatus("Error al exportar respaldo: " + err.message, "#EF4444");
+    setBackupStatus("Error al exportar respaldo: " + err.message, "error");
   } finally {
     btnExportBackup.disabled = false;
   }
@@ -603,6 +715,8 @@ function parseBackup(raw) {
     if (imagen && (!safeImage || safeImage.length > 3000)) throw invalid("imagen");
     if (enlace && (!safeLink || safeLink.length > 2000)) throw invalid("enlace");
     if (typeof item.activo !== "boolean") throw invalid("activo");
+    const borrador = item.borrador ?? false;
+    if (typeof borrador !== "boolean" || (borrador && item.activo)) throw invalid("borrador");
     const categoria = readText("categoria", 100, "Corporativo") || "Corporativo";
     const dates = {};
     for (const field of ["fecha_creacion", "fecha_actualizacion", "fecha_eliminacion"]) {
@@ -620,6 +734,7 @@ function parseBackup(raw) {
         imagen: safeImage,
         enlace: safeLink,
         activo: item.activo,
+        borrador,
         fecha: readText("fecha", 100),
         autor: readText("autor", 100),
         fecha_actualizacion: serverTimestamp(),
@@ -655,14 +770,14 @@ backupFileInput.addEventListener("change", async () => {
       batch.set(id ? doc(news, id) : doc(news), data, { merge: true });
     }
     await batch.commit();
-    setBackupStatus("Restauración completada: " + records.length + " noticias sincronizadas.", "#10B981");
+    setBackupStatus("Restauración completada: " + records.length + " noticias sincronizadas.", "ok");
     updateStats();
     loadAdminNews();
   } catch (error) {
     console.error("Error al restaurar respaldo:", error);
     setBackupStatus(error.code
       ? "No se restauró ninguna noticia. Revisa los permisos y vuelve a intentarlo."
-      : error.message, "#EF4444");
+      : error.message, "error");
   } finally {
     backupFileInput.value = "";
     backupFileInput.disabled = false;
