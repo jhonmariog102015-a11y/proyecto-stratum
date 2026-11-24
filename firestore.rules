@@ -18,7 +18,7 @@ service cloud.firestore {
         && data.keys().hasAll(['titulo', 'resumen', 'categoria', 'activo', 'fecha_creacion'])
         && data.titulo is string && data.titulo.size() >= 2 && data.titulo.size() <= 300
         && data.resumen is string && data.resumen.size() <= 20000
-        && data.categoria is string && data.categoria.size() <= 100
+        && data.categoria is string && data.categoria.size() >= 1 && data.categoria.size() <= 100
         && data.activo is bool
         && data.fecha_creacion is timestamp
         && (!('imagen' in data) || (data.imagen is string && data.imagen.size() <= 3000))
@@ -26,7 +26,12 @@ service cloud.firestore {
         && (!('fecha' in data) || (data.fecha is string && data.fecha.size() <= 100))
         && (!('autor' in data) || (data.autor is string && data.autor.size() <= 100))
         && (!('fecha_actualizacion' in data) || data.fecha_actualizacion is timestamp)
-        && (!('fecha_eliminacion' in data) || data.fecha_eliminacion is timestamp);
+        && (!('fecha_eliminacion' in data) || data.fecha_eliminacion is timestamp)
+        // Campos de fechas de versiones anteriores del panel.
+        && (!('createdAt' in data) || data.createdAt is timestamp
+            || (data.createdAt is string && data.createdAt.size() <= 100))
+        && (!('updatedAt' in data) || data.updatedAt is timestamp
+            || (data.updatedAt is string && data.updatedAt.size() <= 100));
     }
 
     match /noticias/{noticiaId} {

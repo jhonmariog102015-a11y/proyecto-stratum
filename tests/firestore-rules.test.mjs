@@ -100,6 +100,11 @@ test("un UID autorizado puede publicar y retirar pero no delegar permisos", asyn
   await write(path, news, admin);
   await write(path, { ...news, activo: { stringValue: "sí" } }, admin, 403);
   await write(path, { ...news, fecha_creacion: { stringValue: "fecha inválida" } }, admin, 403);
+  await write(path, { ...news, categoria: { stringValue: "" } }, admin, 403);
+  await write(path, { ...news, createdAt: { mapValue: { fields: {} } } }, admin, 403);
+  await write(path, { ...news, createdAt: { timestampValue: "2025-01-01T00:00:00Z" },
+    updatedAt: { stringValue: "2025-01-02T00:00:00Z" } }, admin);
+  await write(path, news, admin);
   await write(path, { ...news, activo: { booleanValue: false } }, admin);
   await read(path, undefined, 403);
   await request("/" + path, { method: "DELETE", auth: admin, status: 403 });

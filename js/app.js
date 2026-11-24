@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function animateStats() {
     statElements.forEach(el => {
       const targetStr = el.getAttribute('data-target');
+      if (targetStr === null) return; // Cifras fijas, como un año, no se animan.
       const prefix = el.getAttribute('data-prefix') || '';
       const isDecimal = el.getAttribute('data-decimal');
       const isFormat = el.getAttribute('data-format');
@@ -130,27 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
     observer.observe(statsBanner);
   }
 
-  // 4b. TARJETAS DESPLEGABLES DE SECTORES (index.html)
-  const sectorCards = document.querySelectorAll('.sector-card-interactive');
-  sectorCards.forEach(card => {
-    card.addEventListener('click', (e) => {
-      // Don't toggle if clicking the inner link
-      if (e.target.closest('.sector-more-link')) return;
-      
-      const isAlreadyActive = card.classList.contains('active');
-      
-      // Close all other sector cards so only the selected one opens
-      sectorCards.forEach(otherCard => {
-        if (otherCard !== card) {
-          otherCard.classList.remove('active');
-        }
-      });
-      
-      // Toggle current card
-      card.classList.toggle('active', !isAlreadyActive);
-    });
-  });
-
   // 1b. DETECCIÓN AUTOMÁTICA DE PÁGINA ACTIVA EN EL MENÚ
   const pageName = path => path.split('/').filter(Boolean).at(-1)?.replace(/\.html$/, '') || 'index';
   const currentPath = pageName(window.location.pathname);
@@ -162,16 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 5. MÓDULO DE ACCESIBILIDAD Y PANEL LATERAL (DRAWER)
-  // Requisito: Excluir estrictamente de la interfaz administrativa
-  const isAdminView = window.location.pathname.toLowerCase().includes('admin_noticias') ||
-                      document.getElementById('loginSection') ||
-                      document.getElementById('dashboardSection') ||
-                      document.getElementById('adminNewsList') ||
-                      document.querySelector('.dashboard-wrapper') ||
-                      document.querySelector('.dash-header') ||
-                      document.getElementById('newsListAdmin');
-
-  if (!isAdminView) {
+  // El panel de administración no carga app.js, así que este módulo solo existe en el sitio público.
+  {
     // 5.1 Asegurar que el botón flotante exista y sea hijo DIRECTO de document.body.
     // Esto es crucial: Si está dentro del footer o un contenedor con filter: grayscale(100%),
     // el filtro CSS crea un contexto de apilamiento y bloque de contención que atrapa
@@ -400,7 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const applyContrast = (isHigh) => {
       document.documentElement.classList.toggle('high-contrast', isHigh);
-      document.body.classList.toggle('high-contrast', isHigh);
       if (chkHighContrast) chkHighContrast.checked = isHigh;
       const current = getCurrentPrefs();
       current.highContrast = isHigh;
@@ -418,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyTheme = (theme) => {
       const isDark = (theme === 'dark');
       document.documentElement.classList.toggle('dark-mode', isDark);
-      document.body.classList.toggle('dark-mode', isDark);
       if (radioThemeLight) radioThemeLight.checked = !isDark;
       if (radioThemeDark) radioThemeDark.checked = isDark;
       const current = getCurrentPrefs();
@@ -476,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 6. ANIMACIONES AL HACER SCROLL (INTERSECTION OBSERVER CON FALLBACK SEGURO)
-  const revealTargets = document.querySelectorAll('.reveal-on-scroll, .service-card-d6, .why-card, .value-card, .pillar-card, .method-card, .news-card-d6');
+  const revealTargets = document.querySelectorAll('.reveal-on-scroll, .value-card');
   if (revealTargets.length > 0) {
     const revealAll = () => {
       revealTargets.forEach(el => el.classList.add('is-revealed'));

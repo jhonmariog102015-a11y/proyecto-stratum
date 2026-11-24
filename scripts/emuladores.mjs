@@ -1,4 +1,5 @@
-import { copyFile, cp, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { copyFile, cp, mkdtemp, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { reemplazarPoliticaMeta } from "./politica-csp.mjs";
 import { basename, dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -25,9 +26,19 @@ try {
     const policy = config.hosting.headers.flatMap(group => group.headers)
       .find(header => header.key === "Content-Security-Policy");
     const { auth, firestore } = config.emulators;
+    const emuladores = `http://${auth.host}:${auth.port} http://${firestore.host}:${firestore.port}`;
+    // La <meta> conserva el resto de la política de producción, que la prueba HTTPS necesita.
+    const politicaPagina = policy.value.replace(/connect-src [^;]+/, match => match + " " + emuladores);
     policy.value = policy.value
-      .replace(/connect-src [^;]+/, `connect-src 'self' http://${auth.host}:${auth.port} http://${firestore.host}:${firestore.port}`)
+      .replace(/connect-src [^;]+/, `connect-src 'self' ${emuladores}`)
       .replace(/form-action [^;]+/, "form-action 'none'");
+    // La <meta> de cada página también debe permitir las conexiones a los emuladores.
+    const publico = join(dir, config.hosting.public);
+    for (const archivo of await readdir(publico)) {
+      if (!archivo.endsWith(".html")) continue;
+      const ruta = join(publico, archivo);
+      await writeFile(ruta, reemplazarPoliticaMeta(await readFile(ruta, "utf8"), politicaPagina));
+    }
     if (process.argv[2] === "--test-ui") {
       const suite = new URL("../tests/flujos-locales.test.mjs", import.meta.url);
       await writeFile(join(dir, "ui.test.mjs"), "import " + JSON.stringify(suite.href) + ";");

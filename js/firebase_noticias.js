@@ -1,24 +1,25 @@
 // Configuración oficial y servicios de Firebase para Stratum Group
 import { initializeApp } from "firebase/app";
 import { esVistaLocal } from "./entorno.js";
-import { 
-  getFirestore, 
-  collection, 
+import {
+  getFirestore,
+  collection,
   getDoc, getDocs, connectFirestoreEmulator,
   writeBatch,
-  addDoc, 
-  updateDoc, 
-  doc, 
-  query, 
+  addDoc,
+  updateDoc,
+  deleteField,
+  getCount,
+  doc,
+  query,
   where,
-  orderBy, 
-  limit,
-  serverTimestamp 
+  orderBy,
+  serverTimestamp
 } from "firebase/firestore/lite";
-import { 
+import {
   initializeAuth, connectAuthEmulator,
-  signInWithEmailAndPassword, 
-  signOut, 
+  signInWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
   browserSessionPersistence
 } from "firebase/auth";
@@ -46,23 +47,23 @@ if (esVistaLocal) {
 }
 
 // Exportar servicios para el panel de administración
-export { 
-  app, 
-  db, 
-  auth, 
-  collection, 
-  getDocs, 
+export {
+  db,
+  auth,
+  collection,
+  getDocs,
   getDoc,
   writeBatch,
-  addDoc, 
-  updateDoc, 
-  doc, 
-  query, 
+  addDoc,
+  updateDoc,
+  deleteField,
+  getCount,
+  doc,
+  query,
   where,
-  orderBy, 
-  limit,
+  orderBy,
   serverTimestamp,
-  signInWithEmailAndPassword, 
-  signOut, 
+  signInWithEmailAndPassword,
+  signOut,
   onAuthStateChanged
 };

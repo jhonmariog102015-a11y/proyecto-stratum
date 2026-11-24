@@ -99,10 +99,34 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   await page.locator("#btnPublish").click();
   await list.getByText("Noticia editada").waitFor();
 
+  // Resumen, contadores, vista previa y búsqueda.
+  await page.locator("#statPublicadas").getByText("1", { exact: true }).waitFor();
+  assert.equal(await page.locator("#statRetiradas").textContent(), "0");
+  await page.locator("#newsTitle").fill("Borrador sin guardar");
+  assert.equal(await page.locator("#newsTitleCount").textContent(), "20/300");
+  await page.locator("#newsPreview").getByText("Borrador sin guardar").waitFor();
+  // Con cambios sin guardar, editar otra noticia pide confirmación y se puede cancelar.
+  let dialogs = 0;
+  page.once("dialog", dialog => { dialogs++; dialog.dismiss(); });
+  await list.locator(".btn-edit").click();
+  assert.equal(dialogs, 1);
+  assert.equal(await page.locator("#newsTitle").inputValue(), "Borrador sin guardar");
+  await page.locator("#newsTitle").fill("");
+  await page.locator("#newsSearch").fill("inexistente");
+  await list.getByText(/Ninguna noticia coincide/).waitFor();
+  await page.locator("#newsSearch").fill("EDITADA");
+  await list.getByText("Noticia editada").waitFor();
+  await page.locator("#newsSearch").fill("");
+  await page.locator("#newsCategoryFilter").selectOption("Corporativo");
+  await list.getByText("Noticia editada").waitFor();
+  await page.locator("#newsCategoryFilter").selectOption("");
+  const verEnLaWeb = await list.getByRole("link", { name: "Ver en la web" }).getAttribute("href");
+
   // Una pestaña independiente empieza sin la sesión del editor.
   const visitor = await context.newPage();
-  await visitor.goto(base + "/noticias");
+  await visitor.goto(base + "/" + verEnLaWeb);
   await visitor.locator("#firebase-news-container").getByText("Noticia editada").waitFor();
+  await visitor.locator(".featured.is-target").waitFor();
   await visitor.goto(base);
   await visitor.locator("#home-news-container").getByText("Noticia editada").waitFor();
   await page.bringToFront();
@@ -129,16 +153,72 @@ test("el editor publica, edita, retira, exporta y restaura con los permisos real
   assert.equal(record.activo, false);
   assert.ok(Number.isFinite(Date.parse(record.fecha_eliminacion)));
   assert.ok(Number.isFinite(Date.parse(record.fecha_actualizacion)));
+  assert.ok(Number.isFinite(Date.parse(record.fecha_creacion)));
+  const creada = record.fecha_creacion;
   record.activo = true;
   record.titulo = "Noticia restaurada";
+  record.categoria = "Categoría anterior";
+  // Sin fecha en el respaldo, la noticia conserva su fecha de creación.
+  delete record.fecha_creacion;
   page.once("dialog", dialog => dialog.accept());
   await page.locator("#backupFileInput").setInputFiles({
     name: "respaldo.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(backup))
   });
   await list.getByText("Noticia restaurada").waitFor();
+  const reexporting = page.waitForEvent("download");
+  await page.locator("#btnExportBackup").click();
+  const again = JSON.parse(await readFile(await (await reexporting).path(), "utf8"));
+  assert.equal(again.datos[0].fecha_creacion, creada);
+
+  // Una categoría que no está en la lista se conserva al editar.
+  await list.locator(".btn-edit").click();
+  assert.equal(await page.locator("#newsCategory").inputValue(), "Categoría anterior");
+  await page.locator("#btnPublish").click();
+  await page.locator("#publishAlert").getByText(/actualizada/).waitFor();
+  assert.equal(await page.locator("#newsCategory").inputValue(), "Corporativo");
+  await list.getByText("Categoría anterior").waitFor();
+
+  // Una noticia retirada se puede volver a publicar desde la pestaña Retiradas.
+  await list.getByRole("button", { name: "Retirar noticia" }).click();
+  await list.getByRole("button", { name: "Confirmar retiro" }).click();
+  await list.getByText(/No hay noticias publicadas/).waitFor();
+  await page.getByRole("button", { name: "Retiradas" }).click();
+  await list.getByRole("button", { name: "Reactivar" }).click();
+  await list.getByText(/No hay noticias retiradas/).waitFor();
+  await page.getByRole("button", { name: "Publicadas" }).click();
+  await list.getByText("Noticia restaurada").waitFor();
   await page.locator("#btnLogout").click();
   await page.locator("#loginEmail").waitFor();
   assert.equal(await list.locator(".news-item-card").count(), 0);
+});
+
+test("las páginas declaran su CSP y el panel no se muestra dentro de un marco", async () => {
+  for (const path of ["/", "/noticias", "/admin_noticias"]) {
+    await page.goto(base + path);
+    assert.match(await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content"),
+      /object-src 'none'/, path);
+  }
+  // Como en GitHub Pages, sin X-Frame-Options ni frame-ancestors, una página ajena intenta
+  // mostrar el panel en un marco aislado.
+  const ajena = await context.newPage();
+  try {
+    await ajena.route(base + "/admin_noticias", async route => {
+      const response = await route.fetch();
+      const headers = { ...response.headers() };
+      delete headers["x-frame-options"];
+      delete headers["content-security-policy"];
+      return route.fulfill({ response, headers });
+    });
+    await ajena.setContent(`<iframe sandbox="allow-scripts allow-same-origin" src="${base}/admin_noticias"></iframe>`);
+    await ajena.frameLocator("iframe").locator("#loginForm").waitFor({ state: "attached" });
+    const marco = ajena.frames().find(frame => frame.url().startsWith(base));
+    await marco.waitForFunction(() => document.readyState === "complete");
+    assert.equal(await marco.evaluate(() => document.documentElement.hidden), true);
+    assert.equal(await marco.locator("#btnLogin").isDisabled(), true);
+    assert.equal(ajena.url(), "about:blank");
+  } finally {
+    await ajena.close();
+  }
 });
 
 test("las noticias y el panel explican los fallos de conexión", async () => {

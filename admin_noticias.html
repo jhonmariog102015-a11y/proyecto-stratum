@@ -7,10 +7,11 @@
   <meta name="description" content="Panel de administración y gestión de noticias para Stratum Group S.A.S.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="strict-origin-when-cross-origin">
+  <script src="js/anti-marco.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=3.7">
+  <link rel="stylesheet" href="css/main.css?v=3.8">
   <link rel="icon" type="image/png" href="img/favicon-stratum.png">
 </head>
 <body>
@@ -77,7 +78,14 @@
           <li class="breadcrumb-item active" aria-current="page">Gestor de Noticias</li>
         </ol>
       </nav>
-      
+
+      <!-- Resumen -->
+      <section class="dash-stats" aria-label="Resumen de noticias">
+        <div class="dash-stat"><span class="dash-stat-label">Publicadas</span><strong id="statPublicadas" class="dash-stat-value">–</strong></div>
+        <div class="dash-stat"><span class="dash-stat-label">Retiradas</span><strong id="statRetiradas" class="dash-stat-value">–</strong></div>
+        <div class="dash-stat"><span class="dash-stat-label">Último respaldo en este navegador</span><strong id="statRespaldo" class="dash-stat-value dash-stat-text">Ninguno</strong></div>
+      </section>
+
       <!-- Columna 1: Formulario Crear Noticia -->
       <section class="dash-card">
         <h2 class="dash-card-title" id="formCardTitle">
@@ -89,7 +97,10 @@
           <input type="hidden" id="editingNewsId" value="">
 
           <div class="form-group">
-            <label class="form-label" for="newsTitle">Título de la Noticia <span class="req-star">*</span></label>
+            <div class="form-label-row">
+              <label class="form-label" for="newsTitle">Título de la Noticia <span class="req-star">*</span></label>
+              <span class="char-count" id="newsTitleCount" aria-live="polite">0/300</span>
+            </div>
             <input type="text" minlength="2" maxlength="300" id="newsTitle" class="form-input" placeholder="Ej: Implementación de IA en proyectos mineros de Cundinamarca" required>
           </div>
 
@@ -106,7 +117,10 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="newsSummary">Resumen / Contenido de la Noticia <span class="req-star">*</span></label>
+            <div class="form-label-row">
+              <label class="form-label" for="newsSummary">Resumen / Contenido de la Noticia <span class="req-star">*</span></label>
+              <span class="char-count" id="newsSummaryCount">0/20000</span>
+            </div>
             <textarea id="newsSummary" class="form-textarea" rows="4" maxlength="20000" placeholder="Describe brevemente el avance, proyecto o noticia que deseas comunicar a los clientes..." required></textarea>
           </div>
 
@@ -131,6 +145,11 @@
         </form>
 
         <div id="publishAlert" role="status" class="alert-box"></div>
+
+        <div class="news-preview">
+          <p class="news-preview-label">Vista previa: así se verá en la página de Noticias</p>
+          <div id="newsPreview" class="news-preview-card"></div>
+        </div>
       </section>
 
       <!-- Columna 2: Lista de Noticias Activas -->
@@ -139,6 +158,21 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
           Noticias en la Base de Datos
         </h2>
+
+        <div class="news-list-filters" role="group" aria-label="Noticias que se muestran">
+          <button type="button" class="news-filter-btn" data-vista-lista="activas" aria-pressed="true">Publicadas</button>
+          <button type="button" class="news-filter-btn" data-vista-lista="retiradas" aria-pressed="false">Retiradas</button>
+        </div>
+
+        <div class="news-toolbar">
+          <label class="visually-hidden" for="newsSearch">Buscar noticias</label>
+          <input type="search" id="newsSearch" class="form-input" placeholder="Buscar por título o texto" autocomplete="off">
+          <label class="visually-hidden" for="newsCategoryFilter">Filtrar por categoría</label>
+          <select id="newsCategoryFilter" class="form-select">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+        <p id="newsListSummary" class="news-list-summary" aria-live="polite"></p>
 
         <div id="adminNewsList" class="news-list">
           <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Cargando lista de noticias...</p>

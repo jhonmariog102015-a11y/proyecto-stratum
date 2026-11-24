@@ -2,6 +2,7 @@ import { copyFile, lstat, mkdir, readFile, realpath, rm, writeFile } from "node:
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { insertarPoliticaMeta } from "./politica-csp.mjs";
 
 const root = await realpath(fileURLToPath(new URL("../", import.meta.url)));
 const output = join(root, ".hosting-public");
@@ -16,11 +17,15 @@ if (process.env.SITE_ORIGIN) {
   }
   siteOrigin = url.origin;
 }
+const firebase = JSON.parse(await readFile(join(root, "firebase.json"), "utf8"));
+const politica = firebase.hosting.headers.flatMap(grupo => grupo.headers)
+  .find(cabecera => cabecera.key === "Content-Security-Policy").value;
 const files = [
   "index.html", "nosotros.html", "servicios.html", "noticias.html", "contacto.html",
   "aviso-legal.html", "politica-privacidad.html", "gracias.html", "404.html",
   "admin_noticias.html", "robots.txt", ...(siteOrigin ? ["sitemap.xml"] : []),
   "css/main.css", "js/app.js", "js/analytics.js", "js/admin.js", "js/entorno.js",
+  "js/preferencias.js", "js/anti-marco.js",
   "js/noticias-publicas.js", "js/formato-noticias.js", "js/cargar-noticias.js", "js/contacto.js",
   "assets/Portafolio_Stratum_Group.pdf", "assets/drone_landscape.png", "assets/coal_hand.png",
   "img/favicon-stratum.png", "img/logo_complet_sin_fondo.png",
@@ -54,6 +59,11 @@ for (const file of files) {
     await writeFile(destination, "User-agent: *\nDisallow: /\n");
   } else if (file.endsWith(".html") || file === "robots.txt" || file === "sitemap.xml") {
     let template = await readFile(join(root, file), "utf8");
+    if (file === "robots.txt") {
+      // Las rutas de robots.txt son absolutas; GitHub Pages publica el sitio en una subcarpeta.
+      template = template.replace(/^(Disallow: )\//gm, `$1${basePath}/`);
+    }
+    if (file.endsWith(".html")) template = insertarPoliticaMeta(template, politica);
     if (file === "404.html") {
       // Hosting sirve este documento también desde direcciones de varios niveles.
       template = template.replace(/\b(href|src)="(?=(?:css\/|js\/|img\/|assets\/|[\w-]+\.html))/g, `$1="${basePath}/`);
