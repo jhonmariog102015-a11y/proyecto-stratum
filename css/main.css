@@ -4817,7 +4817,6 @@ article.post .post__desc {
 .adm-brand {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
   padding: 0.5rem 0.5rem 1.5rem;
   border-bottom: 1px solid rgba(236, 210, 242, 0.16);
 }
@@ -4827,15 +4826,6 @@ article.post .post__desc {
   height: auto;
   /* Igual que el encabezado del sitio sobre fondos oscuros. */
   filter: brightness(0) invert(1);
-}
-
-.adm-brand span {
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--clay);
 }
 
 .adm-nav {
