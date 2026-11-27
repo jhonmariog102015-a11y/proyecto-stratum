@@ -47,7 +47,7 @@ const statBorradores = $("statBorradores");
 const statRespaldo = $("statRespaldo");
 const counts = { activas: $("countActivas"), borradores: $("countBorradores"), retiradas: $("countRetiradas") };
 const BACKUP_KEY = "stratum_ultimo_respaldo";
-const IMAGEN_RESPALDO = "assets/drone_landscape.png";
+const IMAGEN_RESPALDO = "assets/drone_landscape.webp";
 const FECHA = { day: "2-digit", month: "short", year: "numeric", timeZone: "America/Bogota" };
 const hoy = () => new Date().toLocaleDateString("es-CO", FECHA);
 

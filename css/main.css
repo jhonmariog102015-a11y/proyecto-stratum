@@ -214,7 +214,7 @@ textarea {
   height: 100vh;
   min-height: 600px;
   background: linear-gradient(180deg, var(--purple-overlay-top) 0%, var(--purple-overlay-bottom) 100%),
-              url('../assets/drone_landscape.png') center/cover no-repeat;
+              url('../assets/drone_landscape.webp') center/cover no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1335,7 +1335,7 @@ body:has(.dash-header) .btn-whatsapp-float,
 .hero-interior {
   padding: 160px 2rem calc(6vw + 60px) 2rem;
   background: linear-gradient(180deg, var(--purple-overlay-top) 0%, var(--purple-overlay-bottom) 100%),
-              url('../assets/drone_landscape.png') center/cover no-repeat;
+              url('../assets/drone_landscape.webp') center/cover no-repeat;
   text-align: center;
   color: #fff;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 6vw), 0 100%);

@@ -27,13 +27,13 @@ const files = [
   "css/main.css", "js/app.js", "js/analytics.js", "js/admin.js", "js/entorno.js",
   "js/preferencias.js", "js/anti-marco.js",
   "js/noticias-publicas.js", "js/formato-noticias.js", "js/cargar-noticias.js", "js/contacto.js",
-  "assets/Portafolio_Stratum_Group.pdf", "assets/drone_landscape.png", "assets/coal_hand.png",
-  "img/favicon-stratum.png", "img/logo_complet_sin_fondo.png",
-  "img/metodologia_paso1.jpg", "img/metodologia_paso2.jpg", "img/metodologia_paso3.jpg",
-  "img/metodologia_paso4.jpg", "img/entidades/logo_anm.png", "img/entidades/logo_anla.png",
-  "img/entidades/CORPOBOYACA.png", "img/entidades/car-logo-cundinamarca.webp",
-  "img/entidades/minambiente_clean.png", "img/entidades/Ideam_(Colombia)_logo.png",
-  "img/entidades/logo_sena.svg", "img/entidades/logo_contraloria.png",
+  "assets/Portafolio_Stratum_Group.pdf", "assets/drone_landscape.webp", "assets/coal_hand.webp",
+  "img/favicon-stratum.png", "img/logo-stratum.webp", "img/logo-stratum.png",
+  "img/metodologia_paso1.webp", "img/metodologia_paso2.webp", "img/metodologia_paso3.webp",
+  "img/metodologia_paso4.webp", "img/entidades/logo_anm.webp", "img/entidades/logo_anla.webp",
+  "img/entidades/logo_corpoboyaca.webp", "img/entidades/car-logo-cundinamarca.webp",
+  "img/entidades/logo_minambiente.webp", "img/entidades/logo_ideam.webp",
+  "img/entidades/logo_sena.svg", "img/entidades/logo_contraloria.webp",
   "img/entidades/logo_fiscalia.svg"
 ];
 

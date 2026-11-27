@@ -48,7 +48,7 @@ const formatoNoticias = (() => {
   }
 
   // Tarjeta de la cuadrícula de Noticias. El panel la usa también para la vista previa.
-  function htmlPost(data, { id, categoria = "Minería Estratégica", imagen = "assets/drone_landscape.png" } = {}) {
+  function htmlPost(data, { id, categoria = "Minería Estratégica", imagen = "assets/drone_landscape.webp" } = {}) {
     const enlace = escapeHTML(safeNewsLink(data.enlace));
     const tag = enlace ? "a" : "article";
     const atributos = (id ? ` id="${escapeHTML(anclaNoticia(id))}"` : "")

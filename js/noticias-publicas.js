@@ -1,7 +1,7 @@
 import { esVistaLocal } from "./entorno.js";
 
 const { escapeHTML, safeNewsLink, safeImageUrl, fechaVisible, anclaNoticia, htmlPost } = formatoNoticias;
-const IMAGEN_RESPALDO = "assets/drone_landscape.png";
+const IMAGEN_RESPALDO = "assets/drone_landscape.webp";
 
 async function fetchPublishedNews(limit) {
   const server = esVistaLocal ? "http://127.0.0.1:18080" : "https://firestore.googleapis.com";
@@ -71,7 +71,7 @@ async function loadPublicNews(newsContainer) {
     }
 
     // Primera noticia destacada (.featured)
-    const f = camposSeguros(noticias[0], "Ingeniería minera", "img/metodologia_paso4.jpg");
+    const f = camposSeguros(noticias[0], "Ingeniería minera", "img/metodologia_paso4.webp");
     const featuredTag = f.enlace ? "a" : "article";
     const featuredHTML = `
       <${featuredTag} class="featured" id="${escapeHTML(anclaNoticia(noticias[0].id))}" ${f.enlace ? `href="${f.enlace}" ${ATRIBUTOS_EXTERNOS}` : ""}>
