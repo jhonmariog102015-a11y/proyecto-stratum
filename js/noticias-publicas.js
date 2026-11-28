@@ -75,7 +75,7 @@ async function loadPublicNews(newsContainer) {
     const featuredTag = f.enlace ? "a" : "article";
     const featuredHTML = `
       <${featuredTag} class="featured" id="${escapeHTML(anclaNoticia(noticias[0].id))}" ${f.enlace ? `href="${f.enlace}" ${ATRIBUTOS_EXTERNOS}` : ""}>
-        <div class="featured__img"><img src="${f.imagen}" alt=""></div>
+        <div class="featured__img"><img src="${f.imagen}" alt="" width="1200" height="800"></div>
         <div class="featured__body">
           <div class="featured__meta"><span class="cat">${f.categoria}</span><time>${f.fecha}</time></div>
           <h2>${f.titulo}</h2>

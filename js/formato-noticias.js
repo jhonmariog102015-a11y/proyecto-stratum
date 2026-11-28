@@ -55,7 +55,7 @@ const formatoNoticias = (() => {
       + (enlace ? ` href="${enlace}" target="_blank" rel="noopener noreferrer"` : "");
     return `
       <${tag} class="post"${atributos}>
-        <div class="post__img"><img src="${escapeHTML(safeImageUrl(data.imagen) || imagen)}" alt="" loading="lazy"></div>
+        <div class="post__img"><img src="${escapeHTML(safeImageUrl(data.imagen) || imagen)}" alt="" width="400" height="400" loading="lazy"></div>
         <div class="post__body">
           <div class="post__meta"><time>${escapeHTML(fechaVisible(data))}</time> &bull; <span class="cat">${escapeHTML(data.categoria || categoria)}</span></div>
           <h3>${escapeHTML(data.titulo || "")}</h3>

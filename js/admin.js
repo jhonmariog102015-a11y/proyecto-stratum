@@ -631,7 +631,7 @@ function renderList() {
       : escapeHTML(fechaVisible(data));
     row.innerHTML = `
       <td class="adm-cell-title" data-etiqueta="Título">
-        <img src="${escapeHTML(safeImageUrl(data.imagen) || IMAGEN_RESPALDO)}" alt="" class="adm-thumb" loading="lazy">
+        <img src="${escapeHTML(safeImageUrl(data.imagen) || IMAGEN_RESPALDO)}" alt="" class="adm-thumb" width="44" height="44" loading="lazy">
         <span class="adm-title-text">${escapeHTML(data.titulo || "Sin título")}</span>
       </td>
       <td class="adm-cell-muted" data-etiqueta="Categoría">${escapeHTML(data.categoria || "General")}</td>
