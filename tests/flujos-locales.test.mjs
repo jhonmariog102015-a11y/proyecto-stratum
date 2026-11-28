@@ -63,15 +63,45 @@ test("rutas públicas, vista móvil y escritorio, contacto local y teclado", asy
   await page.goto(base + "/contacto");
   await page.evaluate(() => localStorage.setItem("stratum_access_prefs", "null"));
   await page.reload();
-  await page.locator(".btn-accessibility").click();
-  const focused = () => page.evaluate(() => document.activeElement.id);
-  assert.equal(await focused(), "accessCloseBtn");
+  assert.equal(await page.locator(".btn-whatsapp-float, a.whatsapp-float").count(), 0);
+
+  // Panel de accesibilidad: diálogo modal con el foco atrapado y devuelto al cerrar.
+  await page.locator("#a11yBoton").click();
+  const focused = () => page.evaluate(() => document.activeElement.dataset.herramienta || document.activeElement.id);
+  assert.equal(await focused(), "a11yCerrar");
+  assert.equal(await page.locator("main").evaluate(el => el.inert), true);
   await page.keyboard.press("Shift+Tab");
-  assert.equal(await focused(), "btnAccessReset");
+  assert.equal(await focused(), "a11yRestablecer");
+  await page.keyboard.press("Shift+Tab");
+  assert.equal(await focused(), "voz");
   await page.keyboard.press("Tab");
-  assert.equal(await focused(), "accessCloseBtn");
+  assert.equal(await focused(), "a11yRestablecer");
+
+  // Cada herramienta cambia la página y lo recuerda en las demás.
+  const herramienta = id => page.locator(`[data-herramienta="${id}"]`);
+  await herramienta("texto").click();
+  assert.match(await herramienta("texto").textContent(), /115 %/);
+  assert.equal(await herramienta("texto").getAttribute("aria-pressed"), "true");
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize), "18.4px");
+  await herramienta("alinear").click();
+  await herramienta("filtro").click();
+  await herramienta("filtro").click();
+  await herramienta("filtro").click();
+  await herramienta("filtro").click();
+  assert.match(await herramienta("filtro").textContent(), /Escala de grises/);
+  assert.match(await page.locator("main").evaluate(el => getComputedStyle(el).filter), /grayscale\(1\)/);
   await page.keyboard.press("Escape");
-  assert.ok(await page.locator(".btn-accessibility").evaluate(el => document.activeElement === el));
+  assert.ok(await page.locator("#a11yBoton").evaluate(el => document.activeElement === el));
+  assert.equal(await page.locator("main").evaluate(el => el.inert), false);
+  await page.goto(base + "/servicios");
+  assert.equal(await page.locator("p").first().evaluate(el => getComputedStyle(el).textAlign), "left");
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize), "18.4px");
+  await page.locator("#a11yBoton").click();
+  await page.locator("#a11yRestablecer").click();
+  assert.equal(await page.evaluate(() => localStorage.getItem("stratum_access_prefs")), null);
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize), "16px");
+  await page.keyboard.press("Escape");
+  await page.goto(base + "/contacto");
   await page.locator("#btnSubmitContact").click();
   assert.equal(await page.locator("#contactForm").evaluate(form => form.checkValidity()), false);
   for (const [id, value] of Object.entries({ formNombre: "Demo", formTelefono: "1234567890",
